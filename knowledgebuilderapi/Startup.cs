@@ -10,8 +10,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using knowledgebuilderapi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNet.OData.Batch;
+using knowledgebuilderapi.Models;
+using Microsoft.AspNetCore.Routing;
 
 namespace knowledgebuilderapi
 {
@@ -23,13 +27,24 @@ namespace knowledgebuilderapi
         }
 
         public IConfiguration Configuration { get; }
+        public string ConnectionString { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            this.ConnectionString = Configuration["KBAPI.ConnectionString"];
+
             services.AddDbContext<kbdataContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("BloggingDatabase")));
-            services.AddControllers();
+                options.UseSqlServer(this.ConnectionString));
+
+            // services.AddRouting();
+
+            services.AddMvc(option => {
+                option.EnableEndpointRouting = false;
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddOData();
+
+            // services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,16 +55,34 @@ namespace knowledgebuilderapi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
+            // app.UseRouting();
+            // app.UseAuthorization();
 
-            app.UseRouting();
 
-            app.UseAuthorization();
+            ODataModelBuilder modelBuilder = new ODataConventionModelBuilder(app.ApplicationServices);
+            modelBuilder.EntitySet<Knowledge>("Knowledges");
+            modelBuilder.Namespace = typeof(Knowledge).Namespace;
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            var model = modelBuilder.GetEdmModel();
+            app.UseODataBatching();
+
+            app.UseMvc(routeBuilder =>
+                {
+                    // and this line to enable OData query option, for example $filter
+                    routeBuilder.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
+
+                    routeBuilder.MapODataServiceRoute("ODataRoute", "odata", model);
+                });
+            // var routes = new RouteBuilder(app);
+            // routes.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
+            // routes.MapODataServiceRoute("odata", "odata", model, new DefaultODataBatchHandler());
+            // app.UseRouter(routes.Build());
+
+            // app.UseEndpoints(endpoints =>
+            // {
+            //     endpoints.MapControllers();
+            // });
         }
     }
 }

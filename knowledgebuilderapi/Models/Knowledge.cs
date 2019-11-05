@@ -9,9 +9,10 @@ namespace knowledgebuilderapi.Models
     {
 
         [Key]
-        public Int32 ID { get; set; }        
+        public Int32 ID { get; set; }
+        [Required]
         [Column("ContentType")]
-        public Int16 Category { get;set; }
+        public KnowledgeCategory Category { get;set; }
         [Required]
         [MaxLength(50)]
         [ConcurrencyCheck]
