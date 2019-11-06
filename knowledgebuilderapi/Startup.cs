@@ -39,7 +39,7 @@ namespace knowledgebuilderapi
 
             services.AddMvc(action => {
                 action.EnableEndpointRouting = false;
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddOData();
         }
 
@@ -56,7 +56,7 @@ namespace knowledgebuilderapi
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             ODataModelBuilder modelBuilder = new ODataConventionModelBuilder(app.ApplicationServices);
             modelBuilder.EntitySet<Knowledge>("Knowledges");
