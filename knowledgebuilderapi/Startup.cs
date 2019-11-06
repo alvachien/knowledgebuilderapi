@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNet.OData.Builder;
@@ -37,28 +37,26 @@ namespace knowledgebuilderapi
             services.AddDbContext<kbdataContext>(options =>
                 options.UseSqlServer(this.ConnectionString));
 
-            // services.AddRouting();
-
-            services.AddMvc(option => {
-                option.EnableEndpointRouting = false;
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddMvc(action => {
+                action.EnableEndpointRouting = false;
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddOData();
-
-            // services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
 
-            // app.UseHttpsRedirection();
-            // app.UseRouting();
-            // app.UseAuthorization();
-
+            app.UseHttpsRedirection();
 
             ODataModelBuilder modelBuilder = new ODataConventionModelBuilder(app.ApplicationServices);
             modelBuilder.EntitySet<Knowledge>("Knowledges");
@@ -74,15 +72,6 @@ namespace knowledgebuilderapi
 
                     routeBuilder.MapODataServiceRoute("ODataRoute", "odata", model);
                 });
-            // var routes = new RouteBuilder(app);
-            // routes.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
-            // routes.MapODataServiceRoute("odata", "odata", model, new DefaultODataBatchHandler());
-            // app.UseRouter(routes.Build());
-
-            // app.UseEndpoints(endpoints =>
-            // {
-            //     endpoints.MapControllers();
-            // });
         }
     }
 }

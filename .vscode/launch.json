@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/knowledgebuilderapi/bin/Debug/netcoreapp3.0/knowledgebuilderapi.dll",
+            "program": "${workspaceFolder}/knowledgebuilderapi/bin/Debug/netcoreapp2.2/knowledgebuilderapi.dll",
             "args": [],
             "cwd": "${workspaceFolder}/knowledgebuilderapi",
             "stopAtEntry": false,
