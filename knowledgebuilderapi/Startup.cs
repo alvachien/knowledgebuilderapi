@@ -37,9 +37,7 @@ namespace knowledgebuilderapi
             services.AddDbContext<kbdataContext>(options =>
                 options.UseSqlServer(this.ConnectionString));
 
-            services.AddMvc(action => {
-                action.EnableEndpointRouting = false;
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(x => x.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddOData();
         }
 
@@ -63,7 +61,7 @@ namespace knowledgebuilderapi
             modelBuilder.Namespace = typeof(Knowledge).Namespace;
 
             var model = modelBuilder.GetEdmModel();
-            app.UseODataBatching();
+            // app.UseODataBatching();
 
             app.UseMvc(routeBuilder =>
                 {

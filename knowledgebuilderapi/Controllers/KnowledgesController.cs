@@ -5,10 +5,10 @@ using knowledgebuilderapi.Models;
 using System.Linq;
 
 namespace knowledgebuilderapi.Controllers {
-    public class KnowledgeController : ODataController {
+    public class KnowledgesController : ODataController {
         private readonly kbdataContext _context;
 
-        public KnowledgeController(kbdataContext context)
+        public KnowledgesController(kbdataContext context)
         {
             _context = context;
         }
