@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,9 +18,13 @@ namespace knowledgebuilderapi.test
         {
             builder.ConfigureServices(services =>
             {
+                // In-memory database only exists while the connection is open
+                var connection = new SqliteConnection("DataSource=:memory:");
+                connection.Open();
+
                 // Remove the app's ApplicationDbContext registration.
                 var descriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+                    d => d.ServiceType == typeof(DbContextOptions<kbdataContext>));
 
                 if (descriptor != null)
                 {
@@ -28,14 +34,14 @@ namespace knowledgebuilderapi.test
                 // Add ApplicationDbContext using an in-memory database for testing.
                 services.AddDbContext<kbdataContext>((options, context) =>
                     {
-                        context.UseInMemoryDatabase("InMemoryDbForTesting");
+                        context.UseSqlite(connection);
                     });
 
                 // Build the service provider.
                 var sp = services.BuildServiceProvider();
 
                 // Create a scope to obtain a reference to the database
-                // context (ApplicationDbContext).
+                // context (kbdataContext).
                 using (var scope = sp.CreateScope())
                 {
                     var scopedServices = scope.ServiceProvider;
