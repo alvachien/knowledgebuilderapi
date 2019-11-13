@@ -1,11 +1,14 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using Microsoft.AspNet.OData;
 using Microsoft.EntityFrameworkCore;
-using knowledgebuilderapi.Models;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using knowledgebuilderapi.Models;
 
 namespace knowledgebuilderapi.Controllers {
     public class KnowledgesController : ODataController {
@@ -51,12 +54,22 @@ namespace knowledgebuilderapi.Controllers {
         /// </summary>
         public async Task<IActionResult> Post([FromBody] Knowledge knowledge)
         {
-            if (!ModelState.IsValid)
+            if (knowledge == null || !ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                if (knowledge != null)
+                {
+                    System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(knowledge));
+                    foreach (var value in ModelState.Values)
+                    {
+                        foreach(var err in value.Errors) 
+                        {
+                            System.Diagnostics.Debug.WriteLine(err.ToString());
+                        }
+                    }
+                }
+                return BadRequest();
             }
 
-            //return Created(k2);
             _context.Knowledges.Add(knowledge);
             await _context.SaveChangesAsync();
 
