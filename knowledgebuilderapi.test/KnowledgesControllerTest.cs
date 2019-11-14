@@ -61,7 +61,7 @@ namespace knowledgebuilderapi.test
                     rsts = control.Get();
                     rstscnt = await rsts.CountAsync();
                     Assert.Equal(1, rstscnt);
-                    var firstrst = rsts.ElementAt(0);
+                    var firstrst = rsts.ToList()[0];
                     Assert.Equal(firstrst.Title, nmod.Title);
                     Assert.Equal(firstrst.Content, nmod.Content);
                     Assert.Equal(firstrst.Category, nmod.Category);

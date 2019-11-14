@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.IO;
 using System.Collections.Generic;
 using Microsoft.AspNet.OData;
 using Microsoft.EntityFrameworkCore;
@@ -54,19 +55,16 @@ namespace knowledgebuilderapi.Controllers {
         /// </summary>
         public async Task<IActionResult> Post([FromBody] Knowledge knowledge)
         {
-            if (knowledge == null || !ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                if (knowledge != null)
+                foreach (var value in ModelState.Values)
                 {
-                    System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(knowledge));
-                    foreach (var value in ModelState.Values)
+                    foreach(var err in value.Errors) 
                     {
-                        foreach(var err in value.Errors) 
-                        {
-                            System.Diagnostics.Debug.WriteLine(err.ToString());
-                        }
+                        System.Diagnostics.Debug.WriteLine(err.Exception?.Message);
                     }
                 }
+
                 return BadRequest();
             }
 

@@ -6,8 +6,10 @@ namespace knowledgebuilderapi.Models {
     public abstract class BaseModel {
 
         [Column("CreatedAt")]
-        public DateTime CreatedAt { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? CreatedAt { get; set; }
         [Column("ModifiedAt")]
-        public DateTime ModifiedAt { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? ModifiedAt { get; set; }
     }
 }

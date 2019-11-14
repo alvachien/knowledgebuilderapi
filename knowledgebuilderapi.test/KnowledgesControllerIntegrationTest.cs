@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNet.OData.Results;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Converters;
 using System.Text;
 
 namespace knowledgebuilderapi.test
@@ -41,71 +42,131 @@ namespace knowledgebuilderapi.test
         [Fact]
         public async Task Knowlege_Create_Update_Delete_Test()
         {
-            // Metadata request
+            List<Int32> listCreatedIds = new List<Int32>();
+
+            // Step 1. Metadata request
             var metadata = await _client.GetAsync("/odata/$metadata");
             Assert.Equal(HttpStatusCode.OK, metadata.StatusCode);
             var content = await metadata.Content.ReadAsStringAsync();
             if (content.Length > 0) 
             {
+                // How to verify metadata?
+                // TBD.
             }
 
-            // Get all
+            // Step 2. Get all knowledges - empty
             var req1 = await _client.GetAsync("/odata/Knowledges");
             Assert.Equal(HttpStatusCode.OK, req1.StatusCode);
             content = await req1.Content.ReadAsStringAsync();
             if (content.Length > 0) 
             {
-                var resultJson = JObject.Parse(content);
-                var value = resultJson.SelectToken("value");
-                Assert.Equal(0, value.Count());
+                JToken outer = JToken.Parse(content);
+
+                JArray inner = outer["value"].Value<JArray>();
+                Assert.Empty(inner);
             }
 
-            // Get all with count
+            // Step 3. Get all knowledge with count - zero and empty
             var req2 = await _client.GetAsync("/odata/Knowledges?$count=true");
             Assert.Equal(HttpStatusCode.OK, req2.StatusCode);
             content = await req2.Content.ReadAsStringAsync();
             if (content.Length > 0) 
             {
-                var resultJson = JObject.Parse(content);
-                var cnt = resultJson.GetValue("@odata.count");
-                Assert.Equal(0, cnt.Value<int>());                
-                var value = resultJson.SelectToken("value");
-                Assert.Equal(0, value.Count());
+                JToken outer = JToken.Parse(content);
+
+                Int32 odatacount = outer["@odata.count"].Value<Int32>();
+                Assert.Equal(0, odatacount);
+
+                JArray inner = outer["value"].Value<JArray>();
+                Assert.Empty(inner);
             }
 
-            // Then, create one knowledge
-            var nmod = new Knowledge() {
+            // Step 4. Create first knowledge
+            var nmod = new Knowledge() 
+            {
                 Title = "Test 1",
                 Category = KnowledgeCategory.Concept,
                 Content = "My test 1"
             };
             
-            var kjson = JsonConvert.SerializeObject(nmod);
+            var jsetting = new JsonSerializerSettings();
+            jsetting.Converters.Add(new StringEnumConverter());
+            var kjson = JsonConvert.SerializeObject(nmod, jsetting);
             HttpContent inputContent = new StringContent(kjson, Encoding.UTF8, "application/json");
             var req3 = await _client.PostAsync("/odata/Knowledges", inputContent);
-            Assert.Equal(HttpStatusCode.OK, req3.StatusCode);
+            Assert.Equal(HttpStatusCode.Created, req3.StatusCode);
             content = await req3.Content.ReadAsStringAsync();
             if (content.Length > 0) 
             {
-                var resultJson = JObject.Parse(content);
-                if (resultJson != null) 
+                var nmod2 = JsonConvert.DeserializeObject<Knowledge>(content);
+                Assert.Equal(nmod.Title, nmod2.Title);
+                Assert.Equal(nmod.Content, nmod2.Content);
+                listCreatedIds.Add(nmod2.ID);
+            }
+
+            // Step 5. Get all knowledge with count - one and an array with single item
+            req2 = await _client.GetAsync("/odata/Knowledges?$count=true");
+            Assert.Equal(HttpStatusCode.OK, req2.StatusCode);
+            content = await req2.Content.ReadAsStringAsync();
+            if (content.Length > 0) 
+            {
+                JToken outer = JToken.Parse(content);
+
+                Int32 odatacount = outer["@odata.count"].Value<Int32>();
+                Assert.Equal(1, odatacount);
+
+                JArray inner = outer["value"].Value<JArray>();
+                Assert.Single(inner);
+                
+                foreach (var id in inner) 
                 {
+                    JObject dv = id.Value<JObject>();
+                    foreach(var prop in dv.Properties().Select(p => p.Name).ToList())
+                    {
+                        switch(prop)
+                        {
+                            case "ID":
+                                int nid = dv[prop].Value<Int32>();
+                                Assert.Equal(listCreatedIds[0], nid);
+                                break;
+
+                            case "Title":
+                                string dv_t = dv[prop].Value<string>();
+                                Assert.Equal(nmod.Title, dv_t);
+                            break;
+                            
+                            case "Content":
+                                string dv_c = dv[prop].Value<string>();
+                                Assert.Equal(nmod.Content, dv_c);
+                            break;
+
+                            default:
+                            break;
+                        }
+                    }
                 }
             }
 
-            // // Arrange
-            // var defaultPage = await _client.GetAsync("/");
-            // var content = await HtmlHelpers.GetDocumentAsync(defaultPage);
-
-            // //Act
-            // var response = await _client.SendAsync(
-            //     (IHtmlFormElement)content.QuerySelector("form[id='messages']"),
-            //     (IHtmlButtonElement)content.QuerySelector("button[id='deleteAllBtn']"));
-
-            // // Assert
-            // Assert.Equal(HttpStatusCode.OK, defaultPage.StatusCode);
-            // Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-            // Assert.Equal("/", response.Headers.Location.OriginalString);
+            // Step 6: Create second knowledge
+            nmod = new Knowledge() 
+            {
+                Title = "Test 2",
+                Category = KnowledgeCategory.Formula,
+                Content = "My test 2"
+            };
+            
+            kjson = JsonConvert.SerializeObject(nmod, jsetting);
+            inputContent = new StringContent(kjson, Encoding.UTF8, "application/json");
+            var req6 = await _client.PostAsync("/odata/Knowledges", inputContent);
+            Assert.Equal(HttpStatusCode.Created, req6.StatusCode);
+            content = await req6.Content.ReadAsStringAsync();
+            if (content.Length > 0) 
+            {
+                var nmod2 = JsonConvert.DeserializeObject<Knowledge>(content);
+                Assert.Equal(nmod.Title, nmod2.Title);
+                Assert.Equal(nmod.Content, nmod2.Content);
+                listCreatedIds.Add(nmod2.ID);
+            }
         }
     }
 }
