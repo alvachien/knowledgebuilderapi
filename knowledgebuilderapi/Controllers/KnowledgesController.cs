@@ -3,6 +3,7 @@ using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using Microsoft.AspNet.OData;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -11,8 +12,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using knowledgebuilderapi.Models;
 
-namespace knowledgebuilderapi.Controllers {
-    public class KnowledgesController : ODataController {
+namespace knowledgebuilderapi.Controllers 
+{
+    [Authorize]
+    public class KnowledgesController : ODataController 
+    {
         private readonly kbdataContext _context;
 
         public KnowledgesController(kbdataContext context)

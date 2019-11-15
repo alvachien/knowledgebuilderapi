@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -38,6 +40,21 @@ namespace knowledgebuilderapi
                 options.UseSqlServer(this.ConnectionString));
 
             services.AddMvc(x => x.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddAuthorization();
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = "http://localhost:5000";
+                    options.RequireHttpsMetadata = false;
+
+                    options.Audience = "knowledgebuilder.api";
+                });
+
             services.AddOData();
         }
 
@@ -55,13 +72,14 @@ namespace knowledgebuilderapi
             }
 
             //app.UseHttpsRedirection();
+            app.UseAuthentication();
 
             ODataModelBuilder modelBuilder = new ODataConventionModelBuilder(app.ApplicationServices);
             modelBuilder.EntitySet<Knowledge>("Knowledges");
             modelBuilder.Namespace = typeof(Knowledge).Namespace;
 
             var model = modelBuilder.GetEdmModel();
-            // app.UseODataBatching();
+            app.UseODataBatching();
 
             app.UseMvc(routeBuilder =>
                 {
