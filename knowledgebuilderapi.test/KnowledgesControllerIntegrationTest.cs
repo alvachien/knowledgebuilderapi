@@ -42,6 +42,8 @@ namespace knowledgebuilderapi.test
         [Fact]
         public async Task Knowlege_Create_Update_Delete_Test()
         {
+            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Test");
+            
             List<Int32> listCreatedIds = new List<Int32>();
 
             // Step 1. Metadata request

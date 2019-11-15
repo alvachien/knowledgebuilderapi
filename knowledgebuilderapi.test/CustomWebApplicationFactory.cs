@@ -4,11 +4,14 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.Models;
 using knowledgebuilderapi.Models;
+using Microsoft.AspNetCore.TestHost;
 
 namespace knowledgebuilderapi.test
 {
@@ -18,6 +21,14 @@ namespace knowledgebuilderapi.test
         {
             builder.ConfigureServices(services =>
             {
+                services.Configure<IdentityServerConfig>(config =>
+                {
+                    config.Authority = IdentityServerSetup.Instance.IdentityServerUrl;
+                    config.ApiName = "knowledgebuilder.api";
+                    config.ApiSecret = "secret";
+                    config.RequireHttpsMetadata = false;
+                });
+
                 // In-memory database only exists while the connection is open
                 var connection = new SqliteConnection("DataSource=:memory:");
                 connection.Open();
