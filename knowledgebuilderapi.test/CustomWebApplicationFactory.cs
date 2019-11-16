@@ -9,9 +9,9 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using IdentityServer4.Models;
 using knowledgebuilderapi.Models;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace knowledgebuilderapi.test
 {
@@ -21,20 +21,45 @@ namespace knowledgebuilderapi.test
         {
             builder.ConfigureServices(services =>
             {
-                services.Configure<IdentityServerConfig>(config =>
-                {
-                    config.Authority = IdentityServerSetup.Instance.IdentityServerUrl;
-                    config.ApiName = "knowledgebuilder.api";
-                    config.ApiSecret = "secret";
-                    config.RequireHttpsMetadata = false;
-                });
+                // services.Configure<IdentityServerConfig>(config =>
+                // {
+                //     config.Authority = "http://localhost:5005";
+                //     config.ApiName = "knowledgebuilder.api";
+                //     config.ApiSecret = "secret";
+                //     config.RequireHttpsMetadata = false;
+                // });
 
                 // In-memory database only exists while the connection is open
                 var connection = new SqliteConnection("DataSource=:memory:");
                 connection.Open();
 
-                // Remove the app's ApplicationDbContext registration.
+                // Identity
+                foreach(var srv in services)
+                {
+                    System.Diagnostics.Debug.WriteLine("===");
+                    System.Diagnostics.Debug.WriteLine(srv.ServiceType);
+                    System.Diagnostics.Debug.WriteLine(srv.ImplementationType);
+                }
+
                 var descriptor = services.SingleOrDefault(
+                    d => d.ServiceType == typeof(Microsoft.AspNetCore.Authentication.AuthenticationOptions));
+                if (descriptor != null)
+                {
+                    services.Remove(descriptor);
+                }
+                // Add the Jwt bear back
+                services.AddAuthorization();
+                services.AddAuthentication("Bearer")
+                    .AddJwtBearer("Bearer", options =>
+                    {
+                        options.Authority = "http://localhost:5005";
+                        options.RequireHttpsMetadata = false;
+
+                        options.Audience = "knowledgebuilder.api";
+                    });
+
+                // Remove the app's ApplicationDbContext registration.
+                descriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(DbContextOptions<kbdataContext>));
 
                 if (descriptor != null)

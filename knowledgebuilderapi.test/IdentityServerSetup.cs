@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IntegrationTests
+namespace knowledgebuilderapi.test
 {
     public class IdentityServerSetup
     {
@@ -20,7 +20,6 @@ namespace IntegrationTests
 
         public string IdentityServerUrl => "http://localhost:5005";
         private string TokenEndpoint => IdentityServerUrl + "/connect/token";
-
 
         IdentityServerSetup() { }
 
@@ -70,7 +69,7 @@ namespace IntegrationTests
         {
             return new List<ApiResource>
             {
-                new ApiResource("api1", "My API") {ApiSecrets = {new Secret("secret".Sha256())}}
+                new ApiResource("knowledgebuilder.api", "Knowledge Builder API") {ApiSecrets = {new Secret("secret".Sha256())}}
             };
         }
 
@@ -82,7 +81,7 @@ namespace IntegrationTests
             {
                 new Client
                 {
-                    ClientId = "client",
+                    ClientId = "kbapi.integrationtest",
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     ClientSecrets =
@@ -92,7 +91,7 @@ namespace IntegrationTests
                     AllowedScopes = {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "api1"
+                        "knowledgebuilder.api"
                     },
                     AllowOfflineAccess = true
                 }

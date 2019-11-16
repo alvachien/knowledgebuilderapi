@@ -33,7 +33,7 @@ namespace knowledgebuilderapi.test
             _factory = factory;
             _client = factory.CreateClient(new WebApplicationFactoryClientOptions
             {
-                AllowAutoRedirect = false
+                 AllowAutoRedirect = false
             });
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
@@ -42,12 +42,16 @@ namespace knowledgebuilderapi.test
         [Fact]
         public async Task Knowlege_Create_Update_Delete_Test()
         {
-            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Test");
+            string token = await IdentityServerSetup.Instance.GetAccessTokenForUser("user", "password");
+            var client = _factory.CreateClient();
+            client.SetBearerToken(token);
+
+            // _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Test");
             
             List<Int32> listCreatedIds = new List<Int32>();
 
             // Step 1. Metadata request
-            var metadata = await _client.GetAsync("/odata/$metadata");
+            var metadata = await client.GetAsync("/odata/$metadata");
             Assert.Equal(HttpStatusCode.OK, metadata.StatusCode);
             var content = await metadata.Content.ReadAsStringAsync();
             if (content.Length > 0) 
@@ -57,7 +61,7 @@ namespace knowledgebuilderapi.test
             }
 
             // Step 2. Get all knowledges - empty
-            var req1 = await _client.GetAsync("/odata/Knowledges");
+            var req1 = await client.GetAsync("/odata/Knowledges");
             Assert.Equal(HttpStatusCode.OK, req1.StatusCode);
             content = await req1.Content.ReadAsStringAsync();
             if (content.Length > 0) 
@@ -69,7 +73,7 @@ namespace knowledgebuilderapi.test
             }
 
             // Step 3. Get all knowledge with count - zero and empty
-            var req2 = await _client.GetAsync("/odata/Knowledges?$count=true");
+            var req2 = await client.GetAsync("/odata/Knowledges?$count=true");
             Assert.Equal(HttpStatusCode.OK, req2.StatusCode);
             content = await req2.Content.ReadAsStringAsync();
             if (content.Length > 0) 
@@ -95,7 +99,7 @@ namespace knowledgebuilderapi.test
             jsetting.Converters.Add(new StringEnumConverter());
             var kjson = JsonConvert.SerializeObject(nmod, jsetting);
             HttpContent inputContent = new StringContent(kjson, Encoding.UTF8, "application/json");
-            var req3 = await _client.PostAsync("/odata/Knowledges", inputContent);
+            var req3 = await client.PostAsync("/odata/Knowledges", inputContent);
             Assert.Equal(HttpStatusCode.Created, req3.StatusCode);
             content = await req3.Content.ReadAsStringAsync();
             if (content.Length > 0) 
@@ -107,7 +111,7 @@ namespace knowledgebuilderapi.test
             }
 
             // Step 5. Get all knowledge with count - one and an array with single item
-            req2 = await _client.GetAsync("/odata/Knowledges?$count=true");
+            req2 = await client.GetAsync("/odata/Knowledges?$count=true");
             Assert.Equal(HttpStatusCode.OK, req2.StatusCode);
             content = await req2.Content.ReadAsStringAsync();
             if (content.Length > 0) 
@@ -159,7 +163,7 @@ namespace knowledgebuilderapi.test
             
             kjson = JsonConvert.SerializeObject(nmod, jsetting);
             inputContent = new StringContent(kjson, Encoding.UTF8, "application/json");
-            var req6 = await _client.PostAsync("/odata/Knowledges", inputContent);
+            var req6 = await client.PostAsync("/odata/Knowledges", inputContent);
             Assert.Equal(HttpStatusCode.Created, req6.StatusCode);
             content = await req6.Content.ReadAsStringAsync();
             if (content.Length > 0) 
