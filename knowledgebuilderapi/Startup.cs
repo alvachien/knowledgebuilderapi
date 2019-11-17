@@ -23,12 +23,14 @@ namespace knowledgebuilderapi
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            Environment = env;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment Environment { get; }
         public string ConnectionString { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -36,19 +38,51 @@ namespace knowledgebuilderapi
         {
             this.ConnectionString = Configuration["KBAPI.ConnectionString"];
 
-            services.AddDbContext<kbdataContext>(options =>
-                options.UseSqlServer(this.ConnectionString));
+            if (Environment.EnvironmentName != "IntegrationTest")
+            {
+                services.AddDbContext<kbdataContext>(options =>
+                    options.UseSqlServer(this.ConnectionString));
+            }
+
 
             services.AddMvc(x => x.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddAuthorization();
-            services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
-                {
-                    options.Authority = "http://localhost:5005";
-                    options.RequireHttpsMetadata = false;
 
-                    options.Audience = "knowledgebuilder.api";
-                });
+            if (Environment.EnvironmentName == "IntegrationTest")
+            {
+                // Already Converted in IntegrationTest part.
+                // 
+                // services.AddAuthentication("Bearer")
+                //     .AddJwtBearer("Bearer", options =>
+                //     {
+                //         options.Authority = "http://localhost:5005";
+                //         options.RequireHttpsMetadata = false;
+
+                //         options.Audience = "knowledgebuilder.api";
+                //     });
+            }
+            else if (Environment.IsDevelopment())
+            {                
+                services.AddAuthentication("Bearer")
+                    .AddJwtBearer("Bearer", options =>
+                    {
+                        options.Authority = "http://localhost:5005";
+                        options.RequireHttpsMetadata = false;
+
+                        options.Audience = "knowledgebuilder.api";
+                    });
+            }
+            else if (Environment.IsProduction())
+            {
+                services.AddAuthentication("Bearer")
+                    .AddJwtBearer("Bearer", options =>
+                    {
+                        options.Authority = "http://localhost:5005";
+                        options.RequireHttpsMetadata = false;
+
+                        options.Audience = "knowledgebuilder.api";
+                    });
+            }
 
             services.AddOData();
         }

@@ -60,8 +60,12 @@ namespace knowledgebuilderapi.test
                 // TBD.
             }
 
-            // Step 2. Get all knowledges - empty
-            var req1 = await client.GetAsync("/odata/Knowledges");
+            // Step 2a. Get all knowledges - with non-authorized user
+            var req1 = await _client.GetAsync("/odata/Knowledges");
+            Assert.Equal(HttpStatusCode.Unauthorized, req1.StatusCode);
+
+            // Step 2b. Get all knowledges - empty
+            req1 = await client.GetAsync("/odata/Knowledges");
             Assert.Equal(HttpStatusCode.OK, req1.StatusCode);
             content = await req1.Content.ReadAsStringAsync();
             if (content.Length > 0) 
@@ -87,7 +91,7 @@ namespace knowledgebuilderapi.test
                 Assert.Empty(inner);
             }
 
-            // Step 4. Create first knowledge
+            // Prepare the data for creation
             var nmod = new Knowledge() 
             {
                 Title = "Test 1",
@@ -99,7 +103,13 @@ namespace knowledgebuilderapi.test
             jsetting.Converters.Add(new StringEnumConverter());
             var kjson = JsonConvert.SerializeObject(nmod, jsetting);
             HttpContent inputContent = new StringContent(kjson, Encoding.UTF8, "application/json");
-            var req3 = await client.PostAsync("/odata/Knowledges", inputContent);
+            
+            // Step 4a. Create first knowledge - without authority
+            var req3 = await _client.PostAsync("/odata/Knowledges", inputContent);
+            Assert.Equal(HttpStatusCode.Unauthorized, req3.StatusCode);
+
+            // Step 4b. Create first knowledge
+            req3 = await client.PostAsync("/odata/Knowledges", inputContent);
             Assert.Equal(HttpStatusCode.Created, req3.StatusCode);
             content = await req3.Content.ReadAsStringAsync();
             if (content.Length > 0) 

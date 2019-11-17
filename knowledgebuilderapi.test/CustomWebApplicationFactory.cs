@@ -19,27 +19,21 @@ namespace knowledgebuilderapi.test
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            builder.UseEnvironment("IntegrationTest");
+
             builder.ConfigureServices(services =>
             {
-                // services.Configure<IdentityServerConfig>(config =>
-                // {
-                //     config.Authority = "http://localhost:5005";
-                //     config.ApiName = "knowledgebuilder.api";
-                //     config.ApiSecret = "secret";
-                //     config.RequireHttpsMetadata = false;
-                // });
-
                 // In-memory database only exists while the connection is open
                 var connection = new SqliteConnection("DataSource=:memory:");
                 connection.Open();
 
-                // Identity
-                foreach(var srv in services)
-                {
-                    System.Diagnostics.Debug.WriteLine("===");
-                    System.Diagnostics.Debug.WriteLine(srv.ServiceType);
-                    System.Diagnostics.Debug.WriteLine(srv.ImplementationType);
-                }
+                // // Identity
+                // foreach(var srv in services)
+                // {
+                //     System.Diagnostics.Debug.WriteLine("===");
+                //     System.Diagnostics.Debug.WriteLine(srv.ServiceType);
+                //     System.Diagnostics.Debug.WriteLine(srv.ImplementationType);
+                // }
 
                 var descriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(Microsoft.AspNetCore.Authentication.AuthenticationOptions));
@@ -47,8 +41,8 @@ namespace knowledgebuilderapi.test
                 {
                     services.Remove(descriptor);
                 }
+
                 // Add the Jwt bear back
-                services.AddAuthorization();
                 services.AddAuthentication("Bearer")
                     .AddJwtBearer("Bearer", options =>
                     {

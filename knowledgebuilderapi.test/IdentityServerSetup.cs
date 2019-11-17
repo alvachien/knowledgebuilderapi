@@ -39,11 +39,13 @@ namespace knowledgebuilderapi.test
             }
         }
 
-        public async Task<string> GetAccessTokenForUser(string userName, string password, string clientId = "client", string clientSecret = "secret")
+        public async Task<string> GetAccessTokenForUser(string userName, string password, 
+            string clientId = "kbapi.integrationtest", 
+            string clientSecret = "secret")
         {
             var client = new TokenClient(TokenEndpoint, clientId, clientSecret);
 
-            var response = await client.RequestResourceOwnerPasswordAsync(userName, password, "api1");
+            var response = await client.RequestResourceOwnerPasswordAsync(userName, password, "knowledgebuilder.api");
             return response.AccessToken;
         }
 
@@ -69,7 +71,7 @@ namespace knowledgebuilderapi.test
         {
             return new List<ApiResource>
             {
-                new ApiResource("knowledgebuilder.api", "Knowledge Builder API") {ApiSecrets = {new Secret("secret".Sha256())}}
+                new ApiResource("knowledgebuilder.api", "Knowledge Builder API") { ApiSecrets = {new Secret("secret".Sha256())} }
             };
         }
 
