@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 using System.Text;
+using IdentityModel.Client;
 
 namespace knowledgebuilderapi.test
 {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using IdentityModel.Client;
@@ -43,10 +44,24 @@ namespace knowledgebuilderapi.test
             string clientId = "kbapi.integrationtest", 
             string clientSecret = "secret")
         {
-            var client = new TokenClient(TokenEndpoint, clientId, clientSecret);
+            //var client = new TokenClient(TokenEndpoint, clientId, clientSecret);            
 
-            var response = await client.RequestResourceOwnerPasswordAsync(userName, password, "knowledgebuilder.api");
-            return response.AccessToken;
+            //var response = await client.RequestPasswordTokenAsync(userName, password, "knowledgebuilder.api");
+
+            //return response.AccessToken;
+
+            var client = new HttpClient();
+            var disco = await client.GetDiscoveryDocumentAsync(IdentityServerUrl);
+            var tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = clientId,
+                ClientSecret = clientSecret,
+                UserName = userName,
+                Password = password,
+                Scope = "knowledgebuilder.api"
+            });
+            return tokenResponse.AccessToken;
         }
 
         private void InitializeIdentityServer()
