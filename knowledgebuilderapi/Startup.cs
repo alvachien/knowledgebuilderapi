@@ -45,7 +45,8 @@ namespace knowledgebuilderapi
             }
 
 
-            services.AddMvc(x => x.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            //services.AddMvc(x => x.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            
             services.AddAuthorization();
 
             if (Environment.EnvironmentName == "IntegrationTest")
@@ -85,6 +86,7 @@ namespace knowledgebuilderapi
             }
 
             services.AddOData();
+            services.AddMvc(options => options.EnableEndpointRouting = false);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

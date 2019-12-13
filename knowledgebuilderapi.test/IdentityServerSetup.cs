@@ -51,10 +51,10 @@ namespace knowledgebuilderapi.test
             //return response.AccessToken;
 
             var client = new HttpClient();
-            var disco = await client.GetDiscoveryDocumentAsync(IdentityServerUrl);
+            var idsrv = await client.GetDiscoveryDocumentAsync(IdentityServerUrl);
             var tokenResponse = await client.RequestPasswordTokenAsync(new PasswordTokenRequest
             {
-                Address = disco.TokenEndpoint,
+                Address = idsrv.TokenEndpoint,
                 ClientId = clientId,
                 ClientSecret = clientSecret,
                 UserName = userName,
