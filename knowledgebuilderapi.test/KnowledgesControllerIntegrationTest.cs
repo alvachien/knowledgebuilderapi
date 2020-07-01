@@ -62,11 +62,11 @@ namespace knowledgebuilderapi.test
             }
 
             // Step 2a. Get all knowledges - with non-authorized user
-            var req1 = await _client.GetAsync("/odata/Knowledges");
+            var req1 = await _client.GetAsync("/odata/KnowledgeItems");
             Assert.Equal(HttpStatusCode.Unauthorized, req1.StatusCode);
 
             // Step 2b. Get all knowledges - empty
-            req1 = await client.GetAsync("/odata/Knowledges");
+            req1 = await client.GetAsync("/odata/KnowledgeItems");
             Assert.Equal(HttpStatusCode.OK, req1.StatusCode);
             content = await req1.Content.ReadAsStringAsync();
             if (content.Length > 0) 
@@ -78,7 +78,7 @@ namespace knowledgebuilderapi.test
             }
 
             // Step 3. Get all knowledge with count - zero and empty
-            var req2 = await client.GetAsync("/odata/Knowledges?$count=true");
+            var req2 = await client.GetAsync("/odata/KnowledgeItems?$count=true");
             Assert.Equal(HttpStatusCode.OK, req2.StatusCode);
             content = await req2.Content.ReadAsStringAsync();
             if (content.Length > 0) 
@@ -93,7 +93,7 @@ namespace knowledgebuilderapi.test
             }
 
             // Prepare the data for creation
-            var nmod = new Knowledge() 
+            var nmod = new KnowledgeItem() 
             {
                 Title = "Test 1",
                 Category = KnowledgeCategory.Concept,
@@ -106,23 +106,23 @@ namespace knowledgebuilderapi.test
             HttpContent inputContent = new StringContent(kjson, Encoding.UTF8, "application/json");
             
             // Step 4a. Create first knowledge - without authority
-            var req3 = await _client.PostAsync("/odata/Knowledges", inputContent);
+            var req3 = await _client.PostAsync("/odata/KnowledgeItems", inputContent);
             Assert.Equal(HttpStatusCode.Unauthorized, req3.StatusCode);
 
             // Step 4b. Create first knowledge
-            req3 = await client.PostAsync("/odata/Knowledges", inputContent);
+            req3 = await client.PostAsync("/odata/KnowledgeItems", inputContent);
             Assert.Equal(HttpStatusCode.Created, req3.StatusCode);
             content = await req3.Content.ReadAsStringAsync();
             if (content.Length > 0) 
             {
-                var nmod2 = JsonConvert.DeserializeObject<Knowledge>(content);
+                var nmod2 = JsonConvert.DeserializeObject<KnowledgeItem>(content);
                 Assert.Equal(nmod.Title, nmod2.Title);
                 Assert.Equal(nmod.Content, nmod2.Content);
                 listCreatedIds.Add(nmod2.ID);
             }
 
             // Step 5. Get all knowledge with count - one and an array with single item
-            req2 = await client.GetAsync("/odata/Knowledges?$count=true");
+            req2 = await client.GetAsync("/odata/KnowledgeItems?$count=true");
             Assert.Equal(HttpStatusCode.OK, req2.StatusCode);
             content = await req2.Content.ReadAsStringAsync();
             if (content.Length > 0) 
@@ -165,7 +165,7 @@ namespace knowledgebuilderapi.test
             }
 
             // Step 6: Create second knowledge
-            nmod = new Knowledge() 
+            nmod = new KnowledgeItem() 
             {
                 Title = "Test 2",
                 Category = KnowledgeCategory.Formula,
@@ -174,12 +174,12 @@ namespace knowledgebuilderapi.test
             
             kjson = JsonConvert.SerializeObject(nmod, jsetting);
             inputContent = new StringContent(kjson, Encoding.UTF8, "application/json");
-            var req6 = await client.PostAsync("/odata/Knowledges", inputContent);
+            var req6 = await client.PostAsync("/odata/KnowledgeItems", inputContent);
             Assert.Equal(HttpStatusCode.Created, req6.StatusCode);
             content = await req6.Content.ReadAsStringAsync();
             if (content.Length > 0) 
             {
-                var nmod2 = JsonConvert.DeserializeObject<Knowledge>(content);
+                var nmod2 = JsonConvert.DeserializeObject<KnowledgeItem>(content);
                 Assert.Equal(nmod.Title, nmod2.Title);
                 Assert.Equal(nmod.Content, nmod2.Content);
                 listCreatedIds.Add(nmod2.ID);

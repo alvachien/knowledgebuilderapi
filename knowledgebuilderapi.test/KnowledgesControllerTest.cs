@@ -32,7 +32,7 @@ namespace knowledgebuilderapi.test
                 {
                     context.Database.EnsureCreated();
 
-                    KnowledgesController control = new KnowledgesController(context);
+                    KnowledgeItemsController control = new KnowledgeItemsController(context);
                     
                     // Step 1. Read - nothing
                     var rsts = control.Get();
@@ -40,19 +40,19 @@ namespace knowledgebuilderapi.test
                     Assert.Equal(0, rstscnt);
 
                     // Step 2. Create a new one
-                    var nmod = new Knowledge() {
+                    var nmod = new KnowledgeItem() {
                         Title = "Test 1",
                         Category = KnowledgeCategory.Concept,
                         Content = "My test 1"
                     };
                     var result = control.Post(nmod);
                     var actionResult = Assert.IsType<Task<IActionResult>>(result);
-                    var actResult = Assert.IsType<CreatedODataResult<Knowledge>>(result.Result);
-                    rstscnt = await context.Knowledges.CountAsync();
+                    var actResult = Assert.IsType<CreatedODataResult<KnowledgeItem>>(result.Result);
+                    rstscnt = await context.KnowledgeItems.CountAsync();
                     Assert.Equal(1, rstscnt);
                     
                     var nid = actResult.Entity.ID;
-                    var dbrst = await context.Knowledges.SingleOrDefaultAsync(p => p.ID == nid);
+                    var dbrst = await context.KnowledgeItems.SingleOrDefaultAsync(p => p.ID == nid);
                     Assert.Equal(dbrst.Title, nmod.Title);
                     Assert.Equal(dbrst.Content, nmod.Content);
                     Assert.Equal(dbrst.Category, nmod.Category);

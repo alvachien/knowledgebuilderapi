@@ -44,9 +44,6 @@ namespace knowledgebuilderapi
                     options.UseSqlServer(this.ConnectionString));
             }
 
-
-            //services.AddMvc(x => x.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            
             services.AddAuthorization();
 
             if (Environment.EnvironmentName == "IntegrationTest")
