@@ -106,8 +106,8 @@ namespace knowledgebuilderapi
             app.UseAuthentication();
 
             ODataModelBuilder modelBuilder = new ODataConventionModelBuilder(app.ApplicationServices);
-            modelBuilder.EntitySet<Knowledge>("Knowledges");
-            modelBuilder.Namespace = typeof(Knowledge).Namespace;
+            modelBuilder.EntitySet<KnowledgeItem>("KnowledgeItems");
+            modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
 
             var model = modelBuilder.GetEdmModel();
             app.UseODataBatching();

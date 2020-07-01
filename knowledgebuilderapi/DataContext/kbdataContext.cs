@@ -9,17 +9,17 @@ namespace knowledgebuilderapi.Models
         { 
         }
 
-        public DbSet<Knowledge> Knowledges { get; set; }
+        public DbSet<KnowledgeItem> KnowledgeItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Knowledge>()
+            modelBuilder.Entity<KnowledgeItem>()
                 .Property(b => b.CreatedAt);
                 // .HasDefaultValueSql("getdate()");
-            modelBuilder.Entity<Knowledge>()
+            modelBuilder.Entity<KnowledgeItem>()
                 .Property(b => b.ModifiedAt);
                 // .HasDefaultValueSql("getdate()");
-            modelBuilder.Entity<Knowledge>()
+            modelBuilder.Entity<KnowledgeItem>()
                 .Property(e => e.Category)
                 .HasConversion(
                     v => (Int16)v,

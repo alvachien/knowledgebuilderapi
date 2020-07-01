@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace knowledgebuilderapi.Models
 {
-    [Table("Knowledge")]
-    public class Knowledge : BaseModel
+    [Table("KnowledgeItem")]
+    public class KnowledgeItem : BaseModel
     {
 
         [Key]

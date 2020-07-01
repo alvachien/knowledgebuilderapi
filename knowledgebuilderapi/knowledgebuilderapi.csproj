@@ -3,6 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>609c239b-e8d5-49a0-9cd3-feb06a09011b</UserSecretsId>
+    <AssemblyName>KnowledgeBuilder.API</AssemblyName>
+    <Version>1.2.0</Version>
+    <Authors>Alva Chien</Authors>
+    <Company>Alva Chien</Company>
+    <Copyright>Copyright by Alva Chien</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

@@ -15,11 +15,11 @@ using knowledgebuilderapi.Models;
 namespace knowledgebuilderapi.Controllers 
 {
     [Authorize]
-    public class KnowledgesController : ODataController 
+    public class KnowledgeItemsController : ODataController 
     {
         private readonly kbdataContext _context;
 
-        public KnowledgesController(kbdataContext context)
+        public KnowledgeItemsController(kbdataContext context)
         {
             _context = context;
         }
@@ -34,9 +34,9 @@ namespace knowledgebuilderapi.Controllers
         /// 
         /// <remarks>
         [EnableQuery]
-        public IQueryable<Knowledge> Get()
+        public IQueryable<KnowledgeItem> Get()
         {
-            return _context.Knowledges;
+            return _context.KnowledgeItems;
         }
 
         /// GET: /Knowledges(:id)
@@ -48,16 +48,16 @@ namespace knowledgebuilderapi.Controllers
         /// <param name="key">The key of the Knowledge required</param>
         /// <returns>The Knowledge</returns>
         [EnableQuery]
-        public SingleResult<Knowledge> Get([FromODataUri] int key)
+        public SingleResult<KnowledgeItem> Get([FromODataUri] int key)
         {
-            return SingleResult.Create(_context.Knowledges.Where(p => p.ID == key));
+            return SingleResult.Create(_context.KnowledgeItems.Where(p => p.ID == key));
         }
 
         // POST: /Knowledges
         /// <summary>
         /// Support for creating knowledge
         /// </summary>
-        public async Task<IActionResult> Post([FromBody] Knowledge knowledge)
+        public async Task<IActionResult> Post([FromBody] KnowledgeItem knowledge)
         {
             if (!ModelState.IsValid)
             {
@@ -72,7 +72,7 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest();
             }
 
-            _context.Knowledges.Add(knowledge);
+            _context.KnowledgeItems.Add(knowledge);
             await _context.SaveChangesAsync();
 
             return Created(knowledge);
@@ -82,7 +82,7 @@ namespace knowledgebuilderapi.Controllers
         /// <summary>
         /// Support for updating Knowledges
         /// </summary>
-        public async Task<IActionResult> Put([FromODataUri] int key, [FromBody] Knowledge update)
+        public async Task<IActionResult> Put([FromODataUri] int key, [FromBody] KnowledgeItem update)
         {
             if (!ModelState.IsValid)
             {
@@ -101,7 +101,7 @@ namespace knowledgebuilderapi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.Knowledges.Any(p => p.ID == key))
+                if (!_context.KnowledgeItems.Any(p => p.ID == key))
                 {
                     return NotFound();
                 }
@@ -120,13 +120,13 @@ namespace knowledgebuilderapi.Controllers
         /// </summary>
         public async Task<IActionResult> Delete([FromODataUri] int key)
         {
-            var knowledge = await _context.Knowledges.FindAsync(key);
+            var knowledge = await _context.KnowledgeItems.FindAsync(key);
             if (knowledge == null)
             {
                 return NotFound();
             }
 
-            _context.Knowledges.Remove(knowledge);
+            _context.KnowledgeItems.Remove(knowledge);
             await _context.SaveChangesAsync();
 
             return StatusCode(204); // HttpStatusCode.NoContent
@@ -136,14 +136,14 @@ namespace knowledgebuilderapi.Controllers
         /// <summary>
         /// Support for partial updates of knowledges
         /// </summary>
-        public async Task<IActionResult> Patch([FromODataUri] int key, [FromBody] Delta<Knowledge> knowledge)
+        public async Task<IActionResult> Patch([FromODataUri] int key, [FromBody] Delta<KnowledgeItem> knowledge)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var entity = await _context.Knowledges.FindAsync(key);
+            var entity = await _context.KnowledgeItems.FindAsync(key);
             if (entity == null)
             {
                 return NotFound();
@@ -157,7 +157,7 @@ namespace knowledgebuilderapi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.Knowledges.Any(p => p.ID == key))
+                if (!_context.KnowledgeItems.Any(p => p.ID == key))
                 {
                     return NotFound();
                 }
