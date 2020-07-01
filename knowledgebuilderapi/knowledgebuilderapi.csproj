@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>609c239b-e8d5-49a0-9cd3-feb06a09011b</UserSecretsId>
+    <AssemblyName>KnowledgeBuilder.API</AssemblyName>
+    <Version>1.2.0</Version>
+    <Authors>Alva Chien</Authors>
+    <Company>Alva Chien</Company>
+    <Copyright>Copyright by Alva Chien</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.4.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
+  </ItemGroup>
+</Project>
