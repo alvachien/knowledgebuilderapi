@@ -42,7 +42,7 @@ namespace knowledgebuilderapi.test
                     // Step 2. Create a new one
                     var nmod = new KnowledgeItem() {
                         Title = "Test 1",
-                        Category = KnowledgeCategory.Concept,
+                        Category = KnowledgeItemCategory.Concept,
                         Content = "My test 1"
                     };
                     var result = control.Post(nmod);

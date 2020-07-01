@@ -12,7 +12,7 @@ namespace knowledgebuilderapi.Models
         public Int32 ID { get; set; }
         [Required]
         [Column("ContentType")]
-        public KnowledgeCategory Category { get;set; }
+        public KnowledgeItemCategory Category { get;set; }
         [Required]
         [MaxLength(50)]
         [ConcurrencyCheck]

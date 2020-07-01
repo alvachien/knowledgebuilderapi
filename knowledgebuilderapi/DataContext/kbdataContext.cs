@@ -23,7 +23,7 @@ namespace knowledgebuilderapi.Models
                 .Property(e => e.Category)
                 .HasConversion(
                     v => (Int16)v,
-                    v => (KnowledgeCategory)v);
+                    v => (KnowledgeItemCategory)v);
         }
     }
 }

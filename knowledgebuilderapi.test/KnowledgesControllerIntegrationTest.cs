@@ -96,7 +96,7 @@ namespace knowledgebuilderapi.test
             var nmod = new KnowledgeItem() 
             {
                 Title = "Test 1",
-                Category = KnowledgeCategory.Concept,
+                Category = KnowledgeItemCategory.Concept,
                 Content = "My test 1"
             };
             
@@ -168,7 +168,7 @@ namespace knowledgebuilderapi.test
             nmod = new KnowledgeItem() 
             {
                 Title = "Test 2",
-                Category = KnowledgeCategory.Formula,
+                Category = KnowledgeItemCategory.Formula,
                 Content = "My test 2"
             };
             
