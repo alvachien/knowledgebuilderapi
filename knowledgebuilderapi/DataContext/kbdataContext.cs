@@ -1,7 +1,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
+using knowledgebuilderapi.Models;
 
-namespace knowledgebuilderapi.Models
+namespace knowledgebuilderapi
 {
     public class kbdataContext : DbContext
     {

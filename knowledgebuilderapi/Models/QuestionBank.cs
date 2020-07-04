@@ -35,13 +35,14 @@ namespace knowledgebuilderapi.Models
     [Table("QuestionBankSubItem")]
     public sealed class QuestionBankSubItem
     {
-        [Required]
+        [Key]
         [Column("ItemID", TypeName = "INT")]
         public Int32 ItemID { get; set; }
 
-        [Required]
-        [Column("SubID", TypeName = "INT")]
-        public Int32 SubID { get; set; }
+        [Key]
+        [Column("SubID", TypeName = "NVARCHAR(20)")]
+        [StringLength(20)]
+        public String SubID { get; set; }
 
         [Required]
         [Column("QBType", TypeName = "INT")]
