@@ -1,13 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace knowledgebuilderapi.Models
 {
     [Table("KnowledgeItem")]
-    public class KnowledgeItem : BaseModel
+    public sealed class KnowledgeItem : BaseModel
     {
-
         [Key]
         public Int32 ID { get; set; }
         [Required]
@@ -23,5 +23,7 @@ namespace knowledgebuilderapi.Models
         public string Content { get;set; }
         [Column("Tags")]
         public string Tags { get; set; }
+
+        public ICollection<QuestionBankItem> QuestionBankItems { get; set; }
     }
 }
