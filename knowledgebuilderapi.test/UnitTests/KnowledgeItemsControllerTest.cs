@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNet.OData.Results;
 
-namespace knowledgebuilderapi.test
+namespace knowledgebuilderapi.test.UnitTests
 {
-    public class KnowledgeControllerTest
+    public class KnowledgeItemsControllerTest
     {
         [Fact]
         public async Task Test_Read_Create_ReRead()
