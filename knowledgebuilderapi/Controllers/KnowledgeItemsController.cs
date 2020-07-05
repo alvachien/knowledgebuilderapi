@@ -14,7 +14,7 @@ using knowledgebuilderapi.Models;
 
 namespace knowledgebuilderapi.Controllers 
 {
-    [Authorize]
+    //[Authorize]
     public class KnowledgeItemsController : ODataController 
     {
         private readonly kbdataContext _context;

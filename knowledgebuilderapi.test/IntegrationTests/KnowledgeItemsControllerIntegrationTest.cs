@@ -20,7 +20,7 @@ using Newtonsoft.Json.Converters;
 using System.Text;
 using IdentityModel.Client;
 
-namespace knowledgebuilderapi.test
+namespace knowledgebuilderapi.test.IntegrationTests
 {
     public class KnowledgeControllerIntegrationTest :
         IClassFixture<CustomWebApplicationFactory<knowledgebuilderapi.Startup>>
