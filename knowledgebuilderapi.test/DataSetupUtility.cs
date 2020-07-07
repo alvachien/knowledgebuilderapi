@@ -49,6 +49,12 @@ namespace knowledgebuilderapi.test
             // Nothing
         }
         #endregion
+
+        internal static void DeleteKnowledgeItem(kbdataContext context, int kid)
+        {
+            context.Database.ExecuteSqlRaw("DELETE FROM KnowledgeItem WHERE ID = " + kid.ToString());
+
+        }
     }
 }
 

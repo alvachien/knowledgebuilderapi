@@ -23,14 +23,14 @@ namespace knowledgebuilderapi
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
             Environment = env;
         }
 
         public IConfiguration Configuration { get; }
-        public IHostingEnvironment Environment { get; }
+        public IWebHostEnvironment Environment { get; }
         public string ConnectionString { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -59,7 +59,7 @@ namespace knowledgebuilderapi
                 //         options.Audience = "knowledgebuilder.api";
                 //     });
             }
-            else if (Environment.IsDevelopment())
+            else if (Environment.EnvironmentName == "Development")
             {                
                 services.AddAuthentication("Bearer")
                     .AddJwtBearer("Bearer", options =>
@@ -70,7 +70,7 @@ namespace knowledgebuilderapi
                         options.Audience = "knowledgebuilder.api";
                     });
             }
-            else if (Environment.IsProduction())
+            else if (Environment.EnvironmentName == "Production")
             {
                 services.AddAuthentication("Bearer")
                     .AddJwtBearer("Bearer", options =>

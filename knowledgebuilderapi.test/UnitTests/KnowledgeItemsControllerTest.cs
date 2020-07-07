@@ -102,7 +102,7 @@ namespace knowledgebuilderapi.test.UnitTests
             {
                 var context = this.fixture.GetCurrentDataContext();
                 foreach (var kid in objectsCreated)
-                    fixture.DeleteKnowledgeItem(context, kid);
+                    DataSetupUtility.DeleteKnowledgeItem(context, kid);
 
                 objectsCreated.Clear();
                 context.SaveChanges();

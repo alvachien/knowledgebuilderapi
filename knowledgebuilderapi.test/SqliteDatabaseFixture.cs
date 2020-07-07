@@ -71,11 +71,5 @@ namespace knowledgebuilderapi.test
             var context = new kbdataContext(options, true);
             return context;
         }
-
-        internal void DeleteKnowledgeItem(kbdataContext context, int kid)
-        {
-            context.Database.ExecuteSqlRaw("DELETE FROM KnowledgeItem WHERE ID = " + kid.ToString());
-
-        }
     }
 }
