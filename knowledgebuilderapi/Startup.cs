@@ -74,7 +74,10 @@ namespace knowledgebuilderapi
                 {
                     options.AddPolicy("TEST", builder =>
                     {
-                        builder.WithOrigins("http://localhost:5555")
+                        builder.WithOrigins(
+                            "http://localhost:5005",
+                            "https://localhost:5005"
+                            )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
