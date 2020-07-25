@@ -11,16 +11,17 @@ namespace knowledgebuilderapi.Models
     public sealed class QuestionBankItem : BaseModel
     {
         [Key]
+        [Column("ID")]
         public Int32 ID { get; set; }
 
-        [Column("KnowledgeItem", TypeName = "INT")]
+        [Column("KnowledgeItem")]
         public Int32? KnowledgeItemID { get; set; }
 
-        [Column("ParentID", TypeName = "INT")]
+        [Column("ParentID")]
         public Int32? ParentID { get; set; }
 
         [Required]
-        [Column("QBType", TypeName = "INT")]
+        [Column("QBType")]
         public Int32 QBType { get; set; }
 
         [Required]
@@ -36,16 +37,16 @@ namespace knowledgebuilderapi.Models
     public sealed class QuestionBankSubItem
     {
         [Key]
-        [Column("ItemID", TypeName = "INT")]
+        [Column("ItemID")]
         public Int32 ItemID { get; set; }
 
         [Key]
-        [Column("SubID", TypeName = "NVARCHAR(20)")]
+        [Column("SubID")]
         [StringLength(20)]
         public String SubID { get; set; }
 
         [Required]
-        [Column("QBType", TypeName = "INT")]
+        [Column("QBType")]
         public Int32 QBType { get; set; }
 
         [Required]

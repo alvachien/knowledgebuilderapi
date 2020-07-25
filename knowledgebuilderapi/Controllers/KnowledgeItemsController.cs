@@ -24,13 +24,13 @@ namespace knowledgebuilderapi.Controllers
             _context = context;
         }
 
-        /// GET: /Knowledges
+        /// GET: /KnowledgeItems
         /// <summary>
         /// Adds support for getting knowledges, for example:
         /// 
-        /// GET /Knowledges
-        /// GET /Knowledges?$filter=Name eq 'Windows 95'
-        /// GET /Knowledges?
+        /// GET /KnowledgeItems
+        /// GET /KnowledgeItems?$filter=Title eq 'Windows 95'
+        /// GET /KnowledgeItems?
         /// 
         /// <remarks>
         [EnableQuery]
@@ -39,23 +39,23 @@ namespace knowledgebuilderapi.Controllers
             return _context.KnowledgeItems;
         }
 
-        /// GET: /Knowledges(:id)
+        /// GET: /KnowledgeItems(:id)
         /// <summary>
         /// Adds support for getting a knowledge by key, for example:
         /// 
-        /// GET /Knowledges(1)
+        /// GET /KnowledgeItems(1)
         /// </summary>
-        /// <param name="key">The key of the Knowledge required</param>
-        /// <returns>The Knowledge</returns>
+        /// <param name="key">The key of the Knowledge item required</param>
+        /// <returns>The Knowledge item</returns>
         [EnableQuery]
         public SingleResult<KnowledgeItem> Get([FromODataUri] int key)
         {
             return SingleResult.Create(_context.KnowledgeItems.Where(p => p.ID == key));
         }
 
-        // POST: /Knowledges
+        // POST: /KnowledgeItems
         /// <summary>
-        /// Support for creating knowledge
+        /// Support for creating knowledge item
         /// </summary>
         public async Task<IActionResult> Post([FromBody] KnowledgeItem knowledge)
         {
@@ -78,9 +78,9 @@ namespace knowledgebuilderapi.Controllers
             return Created(knowledge);
         }
 
-        // PUT: /Knowledges/5
+        // PUT: /KnowledgeItems/5
         /// <summary>
-        /// Support for updating Knowledges
+        /// Support for updating Knowledge items
         /// </summary>
         public async Task<IActionResult> Put([FromODataUri] int key, [FromBody] KnowledgeItem update)
         {
@@ -114,9 +114,9 @@ namespace knowledgebuilderapi.Controllers
             return Updated(update);
         }
 
-        // DELETE: /Knowledges/5
+        // DELETE: /KnowledgeItems/5
         /// <summary>
-        /// Support for deleting knowledge by key.
+        /// Support for deleting knowledge item by key.
         /// </summary>
         public async Task<IActionResult> Delete([FromODataUri] int key)
         {
@@ -132,9 +132,9 @@ namespace knowledgebuilderapi.Controllers
             return StatusCode(204); // HttpStatusCode.NoContent
         }
 
-        // PATCH: /Knowleges
+        // PATCH: /KnowledgeItems
         /// <summary>
-        /// Support for partial updates of knowledges
+        /// Support for partial updates of knowledge items
         /// </summary>
         public async Task<IActionResult> Patch([FromODataUri] int key, [FromBody] Delta<KnowledgeItem> knowledge)
         {

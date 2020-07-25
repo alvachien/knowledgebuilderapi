@@ -16,13 +16,13 @@ namespace knowledgebuilderapi.Controllers
             _context = context;
         }
 
-        /// GET: /Knowledges
+        /// GET: /QuestionBankSubItem
         /// <summary>
         /// Adds support for getting knowledges, for example:
         /// 
-        /// GET /Knowledges
-        /// GET /Knowledges?$filter=Name eq 'Windows 95'
-        /// GET /Knowledges?
+        /// GET /QuestionBankSubItem
+        /// GET /QuestionBankSubItem?$filter=Name eq 'Windows 95'
+        /// GET /QuestionBankSubItem?
         /// 
         /// <remarks>
         [EnableQuery]
