@@ -18,6 +18,9 @@ using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Batch;
 using knowledgebuilderapi.Models;
 using Microsoft.AspNetCore.Routing;
+using System.IO;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Http;
 
 namespace knowledgebuilderapi
 {
@@ -27,11 +30,19 @@ namespace knowledgebuilderapi
         {
             Configuration = configuration;
             Environment = env;
+
+            UploadFolder = Path.Combine(env.ContentRootPath, UploadFolderName);
+            if (!Directory.Exists(UploadFolder))
+            {
+                Directory.CreateDirectory(UploadFolder);
+            }
         }
 
+        internal const string UploadFolderName = @"uploads";
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment Environment { get; }
         public string ConnectionString { get; private set; }
+        internal static String UploadFolder { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -69,6 +80,20 @@ namespace knowledgebuilderapi
 
                         options.Audience = "knowledgebuilder.api";
                     });
+
+                services.AddCors(options =>
+                {
+                    options.AddPolicy("TEST", builder =>
+                    {
+                        builder.WithOrigins(
+                            "http://localhost:5005",
+                            "https://localhost:5005"
+                            )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                    });
+                });
             }
             else if (Environment.EnvironmentName == "Production")
             {
@@ -87,11 +112,12 @@ namespace knowledgebuilderapi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.EnvironmentName == "Development")
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors("TEST");
             }
             else
             {
@@ -118,6 +144,19 @@ namespace knowledgebuilderapi
 
                     routeBuilder.MapODataServiceRoute("ODataRoute", "odata", model);
                 });
+
+            var cachePeriod = "604800";
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(UploadFolder),
+                RequestPath = "/" + UploadFolderName,
+                OnPrepareResponse = ctx =>
+                {
+                    // Requires the following import:
+                    // using Microsoft.AspNetCore.Http;
+                    ctx.Context.Response.Headers.Append("Cache-Control", $"public, max-age={cachePeriod}");
+                }
+            });
         }
     }
 }

@@ -11,12 +11,13 @@ namespace knowledgebuilderapi.Models
     public sealed class ExerciseItem : BaseModel
     {
         [Key]
+        [Column("ID")]
         public Int32 ID { get; set; }
 
-        [Column("KnowledgeItem", TypeName = "INT")]
+        [Column("KnowledgeItem")]
         public Int32? KnowledgeItemID { get; set; }
 
-        [Column("ParentID", TypeName = "INT")]
+        [Column("ParentID")]
         public Int32? ParentID { get; set; }
 
         [Required]
@@ -36,7 +37,7 @@ namespace knowledgebuilderapi.Models
     public sealed class ExerciseItemAnswer : BaseModel
     {
         [Key]
-        [Column("ItemID", TypeName = "INT")]
+        [Column("ItemID")]
         public Int32 ItemID { get; set; }
 
         [Required]
