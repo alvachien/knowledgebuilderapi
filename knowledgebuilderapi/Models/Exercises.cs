@@ -7,8 +7,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace knowledgebuilderapi.Models
 {
-    [Table("QuestionBankItem")]
-    public sealed class QuestionBankItem : BaseModel
+    [Table("ExerciseItem")]
+    public sealed class ExerciseItem : BaseModel
     {
         [Key]
         public Int32 ID { get; set; }
@@ -20,38 +20,29 @@ namespace knowledgebuilderapi.Models
         public Int32? ParentID { get; set; }
 
         [Required]
-        [Column("QBType", TypeName = "INT")]
-        public Int32 QBType { get; set; }
+        [Column("ExerciseType", TypeName = "INT")]
+        public Int32 ExerciseType { get; set; }
 
         [Required]
         [Column("Content", TypeName = "TEXT")]
         public string Content { get; set; }
 
         public KnowledgeItem CurrentKnowledgeItem { get; set; }
-        public ICollection<QuestionBankSubItem> SubItems { get; set; }
+        public ExerciseItemAnswer Answer { get; set; }
     }
 
 
-    [Table("QuestionBankSubItem")]
-    public sealed class QuestionBankSubItem
+    [Table("ExerciseItemAnswer")]
+    public sealed class ExerciseItemAnswer : BaseModel
     {
         [Key]
         [Column("ItemID", TypeName = "INT")]
         public Int32 ItemID { get; set; }
 
-        [Key]
-        [Column("SubID", TypeName = "NVARCHAR(20)")]
-        [StringLength(20)]
-        public String SubID { get; set; }
-
-        [Required]
-        [Column("QBType", TypeName = "INT")]
-        public Int32 QBType { get; set; }
-
         [Required]
         [Column("Content", TypeName = "TEXT")]
         public string Content { get; set; }
 
-        public QuestionBankItem CurrentQuestionBankItem { get; set; }
+        public ExerciseItem ExerciseItem { get; set; }
     }
 }

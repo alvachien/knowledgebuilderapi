@@ -24,6 +24,6 @@ namespace knowledgebuilderapi.Models
         [Column("Tags")]
         public string Tags { get; set; }
 
-        public ICollection<QuestionBankItem> QuestionBankItems { get; set; }
+        public ICollection<ExerciseItem> Exercises { get; set; }
     }
 }

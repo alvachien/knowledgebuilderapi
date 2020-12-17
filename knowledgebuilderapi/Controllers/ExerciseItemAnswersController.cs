@@ -7,11 +7,11 @@ using knowledgebuilderapi.Models;
 
 namespace knowledgebuilderapi.Controllers
 {
-    public class QuestionBankSubItemsController : ODataController
+    public class ExerciseItemAnswersController : ODataController
     {
         private readonly kbdataContext _context;
 
-        public QuestionBankSubItemsController(kbdataContext context)
+        public ExerciseItemAnswersController(kbdataContext context)
         {
             _context = context;
         }
@@ -26,9 +26,9 @@ namespace knowledgebuilderapi.Controllers
         /// 
         /// <remarks>
         [EnableQuery]
-        public IQueryable<QuestionBankSubItem> Get()
+        public IQueryable<ExerciseItemAnswer> Get()
         {
-            return _context.QuestionBankSubItems;
+            return _context.ExerciseItemAnswers;
         }
     }
 }

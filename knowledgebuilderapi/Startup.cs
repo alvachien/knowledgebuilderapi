@@ -104,8 +104,8 @@ namespace knowledgebuilderapi
 
             ODataModelBuilder modelBuilder = new ODataConventionModelBuilder(app.ApplicationServices);
             modelBuilder.EntitySet<KnowledgeItem>("KnowledgeItems");
-            modelBuilder.EntitySet<QuestionBankItem>("QuestionBankItems");
-            modelBuilder.EntitySet<QuestionBankSubItem>("QuestionBankSubItems");
+            modelBuilder.EntitySet<ExerciseItem>("ExerciseItems");
+            modelBuilder.EntitySet<ExerciseItemAnswer>("ExerciseItemAnswers");
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
 
             var model = modelBuilder.GetEdmModel();
