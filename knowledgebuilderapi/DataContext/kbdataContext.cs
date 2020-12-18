@@ -20,8 +20,8 @@ namespace knowledgebuilderapi
         public Boolean TestingMode { get; private set; }
 
         public DbSet<KnowledgeItem> KnowledgeItems { get; set; }
-        public DbSet<QuestionBankItem> QuestionBankItems { get; set; }
-        public DbSet<QuestionBankSubItem> QuestionBankSubItems { get; set; }
+        public DbSet<ExerciseItem> ExerciseItems { get; set; }
+        public DbSet<ExerciseItemAnswer> ExerciseItemAnswers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,7 +47,7 @@ namespace knowledgebuilderapi
                         v => (KnowledgeItemCategory)v);
             });
 
-            modelBuilder.Entity<QuestionBankItem>(entity =>
+            modelBuilder.Entity<ExerciseItem>(entity =>
             {
                 if (!TestingMode)
                 {
@@ -65,21 +65,21 @@ namespace knowledgebuilderapi
                 }
 
                 entity.HasOne(d => d.CurrentKnowledgeItem)
-                    .WithMany(p => p.QuestionBankItems)
+                    .WithMany(p => p.Exercises)
                     .HasForeignKey(d => d.KnowledgeItemID)
                     .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("FK_QBITEM_KITEM");
+                    .HasConstraintName("FK_EXECITEM_KITEM");
             });
 
-            modelBuilder.Entity<QuestionBankSubItem>(entity =>
+            modelBuilder.Entity<ExerciseItemAnswer>(entity =>
             {
-                entity.HasKey(e => new { e.ItemID, e.SubID });
+                entity.HasKey(e => new { e.ItemID });
 
-                entity.HasOne(d => d.CurrentQuestionBankItem)
-                    .WithMany(p => p.SubItems)
-                    .HasForeignKey(d => d.ItemID)
+                entity.HasOne(d => d.ExerciseItem)
+                    .WithOne(p => p.Answer)
+                    .HasForeignKey<ExerciseItem>(prop => prop.ID)
                     .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK_QBSUBITEM_QBITEM");
+                    .HasConstraintName("FK_EXECAWR_EXECITEM");
             });
         }
     }

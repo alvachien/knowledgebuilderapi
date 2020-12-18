@@ -7,29 +7,28 @@ using knowledgebuilderapi.Models;
 
 namespace knowledgebuilderapi.Controllers
 {
-    public class QuestionBankSubItemsController : ODataController
+    public class ExerciseItemsController : ODataController
     {
         private readonly kbdataContext _context;
 
-        public QuestionBankSubItemsController(kbdataContext context)
+        public ExerciseItemsController(kbdataContext context)
         {
             _context = context;
         }
 
-        /// GET: /Knowledges
+        /// GET: /ExerciseItems
         /// <summary>
         /// Adds support for getting knowledges, for example:
         /// 
-        /// GET /Knowledges
-        /// GET /Knowledges?$filter=Name eq 'Windows 95'
-        /// GET /Knowledges?
+        /// GET /ExerciseItems
+        /// GET /ExerciseItems?$filter=Name eq 'Windows 95'
+        /// GET /ExerciseItems?
         /// 
         /// <remarks>
         [EnableQuery]
-        public IQueryable<QuestionBankSubItem> Get()
+        public IQueryable<ExerciseItem> Get()
         {
-            return _context.QuestionBankSubItems;
+            return _context.ExerciseItems;
         }
     }
 }
-

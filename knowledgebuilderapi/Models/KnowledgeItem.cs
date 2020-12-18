@@ -9,6 +9,7 @@ namespace knowledgebuilderapi.Models
     public sealed class KnowledgeItem : BaseModel
     {
         [Key]
+        [Column("ID")]
         public Int32 ID { get; set; }
         [Required]
         [Column("ContentType")]
@@ -24,6 +25,6 @@ namespace knowledgebuilderapi.Models
         [Column("Tags")]
         public string Tags { get; set; }
 
-        public ICollection<QuestionBankItem> QuestionBankItems { get; set; }
+        public ICollection<ExerciseItem> Exercises { get; set; }
     }
 }

@@ -22,25 +22,23 @@ namespace knowledgebuilderapi.test
                 ModifiedAt  DATETIME    NULL   DEFAULT CURRENT_DATE )"
             );
 
-            database.ExecuteSqlRaw(@"CREATE TABLE QuestionBankItem (
+            database.ExecuteSqlRaw(@"CREATE TABLE ExerciseItem (
                 ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 KnowledgeItem     INT            NULL,
                 ParentID          INT            NULL,
-                QBType            INT            NOT NULL,
+                ExerciseType      INT            NOT NULL,
                 Content           TEXT NOT NULL,
                 CreatedAt   DATETIME    NULL   DEFAULT CURRENT_DATE,
                 ModifiedAt  DATETIME    NULL   DEFAULT CURRENT_DATE,    
-                CONSTRAINT FK_QBITEM_KITEM FOREIGN KEY (KnowledgeItem) REFERENCES KnowledgeItem (ID) ON DELETE SET NULL )"
+                CONSTRAINT FK_EXECITEM_KITEM FOREIGN KEY (KnowledgeItem) REFERENCES KnowledgeItem (ID) ON DELETE SET NULL )"
             );
 
-            database.ExecuteSqlRaw(@"CREATE TABLE QuestionBankSubItem (
-                ItemID            INT            NOT NULL,
-                SubID             NVARCHAR(20)   NOT NULL,
+            database.ExecuteSqlRaw(@"CREATE TABLE ExerciseItemAnswer (
+                ItemID            INTERGER PRIMARY KEY,
                 Content           TEXT NOT NULL,
                 CreatedAt   DATETIME    NULL   DEFAULT CURRENT_DATE,
                 ModifiedAt  DATETIME    NULL   DEFAULT CURRENT_DATE,    
-                PRIMARY KEY (ItemID, SubID),
-                CONSTRAINT FK_QBSUBITEM_QBITEM FOREIGN KEY (ItemID) REFERENCES QuestionBankItem (ID) ON DELETE CASCADE ON UPDATE CASCADE )"
+                CONSTRAINT FK_EXECAWR_EXECITEM FOREIGN KEY (ItemID) REFERENCES ExerciseItem (ID) ON DELETE CASCADE ON UPDATE CASCADE )"
             );
         }
 
