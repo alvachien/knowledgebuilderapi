@@ -38,116 +38,116 @@ namespace knowledgebuilderapi.Controllers
             return _context.ExerciseItemAnswers;
         }
 
-        /// GET: /QuestionBankItems(:id)
-        /// <summary>
-        /// Adds support for getting a knowledge by key, for example:
-        /// 
-        /// GET /KnowledgeItems(1)
-        /// </summary>
-        /// <param name="key">The key of the Knowledge item required</param>
-        /// <returns>The Knowledge item</returns>
-        [EnableQuery]
-        public SingleResult<QuestionBankItem> Get([FromODataUri] int key)
-        {
-            return SingleResult.Create(_context.QuestionBankItems.Where(p => p.ID == key));
-        }
+        ///// GET: /QuestionBankItems(:id)
+        ///// <summary>
+        ///// Adds support for getting a knowledge by key, for example:
+        ///// 
+        ///// GET /KnowledgeItems(1)
+        ///// </summary>
+        ///// <param name="key">The key of the Knowledge item required</param>
+        ///// <returns>The Knowledge item</returns>
+        //[EnableQuery]
+        //public SingleResult<QuestionBankItem> Get([FromODataUri] int key)
+        //{
+        //    return SingleResult.Create(_context.QuestionBankItems.Where(p => p.ID == key));
+        //}
 
-        // POST: /QuestionBankItems
-        /// <summary>
-        /// Support for creating question bank item
-        /// </summary>
-        public async Task<IActionResult> Post([FromBody] QuestionBankItem qbitem)
-        {
-            if (!ModelState.IsValid)
-            {
-                foreach (var value in ModelState.Values)
-                {
-                    foreach (var err in value.Errors)
-                    {
-                        System.Diagnostics.Debug.WriteLine(err.Exception?.Message);
-                    }
-                }
+        //// POST: /QuestionBankItems
+        ///// <summary>
+        ///// Support for creating question bank item
+        ///// </summary>
+        //public async Task<IActionResult> Post([FromBody] QuestionBankItem qbitem)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        foreach (var value in ModelState.Values)
+        //        {
+        //            foreach (var err in value.Errors)
+        //            {
+        //                System.Diagnostics.Debug.WriteLine(err.Exception?.Message);
+        //            }
+        //        }
 
-                return BadRequest();
-            }
+        //        return BadRequest();
+        //    }
 
-            // Do initial check
-            if (qbitem.KnowledgeItemID.HasValue)
-            {
-                if (!_context.KnowledgeItems.Any(p => p.ID == qbitem.KnowledgeItemID.Value))
-                {
-                    return BadRequest("Knowlege Item not exist");
-                }
-            }
+        //    // Do initial check
+        //    if (qbitem.KnowledgeItemID.HasValue)
+        //    {
+        //        if (!_context.KnowledgeItems.Any(p => p.ID == qbitem.KnowledgeItemID.Value))
+        //        {
+        //            return BadRequest("Knowlege Item not exist");
+        //        }
+        //    }
 
-            _context.QuestionBankItems.Add(qbitem);
-            await _context.SaveChangesAsync();
+        //    _context.QuestionBankItems.Add(qbitem);
+        //    await _context.SaveChangesAsync();
 
-            return Created(qbitem);
-        }
+        //    return Created(qbitem);
+        //}
 
-        // PUT: /QuestionBankItems/5
-        /// <summary>
-        /// Support for updating question bank item
-        /// </summary>
-        public async Task<IActionResult> Put([FromODataUri] int key, [FromBody] QuestionBankItem update)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //// PUT: /QuestionBankItems/5
+        ///// <summary>
+        ///// Support for updating question bank item
+        ///// </summary>
+        //public async Task<IActionResult> Put([FromODataUri] int key, [FromBody] QuestionBankItem update)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            if (key != update.ID)
-            {
-                return BadRequest();
-            }
+        //    if (key != update.ID)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            // Do initial check
-            if (update.KnowledgeItemID.HasValue)
-            {
-                if (!_context.KnowledgeItems.Any(p => p.ID == update.KnowledgeItemID.Value))
-                {
-                    return BadRequest("Knowlege Item not exist");
-                }
-            }
+        //    // Do initial check
+        //    if (update.KnowledgeItemID.HasValue)
+        //    {
+        //        if (!_context.KnowledgeItems.Any(p => p.ID == update.KnowledgeItemID.Value))
+        //        {
+        //            return BadRequest("Knowlege Item not exist");
+        //        }
+        //    }
 
-            _context.Entry(update).State = EntityState.Modified;
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.QuestionBankItems.Any(p => p.ID == key))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        //    _context.Entry(update).State = EntityState.Modified;
+        //    try
+        //    {
+        //        await _context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!_context.QuestionBankItems.Any(p => p.ID == key))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
 
-            return Updated(update);
-        }
+        //    return Updated(update);
+        //}
 
-        // DELETE: /QuestionBankItems/5
-        /// <summary>
-        /// Support for deleting question bank item by key.
-        /// </summary>
-        public async Task<IActionResult> Delete([FromODataUri] int key)
-        {
-            var item = await _context.QuestionBankItems.FindAsync(key);
-            if (item == null)
-            {
-                return NotFound();
-            }
+        //// DELETE: /QuestionBankItems/5
+        ///// <summary>
+        ///// Support for deleting question bank item by key.
+        ///// </summary>
+        //public async Task<IActionResult> Delete([FromODataUri] int key)
+        //{
+        //    var item = await _context.QuestionBankItems.FindAsync(key);
+        //    if (item == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            _context.QuestionBankItems.Remove(item);
-            await _context.SaveChangesAsync();
+        //    _context.QuestionBankItems.Remove(item);
+        //    await _context.SaveChangesAsync();
 
-            return StatusCode(204); // HttpStatusCode.NoContent
-        }
+        //    return StatusCode(204); // HttpStatusCode.NoContent
+        //}
     }
 }
 
