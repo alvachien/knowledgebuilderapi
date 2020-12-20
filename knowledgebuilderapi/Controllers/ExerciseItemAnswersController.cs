@@ -23,13 +23,13 @@ namespace knowledgebuilderapi.Controllers
             _context = context;
         }
 
-        /// GET: /QuestionBankItems
+        /// GET: /ExerciseItemAnswers
         /// <summary>
-        /// Adds support for getting question bank items, for example:
+        /// Adds support for getting exercise item answer, for example:
         /// 
-        /// GET /QuestionBankItems
-        /// GET /QuestionBankItems?$filter=Name eq 'Windows 95'
-        /// GET /QuestionBankItems?
+        /// GET /ExerciseItemAnswers
+        /// GET /ExerciseItemAnswers?$filter=Name eq 'Windows 95'
+        /// GET /ExerciseItemAnswers?
         /// 
         /// <remarks>
         [EnableQuery]
@@ -38,116 +38,136 @@ namespace knowledgebuilderapi.Controllers
             return _context.ExerciseItemAnswers;
         }
 
-        ///// GET: /QuestionBankItems(:id)
-        ///// <summary>
-        ///// Adds support for getting a knowledge by key, for example:
-        ///// 
-        ///// GET /KnowledgeItems(1)
-        ///// </summary>
-        ///// <param name="key">The key of the Knowledge item required</param>
-        ///// <returns>The Knowledge item</returns>
-        //[EnableQuery]
-        //public SingleResult<QuestionBankItem> Get([FromODataUri] int key)
-        //{
-        //    return SingleResult.Create(_context.QuestionBankItems.Where(p => p.ID == key));
-        //}
+        /// GET: /ExerciseItemAnswers(:id)
+        /// <summary>
+        /// Adds support for getting a exercise item answer by key, for example:
+        /// 
+        /// GET /ExerciseItemAnswers(1)
+        /// </summary>
+        /// <param name="key">The key of the exercise item answer</param>
+        /// <returns>The exercise item answer</returns>
+        [EnableQuery]
+        public SingleResult<ExerciseItemAnswer> Get([FromODataUri] int key)
+        {
+            return SingleResult.Create(_context.ExerciseItemAnswers.Where(p => p.ItemID == key));
+        }
 
-        //// POST: /QuestionBankItems
-        ///// <summary>
-        ///// Support for creating question bank item
-        ///// </summary>
-        //public async Task<IActionResult> Post([FromBody] QuestionBankItem qbitem)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        foreach (var value in ModelState.Values)
-        //        {
-        //            foreach (var err in value.Errors)
-        //            {
-        //                System.Diagnostics.Debug.WriteLine(err.Exception?.Message);
-        //            }
-        //        }
+        // POST: /ExerciseItemAnswers
+        /// <summary>
+        /// Support for creating exercise item answer
+        /// </summary>
+        public async Task<IActionResult> Post([FromBody] ExerciseItemAnswer answer)
+        {
+            if (!ModelState.IsValid)
+            {
+                foreach (var value in ModelState.Values)
+                {
+                    foreach (var err in value.Errors)
+                    {
+                        System.Diagnostics.Debug.WriteLine(err.Exception?.Message);
+                    }
+                }
 
-        //        return BadRequest();
-        //    }
+                return BadRequest();
+            }
 
-        //    // Do initial check
-        //    if (qbitem.KnowledgeItemID.HasValue)
-        //    {
-        //        if (!_context.KnowledgeItems.Any(p => p.ID == qbitem.KnowledgeItemID.Value))
-        //        {
-        //            return BadRequest("Knowlege Item not exist");
-        //        }
-        //    }
+            _context.ExerciseItemAnswers.Add(answer);
+            await _context.SaveChangesAsync();
 
-        //    _context.QuestionBankItems.Add(qbitem);
-        //    await _context.SaveChangesAsync();
+            return Created(answer);
+        }
 
-        //    return Created(qbitem);
-        //}
+        // PUT: /ExerciseItemAnswers/5
+        /// <summary>
+        /// Support for updating exercise item answer
+        /// </summary>
+        public async Task<IActionResult> Put([FromODataUri] int key, [FromBody] ExerciseItemAnswer update)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //// PUT: /QuestionBankItems/5
-        ///// <summary>
-        ///// Support for updating question bank item
-        ///// </summary>
-        //public async Task<IActionResult> Put([FromODataUri] int key, [FromBody] QuestionBankItem update)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
+            if (key != update.ItemID)
+            {
+                return BadRequest();
+            }
 
-        //    if (key != update.ID)
-        //    {
-        //        return BadRequest();
-        //    }
+            _context.Entry(update).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.ExerciseItemAnswers.Any(p => p.ItemID == key))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
-        //    // Do initial check
-        //    if (update.KnowledgeItemID.HasValue)
-        //    {
-        //        if (!_context.KnowledgeItems.Any(p => p.ID == update.KnowledgeItemID.Value))
-        //        {
-        //            return BadRequest("Knowlege Item not exist");
-        //        }
-        //    }
+            return Updated(update);
+        }
 
-        //    _context.Entry(update).State = EntityState.Modified;
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!_context.QuestionBankItems.Any(p => p.ID == key))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
+        // DELETE: /ExerciseItemAnswers/5
+        /// <summary>
+        /// Support for deleting exercise item answer by key.
+        /// </summary>
+        public async Task<IActionResult> Delete([FromODataUri] int key)
+        {
+            var answer = await _context.ExerciseItemAnswers.FindAsync(key);
+            if (answer == null)
+            {
+                return NotFound();
+            }
 
-        //    return Updated(update);
-        //}
+            _context.ExerciseItemAnswers.Remove(answer);
+            await _context.SaveChangesAsync();
 
-        //// DELETE: /QuestionBankItems/5
-        ///// <summary>
-        ///// Support for deleting question bank item by key.
-        ///// </summary>
-        //public async Task<IActionResult> Delete([FromODataUri] int key)
-        //{
-        //    var item = await _context.QuestionBankItems.FindAsync(key);
-        //    if (item == null)
-        //    {
-        //        return NotFound();
-        //    }
+            return StatusCode(204); // HttpStatusCode.NoContent
+        }
 
-        //    _context.QuestionBankItems.Remove(item);
-        //    await _context.SaveChangesAsync();
+        // PATCH: /ExerciseItemAnswers
+        /// <summary>
+        /// Support for partial updates of exercise item answer
+        /// </summary>
+        public async Task<IActionResult> Patch([FromODataUri] int key, [FromBody] Delta<ExerciseItemAnswer> answer)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //    return StatusCode(204); // HttpStatusCode.NoContent
-        //}
+            var entity = await _context.ExerciseItemAnswers.FindAsync(key);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            answer.Patch(entity);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.ExerciseItemAnswers.Any(p => p.ItemID == key))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Updated(entity);
+        }
     }
 }
 

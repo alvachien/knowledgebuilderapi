@@ -17,12 +17,9 @@ namespace knowledgebuilderapi.Models
         [Column("KnowledgeItem")]
         public Int32? KnowledgeItemID { get; set; }
 
-        [Column("ParentID")]
-        public Int32? ParentID { get; set; }
-
         [Required]
-        [Column("ExerciseType", TypeName = "INT")]
-        public Int32 ExerciseType { get; set; }
+        [Column("ExerciseType", TypeName = "SMALLINT")]
+        public ExerciseItemType ExerciseType { get; set; }
 
         [Required]
         [Column("Content", TypeName = "TEXT")]

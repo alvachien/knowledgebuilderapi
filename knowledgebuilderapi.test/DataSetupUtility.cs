@@ -24,9 +24,8 @@ namespace knowledgebuilderapi.test
 
             database.ExecuteSqlRaw(@"CREATE TABLE ExerciseItem (
                 ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                KnowledgeItem     INT            NULL,
-                ParentID          INT            NULL,
-                ExerciseType      INT            NOT NULL,
+                KnowledgeItem     INT       NULL,
+                ExerciseType      SMALLINT  NOT NULL,
                 Content           TEXT NOT NULL,
                 CreatedAt   DATETIME    NULL   DEFAULT CURRENT_DATE,
                 ModifiedAt  DATETIME    NULL   DEFAULT CURRENT_DATE,    
@@ -34,8 +33,8 @@ namespace knowledgebuilderapi.test
             );
 
             database.ExecuteSqlRaw(@"CREATE TABLE ExerciseItemAnswer (
-                ItemID            INTERGER PRIMARY KEY,
-                Content           TEXT NOT NULL,
+                ItemID      INTERGER PRIMARY KEY,
+                Content     TEXT NOT NULL,
                 CreatedAt   DATETIME    NULL   DEFAULT CURRENT_DATE,
                 ModifiedAt  DATETIME    NULL   DEFAULT CURRENT_DATE,    
                 CONSTRAINT FK_EXECAWR_EXECITEM FOREIGN KEY (ItemID) REFERENCES ExerciseItem (ID) ON DELETE CASCADE ON UPDATE CASCADE )"

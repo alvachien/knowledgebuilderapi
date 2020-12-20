@@ -4,10 +4,11 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>609c239b-e8d5-49a0-9cd3-feb06a09011b</UserSecretsId>
     <AssemblyName>KnowledgeBuilder.API</AssemblyName>
-    <Version>1.3.0</Version>
+    <Version>0.1.2</Version>
     <Authors>Alva Chien</Authors>
     <Company>Alva Chien</Company>
-    <Copyright>Copyright by Alva Chien</Copyright>
+    <Copyright>Copyright by Alva Chien, 2019 - 2020</Copyright>
+    <Description>Web API for Knowledge Builder, built on .Net Core and oData</Description>
   </PropertyGroup>
 
   <ItemGroup>
