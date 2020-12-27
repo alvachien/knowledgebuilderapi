@@ -9,7 +9,7 @@ namespace knowledgebuilderapi.Models
     public sealed class KnowledgeItem : BaseModel
     {
         [Key]
-        [Column("ID")]
+        [Column("ID", TypeName = "INT")]
         public Int32 ID { get; set; }
         [Required]
         [Column("ContentType")]

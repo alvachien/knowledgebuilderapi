@@ -33,14 +33,21 @@ namespace knowledgebuilderapi
                         .HasDefaultValueSql("GETDATE()");
                     entity.Property(b => b.ModifiedAt)
                         .HasDefaultValueSql("GETDATE()");
+
+                    entity.Property(e => e.ID)
+                        .UseIdentityColumn();
                 }
                 else
                 {
+                    // Testing mode: Sqlite
                     entity.Property(b => b.CreatedAt)
                         .HasDefaultValueSql("CURRENT_DATE");
                     entity.Property(b => b.ModifiedAt)
                         .HasDefaultValueSql("CURRENT_DATE");
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd();
                 }
+
                 entity.Property(b => b.Category)
                     .HasConversion(
                         v => (Int16)v,
@@ -55,14 +62,26 @@ namespace knowledgebuilderapi
                         .HasDefaultValueSql("GETDATE()");
                     entity.Property(b => b.ModifiedAt)
                         .HasDefaultValueSql("GETDATE()");
+
+                    entity.Property(e => e.ID)
+                        .UseIdentityColumn();
                 }
                 else
                 {
+                    // Testing mode: Sqlite
                     entity.Property(b => b.CreatedAt)
                         .HasDefaultValueSql("CURRENT_DATE");
                     entity.Property(b => b.ModifiedAt)
                         .HasDefaultValueSql("CURRENT_DATE");
+
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd();
                 }
+
+                entity.Property(b => b.ExerciseType)
+                    .HasConversion(
+                        v => (Int16)v,
+                        v => (ExerciseItemType)v);
 
                 entity.HasOne(d => d.CurrentKnowledgeItem)
                     .WithMany(p => p.Exercises)
