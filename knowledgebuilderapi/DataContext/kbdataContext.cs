@@ -35,6 +35,7 @@ namespace knowledgebuilderapi
                         .HasDefaultValueSql("GETDATE()");
 
                     entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd()
                         .UseIdentityColumn();
                 }
                 else
@@ -64,6 +65,7 @@ namespace knowledgebuilderapi
                         .HasDefaultValueSql("GETDATE()");
 
                     entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd()
                         .UseIdentityColumn();
                 }
                 else
