@@ -27,6 +27,7 @@ namespace knowledgebuilderapi.Models
 
         public KnowledgeItem CurrentKnowledgeItem { get; set; }
         public ExerciseItemAnswer Answer { get; set; }
+        public ICollection<ExerciseTag> Tags { get; set; }
     }
 
 

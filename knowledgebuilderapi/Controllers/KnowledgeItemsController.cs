@@ -72,6 +72,7 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest();
             }
 
+            knowledge.CreatedAt = DateTime.Now;
             _context.KnowledgeItems.Add(knowledge);
             await _context.SaveChangesAsync();
 
@@ -150,7 +151,7 @@ namespace knowledgebuilderapi.Controllers
             }
 
             knowledge.Patch(entity);
-
+            entity.ModifiedAt = DateTime.Now;
             try
             {
                 await _context.SaveChangesAsync();

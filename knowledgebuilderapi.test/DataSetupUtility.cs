@@ -17,7 +17,6 @@ namespace knowledgebuilderapi.test
                 ContentType SMALLINT       NULL,
                 Title       NVARCHAR(50)  NOT NULL,
                 Content     TEXT NOT NULL,
-                Tags        NVARCHAR(100)    NULL,
                 CreatedAt   DATETIME    NULL   DEFAULT CURRENT_DATE,
                 ModifiedAt  DATETIME    NULL   DEFAULT CURRENT_DATE )"
             );
@@ -39,18 +38,33 @@ namespace knowledgebuilderapi.test
                 ModifiedAt  DATETIME    NULL   DEFAULT CURRENT_DATE,    
                 CONSTRAINT FK_EXECAWR_EXECITEM FOREIGN KEY (ItemID) REFERENCES ExerciseItem (ID) ON DELETE CASCADE ON UPDATE CASCADE )"
             );
+
+            database.ExecuteSqlRaw(@"CREATE TABLE KnowledgeTag (
+                Tag   NVARCHAR (20) NOT NULL PRIMARY KEY,
+                RefID INT           NOT NULL,
+                CONSTRAINT FK_KNOWLEDGETAG_ID FOREIGN KEY (RefID) REFERENCES KnowledgeItem ([ID]) ON DELETE CASCADE ON UPDATE CASCADE )"
+            );
+
+            database.ExecuteSqlRaw(@"CREATE TABLE ExerciseTag (
+                Tag   NVARCHAR (20) NOT NULL PRIMARY KEY,
+                RefID INT           NOT NULL,
+                CONSTRAINT FK_KNOWLEDGETAG_ID FOREIGN KEY (RefID) REFERENCES ExerciseItem ([ID]) ON DELETE CASCADE ON UPDATE CASCADE )"
+            );
         }
 
         public static void CreateDatabaseViews(DatabaseFacade database)
         {
-            // Nothing
+            database.ExecuteSqlRaw(@"CREATE VIEW Tag
+	            AS 
+	            SELECT Tag, 1 as RefType, RefID FROM KnowledgeTag
+	            UNION ALL
+	            SELECT Tag, 2 as RefType, RefID FROM ExerciseTag");
         }
         #endregion
 
         internal static void DeleteKnowledgeItem(kbdataContext context, int kid)
         {
             context.Database.ExecuteSqlRaw("DELETE FROM KnowledgeItem WHERE ID = " + kid.ToString());
-
         }
     }
 }

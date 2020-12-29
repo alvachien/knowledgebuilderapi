@@ -66,6 +66,11 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest();
             }
 
+            // Admin. fields
+            execitem.CreatedAt = DateTime.Now;
+            execitem.ModifiedAt = null;
+
+            // Update db
             _context.ExerciseItems.Add(execitem);
             await _context.SaveChangesAsync();
 
@@ -88,6 +93,7 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest();
             }
 
+            update.ModifiedAt = DateTime.Now;
             _context.Entry(update).State = EntityState.Modified;
             try
             {
@@ -144,6 +150,7 @@ namespace knowledgebuilderapi.Controllers
             }
 
             execitem.Patch(entity);
+            entity.ModifiedAt = DateTime.Now;
 
             try
             {

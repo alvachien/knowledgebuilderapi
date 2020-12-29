@@ -132,6 +132,9 @@ namespace knowledgebuilderapi
             modelBuilder.EntitySet<KnowledgeItem>("KnowledgeItems");
             modelBuilder.EntitySet<ExerciseItem>("ExerciseItems");
             modelBuilder.EntitySet<ExerciseItemAnswer>("ExerciseItemAnswers");
+            modelBuilder.EntitySet<KnowledgeTag>("KnowledgeTags");
+            modelBuilder.EntitySet<ExerciseTag>("ExerciseTags");
+            modelBuilder.EntitySet<Tag>("Tags");
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
 
             var model = modelBuilder.GetEdmModel();

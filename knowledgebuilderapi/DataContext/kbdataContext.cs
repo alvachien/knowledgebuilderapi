@@ -22,6 +22,9 @@ namespace knowledgebuilderapi
         public DbSet<KnowledgeItem> KnowledgeItems { get; set; }
         public DbSet<ExerciseItem> ExerciseItems { get; set; }
         public DbSet<ExerciseItemAnswer> ExerciseItemAnswers { get; set; }
+        public DbSet<KnowledgeTag> KnowledgeTags { get; set; }
+        public DbSet<ExerciseTag> ExerciseTags { get; set; }
+        public DbSet<Tag> Tags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -101,6 +104,34 @@ namespace knowledgebuilderapi
                     .HasForeignKey<ExerciseItem>(prop => prop.ID)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_EXECAWR_EXECITEM");
+            });
+
+            modelBuilder.Entity<KnowledgeTag>(entity =>
+            {
+                entity.HasOne(d => d.CurrentKnowledgeItem)
+                    .WithMany(d => d.Tags)
+                    .HasForeignKey(d => d.RefID)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_KNOWLEDGETAG_ID");
+            });
+
+            modelBuilder.Entity<ExerciseTag>(entity =>
+            {
+                entity.HasOne(d => d.CurrentExerciseItem)
+                    .WithMany(d => d.Tags)
+                    .HasForeignKey(d => d.RefID)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_EXERCISETAG_ID");
+            });
+
+            modelBuilder.Entity<Tag>(entity =>
+            {
+                entity.ToView("Tag");
+                entity.HasNoKey();
+                entity.Property(b => b.RefType)
+                    .HasConversion(
+                        v => (Int32)v,
+                        v => (TagRefType)v);
             });
         }
     }

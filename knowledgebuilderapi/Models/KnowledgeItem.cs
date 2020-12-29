@@ -11,20 +11,22 @@ namespace knowledgebuilderapi.Models
         [Key]
         [Column("ID", TypeName = "INT")]
         public Int32 ID { get; set; }
+
         [Required]
-        [Column("ContentType")]
+        [Column("ContentType", TypeName = "SMALLINT")]
         public KnowledgeItemCategory Category { get;set; }
+
         [Required]
         [MaxLength(50)]
         [ConcurrencyCheck]
         [Column("Title", TypeName = "NVARCHAR(50)")]
         public string Title { get;set; }
+
         [Required]
         [Column("Content")]
         public string Content { get;set; }
-        [Column("Tags")]
-        public string Tags { get; set; }
 
         public ICollection<ExerciseItem> Exercises { get; set; }
+        public ICollection<KnowledgeTag> Tags { get; set; }
     }
 }
