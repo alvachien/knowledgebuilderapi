@@ -93,21 +93,24 @@ namespace knowledgebuilderapi
                     .HasForeignKey(d => d.KnowledgeItemID)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_EXECITEM_KITEM");
+
+                entity.HasOne(d => d.Answer)
+                    .WithOne(p => p.ExerciseItem)
+                    .HasForeignKey<ExerciseItemAnswer>(d => d.ID)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.Cascade);
+                    // .HasConstraintName("FK_EXECAWR_EXECITEM");
             });
 
             modelBuilder.Entity<ExerciseItemAnswer>(entity =>
             {
-                entity.HasKey(e => new { e.ItemID });
-
-                entity.HasOne(d => d.ExerciseItem)
-                    .WithOne(p => p.Answer)
-                    .HasForeignKey<ExerciseItem>(prop => prop.ID)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK_EXECAWR_EXECITEM");
+                entity.HasKey(e => new { e.ID });
             });
 
             modelBuilder.Entity<KnowledgeTag>(entity =>
             {
+                entity.HasKey(d => new { d.TagTerm, d.RefID });
+
                 entity.HasOne(d => d.CurrentKnowledgeItem)
                     .WithMany(d => d.Tags)
                     .HasForeignKey(d => d.RefID)
@@ -117,6 +120,8 @@ namespace knowledgebuilderapi
 
             modelBuilder.Entity<ExerciseTag>(entity =>
             {
+                entity.HasKey(d => new { d.TagTerm, d.RefID });
+
                 entity.HasOne(d => d.CurrentExerciseItem)
                     .WithMany(d => d.Tags)
                     .HasForeignKey(d => d.RefID)

@@ -10,6 +10,11 @@ namespace knowledgebuilderapi.Models
     [Table("ExerciseItem")]
     public sealed class ExerciseItem : BaseModel
     {
+        public ExerciseItem() : base()
+        {
+            Tags = new HashSet<ExerciseTag>();
+        }
+
         [Key]
         [Column("ID", TypeName = "INT")]
         public Int32 ID { get; set; }
@@ -36,7 +41,7 @@ namespace knowledgebuilderapi.Models
     {
         [Key]
         [Column("ItemID")]
-        public Int32 ItemID { get; set; }
+        public Int32 ID { get; set; }
 
         [Required]
         [Column("Content", TypeName = "TEXT")]

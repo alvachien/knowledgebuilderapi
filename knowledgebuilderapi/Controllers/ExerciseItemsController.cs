@@ -69,10 +69,34 @@ namespace knowledgebuilderapi.Controllers
             // Admin. fields
             execitem.CreatedAt = DateTime.Now;
             execitem.ModifiedAt = null;
+            //if (execitem.Answer != null)
+            //{
+            //    execitem.Answer.ExerciseItem = execitem;
+            //}
+            //ExerciseItemAnswer execawr = null;
+            //if (execitem.Answer != null)
+            //{
+            //    execawr = new ExerciseItemAnswer();
+            //    execawr.Content = execitem.Answer.Content;
+            //    execitem.Answer = null;
+            //}
+            if (execitem.Tags.Count > 0)
+            {
+                foreach (var tag in execitem.Tags)
+                    tag.CurrentExerciseItem = execitem;
+            }
 
             // Update db
             _context.ExerciseItems.Add(execitem);
             await _context.SaveChangesAsync();
+
+            // Answer
+            //if (execawr != null)
+            //{
+            //    execawr.ItemID = execitem.ID;
+            //    _context.ExerciseItemAnswers.Add(execawr);
+            //    await _context.SaveChangesAsync();
+            //}
 
             return Created(execitem);
         }

@@ -49,7 +49,7 @@ namespace knowledgebuilderapi.Controllers
         [EnableQuery]
         public SingleResult<ExerciseItemAnswer> Get([FromODataUri] int key)
         {
-            return SingleResult.Create(_context.ExerciseItemAnswers.Where(p => p.ItemID == key));
+            return SingleResult.Create(_context.ExerciseItemAnswers.Where(p => p.ID == key));
         }
 
         // POST: /ExerciseItemAnswers
@@ -88,7 +88,7 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (key != update.ItemID)
+            if (key != update.ID)
             {
                 return BadRequest();
             }
@@ -100,7 +100,7 @@ namespace knowledgebuilderapi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.ExerciseItemAnswers.Any(p => p.ItemID == key))
+                if (!_context.ExerciseItemAnswers.Any(p => p.ID == key))
                 {
                     return NotFound();
                 }
@@ -156,7 +156,7 @@ namespace knowledgebuilderapi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.ExerciseItemAnswers.Any(p => p.ItemID == key))
+                if (!_context.ExerciseItemAnswers.Any(p => p.ID == key))
                 {
                     return NotFound();
                 }

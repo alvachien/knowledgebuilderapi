@@ -40,14 +40,16 @@ namespace knowledgebuilderapi.test
             );
 
             database.ExecuteSqlRaw(@"CREATE TABLE KnowledgeTag (
-                Tag   NVARCHAR (20) NOT NULL PRIMARY KEY,
+                Tag   NVARCHAR (20) NOT NULL,
                 RefID INT           NOT NULL,
+                PRIMARY KEY (Tag, RefID),
                 CONSTRAINT FK_KNOWLEDGETAG_ID FOREIGN KEY (RefID) REFERENCES KnowledgeItem ([ID]) ON DELETE CASCADE ON UPDATE CASCADE )"
             );
 
             database.ExecuteSqlRaw(@"CREATE TABLE ExerciseTag (
-                Tag   NVARCHAR (20) NOT NULL PRIMARY KEY,
+                Tag   NVARCHAR (20) NOT NULL,
                 RefID INT           NOT NULL,
+                PRIMARY KEY (Tag, RefID),
                 CONSTRAINT FK_KNOWLEDGETAG_ID FOREIGN KEY (RefID) REFERENCES ExerciseItem ([ID]) ON DELETE CASCADE ON UPDATE CASCADE )"
             );
         }
