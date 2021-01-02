@@ -105,6 +105,20 @@ namespace knowledgebuilderapi
 
                         options.Audience = "knowledgebuilder.api";
                     });
+
+                services.AddCors(options =>
+                {
+                    options.AddPolicy("TEST", builder =>
+                    {
+                        builder.WithOrigins(
+                            "http://localhost:5005",
+                            "https://localhost:5005"
+                            )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                    });
+                });
             }
 
             services.AddOData();
@@ -135,6 +149,8 @@ namespace knowledgebuilderapi
             modelBuilder.EntitySet<KnowledgeTag>("KnowledgeTags");
             modelBuilder.EntitySet<ExerciseTag>("ExerciseTags");
             modelBuilder.EntitySet<Tag>("Tags");
+            modelBuilder.EntitySet<TagCount>("TagCounts");
+            modelBuilder.EntitySet<TagCountByRefType>("TagCountByRefTypes");
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
 
             var model = modelBuilder.GetEdmModel();

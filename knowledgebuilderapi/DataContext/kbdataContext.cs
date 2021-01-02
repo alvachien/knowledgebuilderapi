@@ -25,6 +25,8 @@ namespace knowledgebuilderapi
         public DbSet<KnowledgeTag> KnowledgeTags { get; set; }
         public DbSet<ExerciseTag> ExerciseTags { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<TagCount> TagCounts { get; set; }
+        public DbSet<TagCountByRefType> TagCountByRefTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -132,6 +134,26 @@ namespace knowledgebuilderapi
             modelBuilder.Entity<Tag>(entity =>
             {
                 entity.ToView("Tag");
+                entity.HasNoKey();
+                entity.Property(b => b.RefType)
+                    .HasConversion(
+                        v => (Int32)v,
+                        v => (TagRefType)v);
+            });
+
+            modelBuilder.Entity<TagCountByRefType>(entity =>
+            {
+                entity.ToView("TagCountByRefType");
+                entity.HasNoKey();
+                entity.Property(b => b.RefType)
+                    .HasConversion(
+                        v => (Int32)v,
+                        v => (TagRefType)v);
+            });
+
+            modelBuilder.Entity<TagCount>(entity =>
+            {
+                entity.ToView("TagCount");
                 entity.HasNoKey();
                 entity.Property(b => b.RefType)
                     .HasConversion(
