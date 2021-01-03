@@ -23,7 +23,7 @@ namespace knowledgebuilderapi.Controllers
         /// Adds support for getting tags
         /// <remarks>
         [EnableQuery]
-        public IQueryable<Tag> Get()
+        public IQueryable<TagCountByRefType> Get()
         {
             return _context.TagCountByRefTypes;
         }
