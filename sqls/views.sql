@@ -17,4 +17,9 @@ CREATE VIEW TagCount
 	SELECT Tag, RefType, count(*) as Count
 	FROM Tag
 	GROUP BY Tag, RefType;
-	
+
+CREATE VIEW OverviewInfo
+	AS 
+	SELECT 1 AS RefType, count(*) AS cnt FROM KnowledgeItem
+ 	UNION ALL
+	SELECT 2 AS RefType, count(*) AS cnt FROM ExerciseItem;

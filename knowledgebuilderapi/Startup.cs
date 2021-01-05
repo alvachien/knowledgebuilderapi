@@ -151,6 +151,7 @@ namespace knowledgebuilderapi
             modelBuilder.EntitySet<Tag>("Tags");
             modelBuilder.EntitySet<TagCount>("TagCounts");
             modelBuilder.EntitySet<TagCountByRefType>("TagCountByRefTypes");
+            modelBuilder.EntitySet<OverviewInfo>("OverviewInfos");
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
 
             var model = modelBuilder.GetEdmModel();
