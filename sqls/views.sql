@@ -20,6 +20,6 @@ CREATE VIEW TagCount
 
 CREATE VIEW OverviewInfo
 	AS 
-	SELECT 1 AS RefType, count(*) AS cnt FROM KnowledgeItem
+	SELECT 1 AS RefType, count(*) AS Count FROM KnowledgeItem
  	UNION ALL
-	SELECT 2 AS RefType, count(*) AS cnt FROM ExerciseItem;
+	SELECT 2 AS RefType, count(*) AS Count FROM ExerciseItem;
