@@ -114,11 +114,29 @@ namespace knowledgebuilderapi.Controllers
 
             if (key != update.ID)
             {
-                return BadRequest();
+                return BadRequest("Key is not matched");
             }
 
-            update.ModifiedAt = DateTime.Now;
-            _context.Entry(update).State = EntityState.Modified;
+            // Check item need be updated
+            var execitem = await _context.ExerciseItems.FindAsync(key);
+            if (execitem == null)
+            {
+                return NotFound();
+            }
+
+            if (execitem.Equals(update))
+            {
+                // Do nothing
+            }
+            else
+            {
+                execitem.UpdateData(update);
+                _context.Update(execitem);
+            }
+
+            // Check the associated object need be updated - Answer
+
+            // Check the associated object need be updated - Tags
             try
             {
                 await _context.SaveChangesAsync();

@@ -33,6 +33,29 @@ namespace knowledgebuilderapi.Models
         public KnowledgeItem CurrentKnowledgeItem { get; set; }
         public ExerciseItemAnswer Answer { get; set; }
         public ICollection<ExerciseTag> Tags { get; set; }
+
+        public override Boolean Equals(Object other)
+        {
+            if (other == null || !(other is ExerciseItem))
+                throw new InvalidOperationException("Invalid parameter: Other");
+
+            ExerciseItem ei2 = other as ExerciseItem;
+            if (this.ID != ei2.ID)
+                return false;
+            if (this.KnowledgeItemID != ei2.KnowledgeItemID)
+                return false;
+            if (this.ExerciseType != ei2.ExerciseType)
+                return false;
+            if (String.CompareOrdinal(this.Content, ei2.Content) != 0)
+                return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ID;
+        }
     }
 
 
@@ -48,5 +71,24 @@ namespace knowledgebuilderapi.Models
         public string Content { get; set; }
 
         public ExerciseItem ExerciseItem { get; set; }
+
+        public override Boolean Equals(Object other)
+        {
+            if (other == null || !(other is ExerciseItemAnswer))
+                throw new InvalidOperationException("Invalid parameter: Other");
+
+            ExerciseItemAnswer ei2 = other as ExerciseItemAnswer;
+            if (this.ID != ei2.ID)
+                return false;
+            if (String.CompareOrdinal(this.Content, ei2.Content) != 0)
+                return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ID;
+        }
     }
 }
