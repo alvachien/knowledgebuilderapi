@@ -118,39 +118,131 @@ namespace knowledgebuilderapi.Controllers
             }
 
             // Check item need be updated
-            var execitem = await _context.ExerciseItems.FindAsync(key);
+            //var contentChanged = false;
+            // var execitem = await _context.ExerciseItems.FindAsync(key);
+            var execitem = await _context.ExerciseItems
+                    .Include(i => i.Answer)
+                    .Include(i => i.Tags)
+                    .SingleOrDefaultAsync(x => x.ID == key);
             if (execitem == null)
             {
                 return NotFound();
             }
 
-            if (execitem.Equals(update))
+            execitem.UpdateData(update);
+            if (execitem.Answer == null)
             {
-                // Do nothing
+                if (update.Answer != null)
+                {
+                    execitem.Answer = new ExerciseItemAnswer(update.Answer);
+                    execitem.Answer.ExerciseItem = execitem;
+                }
             }
             else
             {
-                execitem.UpdateData(update);
-                _context.Update(execitem);
-            }
-
-            // Check the associated object need be updated - Answer
-
-            // Check the associated object need be updated - Tags
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.ExerciseItems.Any(p => p.ID == key))
+                if (update.Answer != null)
                 {
-                    return NotFound();
+                    execitem.Answer.UpdateData(update.Answer);
                 }
                 else
                 {
-                    throw;
+                    execitem.Answer = null;
                 }
+            }
+            if (execitem.Tags.Count > 0)
+            {
+                if (update.Tags.Count > 0)
+                {
+                    execitem.Tags.Clear();
+
+                    foreach (var tag in update.Tags)
+                    {
+                        var newtag = new ExerciseTag(tag);
+                        newtag.CurrentExerciseItem = execitem;
+                        execitem.Tags.Add(newtag);
+                    }
+                }
+                else
+                {
+                    // Delete all
+                    execitem.Tags.Clear();
+                }
+            }
+            else
+            {
+                if (update.Tags.Count > 0)
+                {
+                    foreach(var tag in update.Tags)
+                    {
+                        var newtag = new ExerciseTag(tag);
+                        newtag.CurrentExerciseItem = execitem;
+                        execitem.Tags.Add(newtag);
+                    }
+                }
+            }
+
+            //// Check the exercise item
+            //if (execitem.Equals(update))
+            //{
+            //    // Do nothing
+            //}
+            //else
+            //{
+            //    contentChanged = true;
+            //    execitem.UpdateData(update);
+            //    _context.Update(execitem);
+            //}
+
+            //// Check the associated object need be updated - Answer
+            //if (execitem.Answer == null)
+            //{
+            //    if (update.Answer != null)
+            //    {
+            //        contentChanged = true;
+
+            //        ExerciseItemAnswer eia = new ExerciseItemAnswer(update.Answer);
+            //        eia.ExerciseItem = execitem;
+            //        _context.Update(eia);
+            //    }
+            //}
+            //else
+            //{
+            //    if (update.Answer != null)
+            //    {
+            //        if (!execitem.Answer.Equals(update.Answer))
+            //        {
+            //            ExerciseItemAnswer eia = new ExerciseItemAnswer(update.Answer);
+            //            eia.ExerciseItem = execitem;
+            //            _context.Update(eia);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        contentChanged = true;
+
+            //    }
+            //}
+
+            //// Check the associated object need be updated - Tags
+            //if (execitem.Tags.Count > 0)
+            //{
+
+            //}
+            //else
+            //{
+
+            //}
+
+            try
+            {
+                //if (contentChanged)
+                //{
+                    await _context.SaveChangesAsync();
+                //}
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
             }
 
             return Updated(update);

@@ -75,6 +75,16 @@ namespace knowledgebuilderapi.Models
     [Table("ExerciseItemAnswer")]
     public sealed class ExerciseItemAnswer : BaseModel
     {
+        public ExerciseItemAnswer()
+        {
+        }
+
+        public ExerciseItemAnswer(ExerciseItemAnswer other) : this()
+        {
+            this.ID = other.ID;
+            this.Content = other.Content;
+        }
+        
         [Key]
         [Column("ItemID")]
         public Int32 ID { get; set; }
@@ -102,6 +112,15 @@ namespace knowledgebuilderapi.Models
         public override int GetHashCode()
         {
             return this.ID;
+        }
+
+        public void UpdateData(ExerciseItemAnswer other)
+        {
+            if (other == null)
+                throw new InvalidOperationException("Invalid parameter: Other");
+
+            if (String.CompareOrdinal(Content, other.Content) != 0)
+                Content = other.Content;
         }
     }
 }

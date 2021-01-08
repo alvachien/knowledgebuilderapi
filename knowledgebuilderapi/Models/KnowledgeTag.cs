@@ -7,6 +7,15 @@ namespace knowledgebuilderapi.Models
     [Table("KnowledgeTag")]
     public class KnowledgeTag
     {
+        public KnowledgeTag()
+        {
+        }
+        public KnowledgeTag(KnowledgeTag other)
+        {
+            this.TagTerm = other.TagTerm;
+            this.RefID = other.RefID;
+        }
+
         [Key]
         [MaxLength(20)]
         [Column("Tag", TypeName = "NVARCHAR(20)")]

@@ -8,6 +8,15 @@ namespace knowledgebuilderapi.Models
     [Table("ExerciseTag")]
     public class ExerciseTag
     {
+        public ExerciseTag()
+        {
+        }
+        public ExerciseTag(ExerciseTag other)
+        {
+            this.TagTerm = other.TagTerm;
+            this.RefID = other.RefID;
+        }
+
         [Key]
         [MaxLength(20)]
         [Column("Tag", TypeName = "NVARCHAR(20)")]

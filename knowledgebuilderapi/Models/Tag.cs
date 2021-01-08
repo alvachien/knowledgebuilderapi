@@ -7,6 +7,17 @@ namespace knowledgebuilderapi.Models
 {
     public class Tag
     {
+        public Tag()
+        {
+        }
+
+        public Tag(Tag other): this()
+        {
+            this.TagTerm = other.TagTerm;
+            this.RefType = other.RefType;
+            this.RefID = other.RefID;
+        }
+
         [Key]
         [Column("Tag")]
         public String TagTerm { get; set; }
