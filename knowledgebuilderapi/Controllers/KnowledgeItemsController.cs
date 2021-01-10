@@ -95,21 +95,54 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(update).State = EntityState.Modified;
+            var knowitem = await _context.KnowledgeItems
+                    .Include(i => i.Tags)
+                    .SingleOrDefaultAsync(x => x.ID == key);
+            if (knowitem == null)
+            {
+                return NotFound();
+            }
+            knowitem.UpdateData(update);
+            if (knowitem.Tags.Count > 0)
+            {
+                if (update.Tags.Count > 0)
+                {
+                    knowitem.Tags.Clear();
+
+                    foreach (var tag in update.Tags)
+                    {
+                        var newtag = new KnowledgeTag(tag);
+                        newtag.CurrentKnowledgeItem = knowitem;
+                        knowitem.Tags.Add(newtag);
+                    }
+                }
+                else
+                {
+                    // Delete all
+                    knowitem.Tags.Clear();
+                }
+            }
+            else
+            {
+                if (update.Tags.Count > 0)
+                {
+                    foreach (var tag in update.Tags)
+                    {
+                        var newtag = new KnowledgeTag(tag);
+                        newtag.CurrentKnowledgeItem = knowitem;
+                        knowitem.Tags.Add(newtag);
+                    }
+                }
+            }
+
+            //_context.Entry(update).State = EntityState.Modified;
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.KnowledgeItems.Any(p => p.ID == key))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return Updated(update);
