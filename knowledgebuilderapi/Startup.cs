@@ -47,8 +47,6 @@ namespace knowledgebuilderapi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            this.ConnectionString = Configuration["KBAPI.ConnectionString"];
-
             if (Environment.EnvironmentName != "IntegrationTest")
             {
                 services.AddDbContext<kbdataContext>(options =>
@@ -71,7 +69,9 @@ namespace knowledgebuilderapi
                 //     });
             }
             else if (Environment.EnvironmentName == "Development")
-            {                
+            {
+                this.ConnectionString = Configuration["KBAPI.ConnectionString"];
+
                 services.AddAuthentication("Bearer")
                     .AddJwtBearer("Bearer", options =>
                     {
@@ -97,10 +97,12 @@ namespace knowledgebuilderapi
             }
             else if (Environment.EnvironmentName == "Production")
             {
+                this.ConnectionString = Configuration.GetConnectionString("AliyunConnection");
+
                 services.AddAuthentication("Bearer")
                     .AddJwtBearer("Bearer", options =>
                     {
-                        options.Authority = "http://localhost:5005";
+                        options.Authority = "https://www.alvachien.com/idserver";
                         options.RequireHttpsMetadata = false;
 
                         options.Audience = "knowledgebuilder.api";
@@ -111,8 +113,8 @@ namespace knowledgebuilderapi
                     options.AddPolicy("TEST", builder =>
                     {
                         builder.WithOrigins(
-                            "http://localhost:5005",
-                            "https://localhost:5005"
+                            "http://www.alvachien.com/math",
+                            "https://www.alvachien.com/math"
                             )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
