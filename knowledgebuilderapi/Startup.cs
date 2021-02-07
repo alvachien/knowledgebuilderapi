@@ -47,11 +47,11 @@ namespace knowledgebuilderapi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            if (Environment.EnvironmentName != "IntegrationTest")
-            {
-                services.AddDbContext<kbdataContext>(options =>
-                    options.UseSqlServer(this.ConnectionString));
-            }
+            //if (Environment.EnvironmentName != "IntegrationTest")
+            //{
+            //    services.AddDbContext<kbdataContext>(options =>
+            //        options.UseSqlServer(this.ConnectionString));
+            //}
 
             services.AddAuthorization();
 
@@ -71,6 +71,8 @@ namespace knowledgebuilderapi
             else if (Environment.EnvironmentName == "Development")
             {
                 this.ConnectionString = Configuration["KBAPI.ConnectionString"];
+                services.AddDbContext<kbdataContext>(options =>
+                    options.UseSqlServer(this.ConnectionString));
 
                 services.AddAuthentication("Bearer")
                     .AddJwtBearer("Bearer", options =>
@@ -98,7 +100,8 @@ namespace knowledgebuilderapi
             else if (Environment.EnvironmentName == "Production")
             {
                 this.ConnectionString = Configuration.GetConnectionString("AliyunConnection");
-
+                services.AddDbContext<kbdataContext>(options =>
+                    options.UseSqlServer(this.ConnectionString));
                 services.AddAuthentication("Bearer")
                     .AddJwtBearer("Bearer", options =>
                     {
