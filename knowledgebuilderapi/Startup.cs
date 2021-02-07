@@ -94,7 +94,7 @@ namespace knowledgebuilderapi
             else if (Environment.EnvironmentName == "Production")
             {
                 this.ConnectionString = Configuration.GetConnectionString("AliyunConnection");
-                services.AddDbContext<kbdataContext>(options =>    options.UseSqlServer(this.ConnectionString));
+                services.AddDbContext<kbdataContext>(options => options.UseSqlServer(this.ConnectionString));
 
                 services.AddAuthentication("Bearer")
                     .AddJwtBearer("Bearer", options =>
