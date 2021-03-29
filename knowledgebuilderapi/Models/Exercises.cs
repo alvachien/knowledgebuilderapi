@@ -27,7 +27,7 @@ namespace knowledgebuilderapi.Models
         public ExerciseItemType ExerciseType { get; set; }
 
         [Required]
-        [Column("Content", TypeName = "TEXT")]
+        [Column("Content")]
         public string Content { get; set; }
 
         public KnowledgeItem CurrentKnowledgeItem { get; set; }
@@ -90,7 +90,7 @@ namespace knowledgebuilderapi.Models
         public Int32 ID { get; set; }
 
         [Required]
-        [Column("Content", TypeName = "TEXT")]
+        [Column("Content")]
         public string Content { get; set; }
 
         public ExerciseItem ExerciseItem { get; set; }
