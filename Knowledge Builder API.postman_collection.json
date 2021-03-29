@@ -1,0 +1,136 @@
+{
+	"info": {
+		"_postman_id": "879b8e5e-ce5e-4d59-bbfb-add1d06586f1",
+		"name": "Knowledge Builder API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Tag",
+			"item": [
+				{
+					"name": "Tag With Filter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/odata/Tags?$filter=TagTerm eq 'test1' and RefType eq 'KnowledgeItem'&$count=true",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"odata",
+								"Tags"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "TagTerm eq 'test1' and RefType eq 'KnowledgeItem'"
+								},
+								{
+									"key": "$count",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Tag With Filter 2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/odata/Tags?$filter=TagTerm eq 'test1' and RefType eq 'ExerciseItem'&$count=true",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"odata",
+								"Tags"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "TagTerm eq 'test1' and RefType eq 'ExerciseItem'"
+								},
+								{
+									"key": "$count",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Knowledge Items",
+			"item": [
+				{
+					"name": "Get Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/odata/KnowledgeItems?$count=true",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"odata",
+								"KnowledgeItems"
+							],
+							"query": [
+								{
+									"key": "$count",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Exercise Items",
+			"item": [
+				{
+					"name": "Get Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/odata/ExerciseItems?$count=true",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"odata",
+								"ExerciseItems"
+							],
+							"query": [
+								{
+									"key": "$count",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
