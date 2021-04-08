@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
-using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -11,6 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using knowledgebuilderapi.Models;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Results;
+using Microsoft.AspNetCore.OData.Formatter;
+using Microsoft.AspNetCore.OData.Deltas;
 
 namespace knowledgebuilderapi.Controllers 
 {
@@ -79,7 +83,7 @@ namespace knowledgebuilderapi.Controllers
             return Created(knowledge);
         }
 
-        // PUT: /KnowledgeItems/5
+        // PUT: /KnowledgeItems(5)
         /// <summary>
         /// Support for updating Knowledge items
         /// </summary>
@@ -124,7 +128,7 @@ namespace knowledgebuilderapi.Controllers
             }
             else
             {
-                if (update.Tags.Count > 0)
+                if (update.Tags != null && update.Tags.Count > 0)
                 {
                     foreach (var tag in update.Tags)
                     {
@@ -135,7 +139,6 @@ namespace knowledgebuilderapi.Controllers
                 }
             }
 
-            //_context.Entry(update).State = EntityState.Modified;
             try
             {
                 await _context.SaveChangesAsync();
@@ -148,7 +151,7 @@ namespace knowledgebuilderapi.Controllers
             return Updated(update);
         }
 
-        // DELETE: /KnowledgeItems/5
+        // DELETE: /KnowledgeItems(5)
         /// <summary>
         /// Support for deleting knowledge item by key.
         /// </summary>

@@ -13,14 +13,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Builder;
-using Microsoft.AspNet.OData.Batch;
-using knowledgebuilderapi.Models;
-using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.OData;
 using System.IO;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
+using Microsoft.OData.Edm;
+using knowledgebuilderapi.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace knowledgebuilderapi
 {
@@ -43,11 +42,12 @@ namespace knowledgebuilderapi
         public IWebHostEnvironment Environment { get; }
         public string ConnectionString { get; private set; }
         internal static String UploadFolder { get; private set; }
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthorization();
+            services.AddCors();
 
             if (Environment.EnvironmentName == "IntegrationTest")
             {
@@ -71,15 +71,21 @@ namespace knowledgebuilderapi
                 services.AddAuthentication("Bearer")
                     .AddJwtBearer("Bearer", options =>
                     {
-                        options.Authority = "http://localhost:5005";
-                        options.RequireHttpsMetadata = false;
+                        options.Authority = "https://localhost:44353";
+                        options.RequireHttpsMetadata = true;
+                        options.SaveToken = true;
+                        options.IncludeErrorDetails = true;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateAudience = false
+                        };
 
                         options.Audience = "knowledgebuilder.api";
                     });
 
                 services.AddCors(options =>
                 {
-                    options.AddPolicy("TEST", builder =>
+                    options.AddPolicy(MyAllowSpecificOrigins, builder =>
                     {
                         builder.WithOrigins(
                             "http://localhost:5005",
@@ -100,17 +106,22 @@ namespace knowledgebuilderapi
                     .AddJwtBearer("Bearer", options =>
                     {
                         options.Authority = "https://www.alvachien.com/idserver";
-                        options.RequireHttpsMetadata = false;
+                        options.RequireHttpsMetadata = true;
+                        options.SaveToken = true;
+                        options.IncludeErrorDetails = true;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateAudience = false
+                        };
 
                         options.Audience = "knowledgebuilder.api";
                     });
 
                 services.AddCors(options =>
                 {
-                    options.AddPolicy("TEST", builder =>
+                    options.AddPolicy(MyAllowSpecificOrigins, builder =>
                     {
                         builder.WithOrigins(
-                            "http://www.alvachien.com/math",
                             "https://www.alvachien.com/math"
                             )
                         .AllowAnyHeader()
@@ -120,8 +131,25 @@ namespace knowledgebuilderapi
                 });
             }
 
-            services.AddOData();
-            services.AddMvc(options => options.EnableEndpointRouting = false);
+            services.AddHttpContextAccessor();
+
+            services.AddControllers();
+
+            IEdmModel model = EdmModelBuilder.GetEdmModel();
+
+            services.AddOData(opt => opt.Count().Filter().Expand().Select().OrderBy().SetMaxTop(100)
+                .AddModel(model)
+                .AddModel("v1", model)
+                // .AddModel("v2{data}", model2, builder => builder.AddService<ODataBatchHandler, DefaultODataBatchHandler>(Microsoft.OData.ServiceLifetime.Singleton))
+                // .ConfigureRoute(route => route.EnableQualifiedOperationCall = false) // use this to configure the built route template
+                );
+
+            services.AddAuthorization();            
+
+            // Response Caching
+            services.AddResponseCaching();
+            // Memory cache
+            services.AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -130,7 +158,6 @@ namespace knowledgebuilderapi
             if (env.EnvironmentName == "Development")
             {
                 app.UseDeveloperExceptionPage();
-                app.UseCors("TEST");
             }
             else
             {
@@ -138,31 +165,22 @@ namespace knowledgebuilderapi
                 app.UseHsts();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseCors(MyAllowSpecificOrigins);
+            app.UseHttpsRedirection();
             app.UseAuthentication();
 
-            ODataModelBuilder modelBuilder = new ODataConventionModelBuilder(app.ApplicationServices);
-            modelBuilder.EntitySet<KnowledgeItem>("KnowledgeItems");
-            modelBuilder.EntitySet<ExerciseItem>("ExerciseItems");
-            modelBuilder.EntitySet<ExerciseItemAnswer>("ExerciseItemAnswers");
-            modelBuilder.EntitySet<KnowledgeTag>("KnowledgeTags");
-            modelBuilder.EntitySet<ExerciseTag>("ExerciseTags");
-            modelBuilder.EntitySet<Tag>("Tags");
-            modelBuilder.EntitySet<TagCount>("TagCounts");
-            modelBuilder.EntitySet<TagCountByRefType>("TagCountByRefTypes");
-            modelBuilder.EntitySet<OverviewInfo>("OverviewInfos");
-            modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
-
-            var model = modelBuilder.GetEdmModel();
             app.UseODataBatching();
+            app.UseRouting();
 
-            app.UseMvc(routeBuilder =>
-                {
-                    // and this line to enable OData query option, for example $filter
-                    routeBuilder.Select().Expand().Filter().OrderBy().MaxTop(100).Count();
+            //app.UseAuthentication();
+            //app.UseAuthorization();
 
-                    routeBuilder.MapODataServiceRoute("ODataRoute", "odata", model);
-                });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+            app.UseResponseCaching();
 
             var cachePeriod = "604800";
             app.UseStaticFiles(new StaticFileOptions

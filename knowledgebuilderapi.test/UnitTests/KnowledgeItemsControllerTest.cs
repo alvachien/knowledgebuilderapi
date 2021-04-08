@@ -8,11 +8,14 @@ using knowledgebuilderapi.Models;
 using knowledgebuilderapi.Controllers;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNet.OData.Results;
+using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Results;
+using Microsoft.AspNetCore.OData.Formatter;
+using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
-using Microsoft.AspNet.OData;
 
 namespace knowledgebuilderapi.test.UnitTests
 {

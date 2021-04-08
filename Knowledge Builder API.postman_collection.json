@@ -14,14 +14,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:44355/odata/Tags?$filter=TagTerm eq 'test1' and RefType eq 'KnowledgeItem'&$count=true",
+							"raw": "https://localhost:44355/Tags?$filter=TagTerm eq 'test1' and RefType eq 'KnowledgeItem'&$count=true",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
 							"port": "44355",
 							"path": [
-								"odata",
 								"Tags"
 							],
 							"query": [
@@ -44,14 +43,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:44355/odata/Tags?$filter=TagTerm eq 'test1' and RefType eq 'ExerciseItem'&$count=true",
+							"raw": "https://localhost:44355/Tags?$filter=TagTerm eq 'test1' and RefType eq 'ExerciseItem'&$count=true",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
 							"port": "44355",
 							"path": [
-								"odata",
 								"Tags"
 							],
 							"query": [
@@ -79,14 +77,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:44355/odata/KnowledgeItems?$count=true",
+							"raw": "https://localhost:44355/KnowledgeItems?$count=true",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
 							"port": "44355",
 							"path": [
-								"odata",
 								"KnowledgeItems"
 							],
 							"query": [
@@ -94,6 +91,167 @@
 									"key": "$count",
 									"value": "true"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/KnowledgeItems(5)?$select=ID,Category,Title,Content,CreatedAt,ModifiedAt&$expand=Tags",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"KnowledgeItems(5)"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "ID,Category,Title,Content,CreatedAt,ModifiedAt"
+								},
+								{
+									"key": "$expand",
+									"value": "Tags"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Not-Exist Entry",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/KnowledgeItems(999)?$select=ID,Category,Title,Content,CreatedAt,ModifiedAt&$expand=Tags",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"KnowledgeItems(999)"
+							],
+							"query": [
+								{
+									"key": "$select",
+									"value": "ID,Category,Title,Content,CreatedAt,ModifiedAt"
+								},
+								{
+									"key": "$expand",
+									"value": "Tags"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Category\": \"Concept\",\r\n    \"Title\": \"Test from postman\",\r\n    \"Content\": \"New Knowledge Item from postman\\r\\n\\r\\nAA\\r\\n\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/KnowledgeItems",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"KnowledgeItems"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ID\": 5,\r\n    \"Category\": \"Concept\",\r\n    \"Title\": \"Test from postman, updated\",\r\n    \"Content\": \"New Knowledge Item from postman\\r\\n\\r\\nAA\\r\\n\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/KnowledgeItems(5)",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"KnowledgeItems(5)"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Title By PATCH",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Title\": \"Test from postman, upd PATCH\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/KnowledgeItems(5)",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"KnowledgeItems(5)"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/KnowledgeItems(5)",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"KnowledgeItems(5)"
 							]
 						}
 					},
@@ -110,27 +268,267 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:44355/odata/ExerciseItems?$count=true",
+							"raw": "https://localhost:44355/ExerciseItems?$count=true&$select=ID,KnowledgeItemID,ExerciseType,CreatedAt&$expand=Tags",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
 							"port": "44355",
 							"path": [
-								"odata",
 								"ExerciseItems"
 							],
 							"query": [
 								{
 									"key": "$count",
 									"value": "true"
+								},
+								{
+									"key": "$select",
+									"value": "ID,KnowledgeItemID,ExerciseType,CreatedAt"
+								},
+								{
+									"key": "$expand",
+									"value": "Tags"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/ExerciseItems(7)?$expand=Tags",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"ExerciseItems(7)"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Tags"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create With Tag",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"KnowledgeItemID\": null,\r\n    \"ExerciseType\": \"Question\",\r\n    \"Content\": \"New Exercise Item from POSTMAND\\r\\n\\r\\nTest 1.1\",\r\n    \"Tags\": [\r\n        {\r\n            \"TagTerm\": \"test1\"\r\n        },\r\n        {\r\n            \"TagTerm\": \"test1.1\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/ExerciseItems",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"ExerciseItems"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Non-Exist Item",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/ExerciseItems(9999)",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"ExerciseItems(9999)"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change via PUT with TAG",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ID\": 7,\r\n    \"KnowledgeItemID\": null,\r\n    \"ExerciseType\": \"Question\",\r\n    \"Content\": \"New Exercise Item from POSTMAND, UPDATED 2\\r\\n\\r\\nTest 1.1\",\r\n    \"Tags\": [\r\n        {\r\n            \"TagTerm\": \"test1\"\r\n        },\r\n        {\r\n            \"TagTerm\": \"test1.1\"\r\n        },\r\n        {\r\n            \"TagTerm\": \"test1.2\"\r\n        }\r\n    ]    \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/ExerciseItems(7)",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"ExerciseItems(7)"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH Change",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Content\": \"New Exercise Item from POSTMAND, UPDATED BY PATCH 2\\r\\n\\r\\nTest 1.1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/ExerciseItems(7)",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"ExerciseItems(7)"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/ExerciseItems(7)",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"ExerciseItems(7)"
 							]
 						}
 					},
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "KnowledgeTag",
+			"item": [
+				{
+					"name": "GET Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/KnowledgeTags",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"KnowledgeTags"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ExerciseTag",
+			"item": [
+				{
+					"name": "GET Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/ExerciseTags",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"ExerciseTags"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Metadata",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:44355/$metadata",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44355",
+					"path": [
+						"$metadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Debug Endpoint Routing",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:44355/$odata",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44355",
+					"path": [
+						"$odata"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
