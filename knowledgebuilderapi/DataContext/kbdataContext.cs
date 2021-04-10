@@ -28,6 +28,8 @@ namespace knowledgebuilderapi
         public DbSet<TagCount> TagCounts { get; set; }
         public DbSet<TagCountByRefType> TagCountByRefTypes { get; set; }
         public DbSet<OverviewInfo> OverviewInfos { get; set; }
+        public DbSet<ExerciseItemWithTagView> ExerciseItemWithTagViews { get; set; }
+        public DbSet<KnowledgeItemWithTagView> KnowledgeItemWithTagViews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -170,6 +172,18 @@ namespace knowledgebuilderapi
                     .HasConversion(
                         v => (Int32)v,
                         v => (TagRefType)v);
+            });
+
+            modelBuilder.Entity<ExerciseItemWithTagView>(entity =>
+            {
+                entity.ToView("ExerciseItemWithTagView");
+                entity.HasNoKey();
+            });
+
+            modelBuilder.Entity<KnowledgeItemWithTagView>(entity =>
+            {
+                entity.ToView("KnowledgeItemWithTagView");
+                entity.HasNoKey();
             });
         }
     }

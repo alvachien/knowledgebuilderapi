@@ -49,39 +49,27 @@ namespace knowledgebuilderapi
         {
             services.AddCors();
 
-            if (Environment.EnvironmentName == "IntegrationTest")
-            {
-                // Already Converted in IntegrationTest part.
-                // 
-                // services.AddAuthentication("Bearer")
-                //     .AddJwtBearer("Bearer", options =>
-                //     {
-                //         options.Authority = "http://localhost:5005";
-                //         options.RequireHttpsMetadata = false;
-
-                //         options.Audience = "knowledgebuilder.api";
-                //     });
-            }
-            else if (Environment.EnvironmentName == "Development")
+            if (Environment.EnvironmentName == "Development")
             {
                 this.ConnectionString = Configuration["KBAPI.ConnectionString"];
                 services.AddDbContext<kbdataContext>(options =>
                     options.UseSqlServer(this.ConnectionString));
 
-                services.AddAuthentication("Bearer")
-                    .AddJwtBearer("Bearer", options =>
-                    {
-                        options.Authority = "https://localhost:44353";
-                        options.RequireHttpsMetadata = true;
-                        options.SaveToken = true;
-                        options.IncludeErrorDetails = true;
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateAudience = false
-                        };
+                // TBD: Authentication
+                //services.AddAuthentication("Bearer")
+                //    .AddJwtBearer("Bearer", options =>
+                //    {
+                //        options.Authority = "https://localhost:44353";
+                //        options.RequireHttpsMetadata = true;
+                //        options.SaveToken = true;
+                //        options.IncludeErrorDetails = true;
+                //        options.TokenValidationParameters = new TokenValidationParameters
+                //        {
+                //            ValidateAudience = false
+                //        };
 
-                        options.Audience = "knowledgebuilder.api";
-                    });
+                //        options.Audience = "knowledgebuilder.api";
+                //    });
 
                 services.AddCors(options =>
                 {
@@ -102,20 +90,21 @@ namespace knowledgebuilderapi
                 this.ConnectionString = Configuration.GetConnectionString("AliyunConnection");
                 services.AddDbContext<kbdataContext>(options => options.UseSqlServer(this.ConnectionString));
 
-                services.AddAuthentication("Bearer")
-                    .AddJwtBearer("Bearer", options =>
-                    {
-                        options.Authority = "https://www.alvachien.com/idserver";
-                        options.RequireHttpsMetadata = true;
-                        options.SaveToken = true;
-                        options.IncludeErrorDetails = true;
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateAudience = false
-                        };
+                // TBD: Authentication
+                //services.AddAuthentication("Bearer")
+                //    .AddJwtBearer("Bearer", options =>
+                //    {
+                //        options.Authority = "https://www.alvachien.com/idserver";
+                //        options.RequireHttpsMetadata = true;
+                //        options.SaveToken = true;
+                //        options.IncludeErrorDetails = true;
+                //        options.TokenValidationParameters = new TokenValidationParameters
+                //        {
+                //            ValidateAudience = false
+                //        };
 
-                        options.Audience = "knowledgebuilder.api";
-                    });
+                //        options.Audience = "knowledgebuilder.api";
+                //    });
 
                 services.AddCors(options =>
                 {
@@ -144,7 +133,8 @@ namespace knowledgebuilderapi
                 // .ConfigureRoute(route => route.EnableQualifiedOperationCall = false) // use this to configure the built route template
                 );
 
-            services.AddAuthorization();            
+            // TBD: Authorization
+            //services.AddAuthorization();            
 
             // Response Caching
             services.AddResponseCaching();
@@ -172,6 +162,7 @@ namespace knowledgebuilderapi
             app.UseODataBatching();
             app.UseRouting();
 
+            // TBD: Authentication, Authorization
             //app.UseAuthentication();
             //app.UseAuthorization();
 

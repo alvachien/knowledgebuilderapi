@@ -76,4 +76,23 @@ namespace knowledgebuilderapi.Models
                 Content = other.Content;
         }
     }
+
+    public class KnowledgeItemWithTagView
+    {
+        [Key]
+        [Column("ID", TypeName = "INT")]
+        public Int32 ID { get; set; }
+
+        [Column("ContentType", TypeName = "SMALLINT")]
+        public KnowledgeItemCategory Category { get; set; }
+
+        [Column("Title", TypeName = "NVARCHAR(50)")]
+        public string Title { get; set; }
+
+        [Column("Content")]
+        public string Content { get; set; }
+
+        [Column("Tags")]
+        public String Tags { get; set; }
+    }
 }
