@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "879b8e5e-ce5e-4d59-bbfb-add1d06586f1",
+		"_postman_id": "d41a8314-ac83-4819-afbe-651b064fd5ac",
 		"name": "Knowledge Builder API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -485,6 +485,91 @@
 							"port": "44355",
 							"path": [
 								"ExerciseTags"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Knowlege Item With Tag View",
+			"item": [
+				{
+					"name": "Get Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/KnowledgeItemWithTagViews?$count=true",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"KnowledgeItemWithTagViews"
+							],
+							"query": [
+								{
+									"key": "$count",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Exercise Item With Tag View",
+			"item": [
+				{
+					"name": "Get Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/ExerciseItemWithTagViews?$count=true",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"ExerciseItemWithTagViews"
+							],
+							"query": [
+								{
+									"key": "$count",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET with Filter 1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/ExerciseItemWithTagViews?$filter=contains(Tags,'est') or contains(Tags,'2')",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"ExerciseItemWithTagViews"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "contains(Tags,'est') or contains(Tags,'2')"
+								}
 							]
 						}
 					},
