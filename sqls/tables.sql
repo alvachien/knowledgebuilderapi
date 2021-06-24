@@ -53,8 +53,9 @@ CREATE TABLE AwardRule (
     [ID]            INT            IDENTITY (1, 1) NOT NULL,
 	[RuleType]		SMALLINT 		NOT NULL,
 	[TargetUser]	NVARCHAR(50)	NOT NULL,
-	[ValidFrom]		DATETIME       DEFAULT (getdate()) NULL,
-	[ValidTo]		DATETIME       DEFAULT (getdate()) NULL,
+	[DESP]			NVARCHAR(50)	NOT NULL,
+	[ValidFrom]		DATETIME        DEFAULT (getdate()) NULL,
+	[ValidTo]		DATETIME        DEFAULT (getdate()) NULL,
 	[CountOfFact]	INT				NULL,
 	[DoneOfFact]	BIT				NULL,
 	[TimeStart]		DECIMAL			NULL,
@@ -62,14 +63,12 @@ CREATE TABLE AwardRule (
 	[DaysFrom]		INT				NULL,
 	[DaysTo]		INT				NULL,
 	[Point]			INT				NOT NULL,
-	[DESP]			NVARCHAR(50)	NOT NULL,
 	PRIMARY KEY CLUSTERED ([ID] ASC)
 );
 
 CREATE TABLE DailyTrace (
 	[TargetUser]	NVARCHAR(50)	NOT NULL,
 	[RecordDate]	DATE			NOT NULL,
-	PRIMARY KEY CLUSTERED ([TargetUser] ASC, [RecordDate] ASC),
 	[SchoolWorkTime]	DECIMAL		NULL,
 	[GoToBedTime]		DECIMAL		NULL,
 	[HomeWorkCount]		SMALLINT	NULL,
@@ -80,6 +79,7 @@ CREATE TABLE DailyTrace (
 	[HouseKeepingCount]	SMALLINT	NULL,
 	[PoliteBehavior]	SMALLINT	NULL,
 	[COMMENT]			NVARCHAR(50)	NULL,
+	PRIMARY KEY CLUSTERED ([TargetUser] ASC, [RecordDate] ASC)
 );
 
 CREATE TABLE AwardPoints (
@@ -88,7 +88,8 @@ CREATE TABLE AwardPoints (
 	[RecordDate]	DATE			NOT NULL,
 	[MatchedRuleID]	INT				NULL,
 	[Point]			INT				NOT NULL,
-	[COMMENT]			NVARCHAR(50)	NULL
+	[COMMENT]		NVARCHAR(50)	NULL,
+	PRIMARY KEY CLUSTERED(ID ASC)
 );
 
 

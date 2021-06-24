@@ -30,6 +30,9 @@ namespace knowledgebuilderapi
         public DbSet<OverviewInfo> OverviewInfos { get; set; }
         public DbSet<ExerciseItemWithTagView> ExerciseItemWithTagViews { get; set; }
         public DbSet<KnowledgeItemWithTagView> KnowledgeItemWithTagViews { get; set; }
+        public DbSet<AwardRule> AwardRules { get; set; }
+        public DbSet<DailyTrace> DailyTraces { get; set; }
+        public DbSet<AwardPoint> AwardPoints { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -132,6 +135,75 @@ namespace knowledgebuilderapi
                     .HasForeignKey(d => d.RefID)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_EXERCISETAG_ID");
+            });
+
+            modelBuilder.Entity<AwardRule>(entity =>
+            {
+                if (!TestingMode)
+                {
+                    entity.Property(b => b.ValidFrom)
+                        .HasDefaultValueSql("GETDATE()");
+                    entity.Property(b => b.ValidTo)
+                        .HasDefaultValueSql("GETDATE()");
+
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd()
+                        .UseIdentityColumn();
+                }
+                else
+                {
+                    // Testing mode: Sqlite
+                    entity.Property(b => b.ValidFrom)
+                        .HasDefaultValueSql("CURRENT_DATE");
+                    entity.Property(b => b.ValidTo)
+                        .HasDefaultValueSql("CURRENT_DATE");
+
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd();
+                }
+
+                entity.Property(b => b.RuleType)
+                    .HasConversion(
+                        v => (Int16)v,
+                        v => (AwardRuleType)v);
+            });
+
+            modelBuilder.Entity<DailyTrace>(entity =>
+            {
+                if (!TestingMode)
+                {
+                    entity.Property(b => b.RecordDate)
+                        .HasDefaultValueSql("GETDATE()");
+                }
+                else
+                {
+                    // Testing mode: Sqlite
+                    entity.Property(b => b.RecordDate)
+                        .HasDefaultValueSql("CURRENT_DATE");
+                }
+                entity.HasKey(d => new { d.TargetUser, d.RecordDate });
+            });
+
+            modelBuilder.Entity<AwardPoint>(entity =>
+            {
+                if (!TestingMode)
+                {
+                    entity.Property(b => b.RecordDate)
+                        .HasDefaultValueSql("GETDATE()");
+
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd()
+                        .UseIdentityColumn();
+                }
+                else
+                {
+                    // Testing mode: Sqlite
+                    entity.Property(b => b.RecordDate)
+                        .HasDefaultValueSql("CURRENT_DATE");
+
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd();
+                }
             });
 
             modelBuilder.Entity<Tag>(entity =>
