@@ -47,3 +47,48 @@ CREATE TABLE [dbo].[ExerciseTag] (
     PRIMARY KEY CLUSTERED ([Tag], [RefID]),
     CONSTRAINT [FK_EXERCISETAG_ID] FOREIGN KEY ([RefID]) REFERENCES [dbo].[ExerciseItem] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- Award Rules
+CREATE TABLE AwardRule (
+    [ID]            INT            IDENTITY (1, 1) NOT NULL,
+	[RuleType]		SMALLINT 		NOT NULL,
+	[TargetUser]	NVARCHAR(50)	NOT NULL,
+	[ValidFrom]		DATETIME       DEFAULT (getdate()) NULL,
+	[ValidTo]		DATETIME       DEFAULT (getdate()) NULL,
+	[CountOfFact]	INT				NULL,
+	[DoneOfFact]	BIT				NULL,
+	[TimeStart]		DECIMAL			NULL,
+	[TimeEnd] 		DECIMAL 		NULL,
+	[DaysFrom]		INT				NULL,
+	[DaysTo]		INT				NULL,
+	[Point]			INT				NOT NULL,
+	[DESP]			NVARCHAR(50)	NOT NULL,
+	PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+
+CREATE TABLE DailyTrace (
+	[TargetUser]	NVARCHAR(50)	NOT NULL,
+	[RecordDate]	DATE			NOT NULL,
+	PRIMARY KEY CLUSTERED ([TargetUser] ASC, [RecordDate] ASC),
+	[SchoolWorkTime]	DECIMAL		NULL,
+	[GoToBedTime]		DECIMAL		NULL,
+	[HomeWorkCount]		SMALLINT	NULL,
+	[BodyExericseCount]	SMALLINT	NULL,
+	[ErrorsCollection]	BIT			NULL,
+	[HandWriting]		BIT			NULL,
+	[CleanDesk]			BIT			NULL,
+	[HouseKeepingCount]	SMALLINT	NULL,
+	[PoliteBehavior]	SMALLINT	NULL,
+	[COMMENT]			NVARCHAR(50)	NULL,
+);
+
+CREATE TABLE AwardPoints (
+    [ID]            INT            IDENTITY (1, 1) NOT NULL,
+	[TargetUser]	NVARCHAR(50)	NOT NULL,
+	[RecordDate]	DATE			NOT NULL,
+	[MatchedRuleID]	INT				NULL,
+	[Point]			INT				NOT NULL,
+	[COMMENT]			NVARCHAR(50)	NULL
+);
+
+
