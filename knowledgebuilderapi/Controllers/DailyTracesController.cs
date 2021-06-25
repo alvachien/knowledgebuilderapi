@@ -22,22 +22,14 @@ namespace knowledgebuilderapi.Controllers
             _context = context;
         }
 
-        /// GET: /ExerciseItems
-        /// <summary>
-        /// Adds support for getting knowledges, for example:
-        /// 
-        /// GET /ExerciseItems
-        /// GET /ExerciseItems?$filter=Name eq 'Windows 95'
-        /// GET /ExerciseItems?
-        /// 
-        /// <remarks>
+        /// GET: /DailyTraces
         [EnableQuery]
         public IQueryable<DailyTrace> Get()
         {
             return _context.DailyTraces;
         }
 
-        /// GET: /ExerciseItem(:id)
+        /// GET: /DailyTraces(:id)
         /// <summary>
         /// Adds support for getting a exercise by key, for example:
         /// 

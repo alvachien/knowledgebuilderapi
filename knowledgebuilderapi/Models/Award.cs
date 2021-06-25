@@ -63,7 +63,7 @@ namespace knowledgebuilderapi.Models
         [Column("Point", TypeName = "INT")]
         public Int32 Point { get; set; }
 
-        public Boolean IsValid()
+        public bool IsValid()
         {
             if (String.IsNullOrEmpty(TargetUser))
                 return false;
@@ -97,6 +97,22 @@ namespace knowledgebuilderapi.Models
             }
 
             return true;
+        }
+
+        public void UpdateData(AwardRule update)
+        {
+            this.CountOfFact = update.CountOfFact;
+            this.DaysFrom = update.DaysFrom;
+            this.DaysTo = update.DaysTo;
+            this.Desp = update.Desp;
+            this.DoneOfFact = update.DoneOfFact;
+            this.Point = update.Point;
+            this.RuleType = update.RuleType;
+            this.TargetUser = update.TargetUser;
+            this.TimeEnd = update.TimeEnd;
+            this.TimeStart = update.TimeStart;
+            this.ValidFrom = update.ValidFrom;
+            this.ValidTo = update.ValidTo;
         }
     }
 

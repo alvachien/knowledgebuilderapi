@@ -22,29 +22,14 @@ namespace knowledgebuilderapi.Controllers
             _context = context;
         }
 
-        /// GET: /ExerciseItems
-        /// <summary>
-        /// Adds support for getting knowledges, for example:
-        /// 
-        /// GET /ExerciseItems
-        /// GET /ExerciseItems?$filter=Name eq 'Windows 95'
-        /// GET /ExerciseItems?
-        /// 
-        /// <remarks>
+        /// GET: /AwardPoints
         [EnableQuery]
         public IQueryable<AwardPoint> Get()
         {
             return _context.AwardPoints;
         }
 
-        /// GET: /ExerciseItem(:id)
-        /// <summary>
-        /// Adds support for getting a exercise by key, for example:
-        /// 
-        /// GET /ExerciseItem(1)
-        /// </summary>
-        /// <param name="key">The key of the exercise item</param>
-        /// <returns>The exercise item</returns>
+        /// GET: /AwardPoints(:id)
         [EnableQuery]
         public SingleResult<AwardPoint> Get([FromODataUri] int key)
         {
