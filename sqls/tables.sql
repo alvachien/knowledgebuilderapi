@@ -72,7 +72,7 @@ CREATE TABLE DailyTrace (
 	[SchoolWorkTime]	DECIMAL		NULL,
 	[GoToBedTime]		DECIMAL		NULL,
 	[HomeWorkCount]		SMALLINT	NULL,
-	[BodyExericseCount]	SMALLINT	NULL,
+	[BodyExerciseCount]	SMALLINT	NULL,
 	[ErrorsCollection]	BIT			NULL,
 	[HandWriting]		BIT			NULL,
 	[CleanDesk]			BIT			NULL,

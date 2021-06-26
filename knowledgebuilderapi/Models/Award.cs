@@ -17,7 +17,8 @@ namespace knowledgebuilderapi.Models
         ErrorCollectionHabit    = 5,
         CleanDeakHabit          = 6,
         HouseKeepingCount       = 7,
-        PoliteBehavior          = 8
+        PoliteBehavior          = 8,
+        HandWritingHabit        = 9,
     }
 
     [Table("AwardRule")]
@@ -149,13 +150,27 @@ namespace knowledgebuilderapi.Models
         public Boolean? CleanDesk { get; set; }
 
         [Column("HouseKeepingCount", TypeName = "SMALLINT")]
-        public Int16 HouseKeepingCount { get; set; }
+        public Int16? HouseKeepingCount { get; set; }
 
         [Column("PoliteBehavior", TypeName = "SMALLINT")]
-        public Int16 PoliteBehavior { get; set; }
+        public Int16? PoliteBehavior { get; set; }
 
         [Column("COMMENT", TypeName = "NVARCHAR(50)")]
         public String Comment { get; set; }
+
+        public void UpdateData(DailyTrace other)
+        {
+            this.SchoolWorkTime = other.SchoolWorkTime;
+            this.GoToBedTime = other.GoToBedTime;
+            this.HomeWorkCount = other.HomeWorkCount;
+            this.BodyExerciseCount = other.BodyExerciseCount;
+            this.ErrorsCollection = other.ErrorsCollection;
+            this.HandWriting = other.HandWriting;
+            this.CleanDesk = other.CleanDesk;
+            this.HouseKeepingCount = other.HouseKeepingCount;
+            this.PoliteBehavior = other.PoliteBehavior;
+            this.Comment = other.Comment;
+        }
     }
 
     [Table("AwardPoints")]
@@ -176,5 +191,17 @@ namespace knowledgebuilderapi.Models
 
         [Column("Point", TypeName = "INT")]
         public Int32 Point { get; set; }
+
+        [Column("COMMENT", TypeName = "NVARCHAR(50)")]
+        public String Comment { get; set; }
+
+        public void UpdateData(AwardPoint update)
+        {
+            this.TargetUser = update.TargetUser;
+            this.RecordDate = update.RecordDate;
+            this.MatchedRuleID = update.MatchedRuleID;
+            this.Point = update.Point;
+            this.Comment = update.Comment;
+        }
     }
 }

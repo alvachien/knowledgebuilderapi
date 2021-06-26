@@ -52,6 +52,49 @@ namespace knowledgebuilderapi.test
                 PRIMARY KEY (Tag, RefID),
                 CONSTRAINT FK_KNOWLEDGETAG_ID FOREIGN KEY (RefID) REFERENCES ExerciseItem ([ID]) ON DELETE CASCADE ON UPDATE CASCADE )"
             );
+
+            database.ExecuteSqlRaw(@"CREATE TABLE AwardRule (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+	            RuleType	SMALLINT 		NOT NULL,
+	            TargetUser	NVARCHAR(50)	NOT NULL,
+	            DESP		NVARCHAR(50)	NOT NULL,
+	            ValidFrom	DATETIME        NULL DEFAULT CURRENT_DATE,
+	            ValidTo		DATETIME        NULL DEFAULT CURRENT_DATE,
+	            CountOfFact	INT				NULL,
+	            DoneOfFact	BIT				NULL,
+	            TimeStart	DECIMAL			NULL,
+	            TimeEnd		DECIMAL 		NULL,
+	            DaysFrom	INT				NULL,
+	            DaysTo		INT				NULL,
+	            Point		INT				NOT NULL,
+	            PRIMARY KEY ([ID] ) )"
+            );
+
+            database.ExecuteSqlRaw(@"CREATE TABLE DailyTrace (
+	            TargetUser	NVARCHAR(50)	NOT NULL,
+	            RecordDate	DATE			NOT NULL,
+	            SchoolWorkTime	DECIMAL		NULL,
+	            GoToBedTime		DECIMAL		NULL,
+	            HomeWorkCount		SMALLINT	NULL,
+	            BodyExerciseCount	SMALLINT	NULL,
+	            ErrorsCollection	BIT			NULL,
+	            HandWriting		BIT			NULL,
+	            CleanDesk			BIT			NULL,
+	            HouseKeepingCount	SMALLINT	NULL,
+	            PoliteBehavior	SMALLINT	NULL,
+	            COMMENT			NVARCHAR(50)	NULL,
+	            PRIMARY KEY ([TargetUser], [RecordDate]) )"
+            );
+
+            database.ExecuteSqlRaw(@"CREATE TABLE AwardPoints (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+	            TargetUser	NVARCHAR(50)	NOT NULL,
+	            RecordDate	DATE			NOT NULL,
+	            MatchedRuleID	INT				NULL,
+	            Point			INT				NOT NULL,
+	            COMMENT		NVARCHAR(50)	NULL,
+	            PRIMARY KEY (ID) )"
+            );
         }
 
         public static void CreateDatabaseViews(DatabaseFacade database)

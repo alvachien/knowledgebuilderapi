@@ -578,6 +578,360 @@
 			]
 		},
 		{
+			"name": "AwardRule",
+			"item": [
+				{
+					"name": "Get Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/AwardRules",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardRules"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Entity",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"RuleType\": \"1\",\r\n    \"TargetUser\": \"AAA\",\r\n    \"Desp\": \"AAA's go to bed rule\",\r\n    \"ValidFrom\": \"2021-01-01\",\r\n    \"ValidTo\": \"2021-12-31\",\r\n    \"TimeStart\": 19.5,\r\n    \"TimeEnd\": 21.0,\r\n    \"DaysFrom\": 1,\r\n    \"DaysTo\": 1,\r\n    \"Point\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/AwardRules",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardRules"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Entry",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/AwardRules(5)",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardRules(5)"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Entity",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/AwardRules(1)",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardRules(1)"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Entity",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ID\": 6,\r\n    \"RuleType\": \"1\",\r\n    \"TargetUser\": \"AAA\",\r\n    \"Desp\": \"AAA's go to bed rule\",\r\n    \"ValidFrom\": \"2021-01-01T00:00:00+08:00\",\r\n    \"ValidTo\": \"2021-12-31T00:00:00+08:00\",\r\n    \"CountOfFact\": null,\r\n    \"DoneOfFact\": null,\r\n    \"TimeStart\": 20,\r\n    \"TimeEnd\": 21,\r\n    \"DaysFrom\": 5,\r\n    \"DaysTo\": 9999,\r\n    \"Point\": 20\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/AwardRules(6)",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardRules(6)"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DailyTrace",
+			"item": [
+				{
+					"name": "Get Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/DailyTraces",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"DailyTraces"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/DailyTraces(RecordDate=2021-06-25,TargetUser='AAA')",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"DailyTraces(RecordDate=2021-06-25,TargetUser='AAA')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TargetUser\": \"AAA\",\r\n    \"RecordDate\": \"2021-06-26\",\r\n    \"BodyExerciseCount\": 2\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/DailyTraces",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"DailyTraces"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Entity",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TargetUser\": \"AAA\",\r\n    \"RecordDate\": \"2021-06-25\",\r\n    \"BodyExerciseCount\": 3,\r\n    \"HouseKeepingCount\": 0,\r\n    \"PoliteBehavior\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/DailyTraces(RecordDate=2021-06-25,TargetUser='AAA')",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"DailyTraces(RecordDate=2021-06-25,TargetUser='AAA')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Entity",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/DailyTraces(RecordDate=2021-06-25,TargetUser='AAA')",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"DailyTraces(RecordDate=2021-06-25,TargetUser='AAA')"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AwardPoint",
+			"item": [
+				{
+					"name": "Get Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/AwardPoints",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardPoints"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Entity",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TargetUser\": \"AAA\",\r\n    \"RecordDate\": \"2021-06-26\",\r\n    \"Point\": 15,\r\n    \"Comment\": \"Award 1\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/AwardPoints",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardPoints"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Entity",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/AwardPoints(1)",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardPoints(1)"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Entity",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ID\": 1,\r\n    \"TargetUser\": \"AAA\",\r\n    \"RecordDate\": \"2021-06-26\",\r\n    \"Point\": 15,\r\n    \"Comment\": \"Award 1 updated\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/AwardPoints(1)",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardPoints(1)"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Entity",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/AwardPoints(1)",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardPoints(1)"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Metadata",
 			"request": {
 				"method": "GET",
