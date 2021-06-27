@@ -136,7 +136,7 @@ namespace knowledgebuilderapi.Controllers
             return Ok(points);
         }
 
-        private List<AwardPoint> CalculatePoints(DailyTrace dt)
+        public List<AwardPoint> CalculatePoints(DailyTrace dt)
         {
             List<AwardPoint> points = new List<AwardPoint>();
 
