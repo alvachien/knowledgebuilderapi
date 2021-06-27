@@ -14,8 +14,9 @@ namespace knowledgebuilderapi.Models
             modelBuilder.EntitySet<ExerciseItemAnswer>("ExerciseItemAnswers");
             modelBuilder.EntitySet<KnowledgeTag>("KnowledgeTags");
             modelBuilder.EntitySet<ExerciseTag>("ExerciseTags");
+            modelBuilder.EnumType<AwardRuleType>();
             modelBuilder.EntitySet<AwardRule>("AwardRules");
-            modelBuilder.EntitySet<DailyTrace>("DailyTraces");
+            modelBuilder.EntitySet<DailyTrace>("DailyTraces");            
             modelBuilder.EntitySet<AwardPoint>("AwardPoints");
             modelBuilder.EntitySet<Tag>("Tags");
             modelBuilder.EntitySet<TagCount>("TagCounts");
@@ -23,6 +24,17 @@ namespace knowledgebuilderapi.Models
             modelBuilder.EntitySet<OverviewInfo>("OverviewInfos");
             modelBuilder.EntitySet<ExerciseItemWithTagView>("ExerciseItemWithTagViews");
             modelBuilder.EntitySet<KnowledgeItemWithTagView>("KnowledgeItemWithTagViews");
+
+            // Action on Daily trace template documents
+            var awardPointEntity = modelBuilder.EntityType<AwardPoint>();
+            awardPointEntity.Property(prop => prop.RecordDate).AsDate();
+            var dailyTraceEntity = modelBuilder.EntityType<DailyTrace>();
+            dailyTraceEntity.Property(prop => prop.RecordDate).AsDate();
+            var simulatePointAction = dailyTraceEntity.Collection.Action("SimulatePoints");
+            simulatePointAction.Parameter<DailyTrace>("dt");
+            simulatePointAction.ReturnsCollectionFromEntitySet<AwardPoint>("AwardPoints");
+            //.Parameter<DailyTrace>("dt");
+
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
 
             return modelBuilder.GetEdmModel();

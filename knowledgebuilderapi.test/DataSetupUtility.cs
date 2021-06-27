@@ -86,12 +86,13 @@ namespace knowledgebuilderapi.test
 	            PRIMARY KEY ([TargetUser], [RecordDate]) )"
             );
 
-            database.ExecuteSqlRaw(@"CREATE TABLE AwardPoints (
+            database.ExecuteSqlRaw(@"CREATE TABLE AwardPoint (
                 ID INTEGER PRIMARY KEY AUTOINCREMENT,
 	            TargetUser	NVARCHAR(50)	NOT NULL,
 	            RecordDate	DATE			NOT NULL,
-	            MatchedRuleID	INT				NULL,
-	            Point			INT				NOT NULL,
+	            MatchedRuleID	INT			NULL,
+	            Point			INT			NOT NULL,
+                CountOfDay      INT         NULL,
 	            COMMENT		NVARCHAR(50)	NULL,
 	            PRIMARY KEY (ID) )"
             );

@@ -173,7 +173,7 @@ namespace knowledgebuilderapi.Models
         }
     }
 
-    [Table("AwardPoints")]
+    [Table("AwardPoint")]
     public sealed class AwardPoint
     {
         [Key]
@@ -188,6 +188,9 @@ namespace knowledgebuilderapi.Models
 
         [Column("MatchedRuleID", TypeName = "INT")]
         public Int32? MatchedRuleID { get; set; }
+
+        [Column("CountOfDay", TypeName = "INT")]
+        public Int32? CountOfDay { get; set; }
 
         [Column("Point", TypeName = "INT")]
         public Int32 Point { get; set; }

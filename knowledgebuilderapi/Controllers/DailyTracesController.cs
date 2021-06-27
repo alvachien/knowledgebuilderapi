@@ -55,46 +55,7 @@ namespace knowledgebuilderapi.Controllers
             }
 
             // Calculate the points
-            // Step 1. Get all related rules and previous result.
-            var allrules = this._context.AwardRules.Where(p => p.TargetUser == dt.TargetUser);
-            var prvdate = dt.RecordDate.Subtract(new TimeSpan(1, 0, 0, 0)).Date;
-            var prvresults = this._context.AwardPoints.Where(p => p.TargetUser == dt.TargetUser && p.RecordDate.Date == prvdate);
-            List<AwardRuleType> listTypes = new List<AwardRuleType>();
-            if (dt.GoToBedTime.HasValue) {
-                listTypes.Add(AwardRuleType.GoToBedTime);
-            }
-            else if(dt.SchoolWorkTime.HasValue)
-            {
-                listTypes.Add(AwardRuleType.SchoolWorkTime);
-            }
-            else if (dt.HandWriting.HasValue)
-            {
-                listTypes.Add(AwardRuleType.HandWritingHabit);
-            }
-            else if(dt.HomeWorkCount.HasValue)
-            {
-                listTypes.Add(AwardRuleType.HomeWorkCount);
-            }
-            else if(dt.HouseKeepingCount.HasValue) 
-            {
-                listTypes.Add(AwardRuleType.HouseKeepingCount);
-            }
-            else if(dt.PoliteBehavior.HasValue)
-            {
-                listTypes.Add(AwardRuleType.PoliteBehavior);
-            }
-            else if(dt.ErrorsCollection.HasValue)
-            {
-                listTypes.Add(AwardRuleType.ErrorCollectionHabit);
-            }
-            else if(dt.BodyExerciseCount.HasValue)
-            {
-                listTypes.Add(AwardRuleType.BodyExerciseCount);
-            }
-            else if(dt.CleanDesk.HasValue)
-            {
-                listTypes.Add(AwardRuleType.CleanDeakHabit);
-            }
+            List<AwardPoint> points = CalculatePoints(dt);
 
             // Update db
             _context.DailyTraces.Add(dt);
@@ -151,5 +112,197 @@ namespace knowledgebuilderapi.Controllers
 
             return StatusCode(204); // HttpStatusCode.NoContent
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SimulatePoints([FromBody] ODataActionParameters parameters)
+        {
+            if (!ModelState.IsValid)
+            {
+                foreach (var value in ModelState.Values)
+                {
+                    foreach (var err in value.Errors)
+                    {
+                        System.Diagnostics.Debug.WriteLine(err.Exception?.Message);
+                    }
+                }
+
+                return BadRequest();
+            }
+
+            DailyTrace dt = (DailyTrace)parameters["dt"];
+
+            List<AwardPoint> points = CalculatePoints(dt);
+
+            return Ok(points);
+        }
+
+        private List<AwardPoint> CalculatePoints(DailyTrace dt)
+        {
+            List<AwardPoint> points = new List<AwardPoint>();
+
+            // Calculate the points
+            // Step 1. Get all related rules and previous result.
+            var prvdate = dt.RecordDate.Subtract(new TimeSpan(1, 0, 0, 0)).Date;
+            var prvresults = this._context.AwardPoints.Where(p => p.TargetUser == dt.TargetUser && p.RecordDate.Date == prvdate).ToList<AwardPoint>();
+
+            List<AwardRuleType> listTypes = new List<AwardRuleType>();
+            if (dt.GoToBedTime.HasValue)
+            {
+                listTypes.Add(AwardRuleType.GoToBedTime);
+            }
+            else if (dt.SchoolWorkTime.HasValue)
+            {
+                listTypes.Add(AwardRuleType.SchoolWorkTime);
+            }
+            else if (dt.HandWriting.HasValue)
+            {
+                listTypes.Add(AwardRuleType.HandWritingHabit);
+            }
+            else if (dt.HomeWorkCount.HasValue)
+            {
+                listTypes.Add(AwardRuleType.HomeWorkCount);
+            }
+            else if (dt.HouseKeepingCount.HasValue)
+            {
+                listTypes.Add(AwardRuleType.HouseKeepingCount);
+            }
+            else if (dt.PoliteBehavior.HasValue)
+            {
+                listTypes.Add(AwardRuleType.PoliteBehavior);
+            }
+            else if (dt.ErrorsCollection.HasValue)
+            {
+                listTypes.Add(AwardRuleType.ErrorCollectionHabit);
+            }
+            else if (dt.BodyExerciseCount.HasValue)
+            {
+                listTypes.Add(AwardRuleType.BodyExerciseCount);
+            }
+            else if (dt.CleanDesk.HasValue)
+            {
+                listTypes.Add(AwardRuleType.CleanDeakHabit);
+            }
+
+            var allrules = (from rtype in listTypes
+                           join rule in _context.AwardRules 
+                           on new { RuleType = rtype, TargetUser = dt.TargetUser, IsValid = true } equals new { rule.RuleType, rule.TargetUser, IsValid = rule.ValidFrom.Date <= dt.RecordDate.Date && rule.ValidTo.Date >= dt.RecordDate.Date }
+                           select rule).ToList<AwardRule>();
+
+            // Step 2. Calculate the points per rule
+            if (dt.GoToBedTime.HasValue)
+            {
+                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.GoToBedTime);
+                if (rules.Count > 0 && prvresults.Count > 0)
+                {
+                    var matchedrules = rules.FindAll(p => p.TimeStart <= dt.GoToBedTime.Value && p.TimeEnd >= dt.GoToBedTime.Value);
+                    if (matchedrules.Count > 0)
+                    {
+                        // Shall be matched
+                        AwardPoint pnt = new AwardPoint();
+
+                        var countOfDays = 0;
+
+                        // Appear in yesterday?
+                        foreach (var rule in matchedrules)
+                        {
+                            var pntYesterday = prvresults.FirstOrDefault(p => p.MatchedRuleID != null && p.MatchedRuleID == rule.ID);
+                            if (pntYesterday != null)
+                            {
+                                if (pntYesterday.CountOfDay.HasValue)
+                                    countOfDays = pntYesterday.CountOfDay.Value;
+                                break;
+                            }
+                        }
+                        countOfDays++;
+
+                        foreach (var rule in matchedrules)
+                        {
+                            if (rule.DaysFrom <= countOfDays && rule.DaysTo >= countOfDays)
+                            {
+                                pnt.CountOfDay = countOfDays;
+                                pnt.MatchedRuleID = rule.ID;
+                                pnt.RecordDate = dt.RecordDate.Date;
+                                pnt.TargetUser = dt.TargetUser;
+                                pnt.Point = rule.Point;
+                                points.Add(pnt);
+                            }
+                        }
+                    }
+                }
+            }
+            else if (dt.SchoolWorkTime.HasValue)
+            {
+                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.SchoolWorkTime);
+                if (rules.Count > 0 && prvresults.Count > 0)
+                {
+                    var matchedrules = rules.FindAll(p => p.TimeStart <= dt.GoToBedTime.Value && p.TimeEnd >= dt.GoToBedTime.Value);
+                    if (matchedrules.Count > 0)
+                    {
+                        // Shall be matched
+                        AwardPoint pnt = new AwardPoint();
+
+                        var countOfDays = 0;
+
+                        // Appear in yesterday?
+                        foreach (var rule in matchedrules)
+                        {
+                            var pntYesterday = prvresults.FirstOrDefault(p => p.MatchedRuleID != null && p.MatchedRuleID == rule.ID);
+                            if (pntYesterday != null)
+                            {
+                                if (pntYesterday.CountOfDay.HasValue)
+                                    countOfDays = pntYesterday.CountOfDay.Value;
+                                break;
+                            }
+                        }
+                        countOfDays++;
+
+                        foreach (var rule in matchedrules)
+                        {
+                            if (rule.DaysFrom <= countOfDays && rule.DaysTo >= countOfDays)
+                            {
+                                pnt.CountOfDay = countOfDays;
+                                pnt.MatchedRuleID = rule.ID;
+                                pnt.RecordDate = dt.RecordDate.Date;
+                                pnt.TargetUser = dt.TargetUser;
+                                pnt.Point = rule.Point;
+                                points.Add(pnt);
+                            }
+                        }
+                    }
+                }
+            }
+            else if (dt.HandWriting.HasValue)
+            {
+                listTypes.Add(AwardRuleType.HandWritingHabit);
+            }
+            else if (dt.HomeWorkCount.HasValue)
+            {
+                listTypes.Add(AwardRuleType.HomeWorkCount);
+            }
+            else if (dt.HouseKeepingCount.HasValue)
+            {
+                listTypes.Add(AwardRuleType.HouseKeepingCount);
+            }
+            else if (dt.PoliteBehavior.HasValue)
+            {
+                listTypes.Add(AwardRuleType.PoliteBehavior);
+            }
+            else if (dt.ErrorsCollection.HasValue)
+            {
+                listTypes.Add(AwardRuleType.ErrorCollectionHabit);
+            }
+            else if (dt.BodyExerciseCount.HasValue)
+            {
+                listTypes.Add(AwardRuleType.BodyExerciseCount);
+            }
+            else if (dt.CleanDesk.HasValue)
+            {
+                listTypes.Add(AwardRuleType.CleanDeakHabit);
+            }
+
+
+            return points;
+        }
     }
 }
+

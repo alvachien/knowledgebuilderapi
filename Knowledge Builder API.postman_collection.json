@@ -765,6 +765,64 @@
 					"response": []
 				},
 				{
+					"name": "Simulate Points",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TargetUser\": \"AAA\",\r\n    \"RecordDate\": \"2021-06-26\",\r\n    \"BodyExerciseCount\": 2\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/DailyTraces/knowledgebuilderapi.Models.SimulatePoints",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"DailyTraces",
+								"knowledgebuilderapi.Models.SimulatePoints"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Simulate Points without namespace",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"TargetUser\": \"AAA\",\r\n    \"RecordDate\": \"2021-06-26\",\r\n    \"BodyExerciseCount\": 2\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/DailyTraces/SimulatePoints",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"DailyTraces",
+								"SimulatePoints"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update Entity",
 					"request": {
 						"method": "PUT",
