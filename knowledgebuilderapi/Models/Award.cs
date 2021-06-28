@@ -43,8 +43,11 @@ namespace knowledgebuilderapi.Models
         [Column("ValidTo", TypeName = "DATETIME")]
         public DateTime ValidTo { get; set; }
 
-        [Column("CountOfFact", TypeName = "INT")]
-        public Int32? CountOfFact { get; set; }
+        [Column("CountOfFactLow", TypeName = "INT")]
+        public Int32? CountOfFactLow { get; set; }
+
+        [Column("CountOfFactHigh", TypeName = "INT")]
+        public Int32? CountOfFactHigh { get; set; }
 
         [Column("DoneOfFact", TypeName = "BIT")]
         public Boolean? DoneOfFact { get; set; }
@@ -83,7 +86,11 @@ namespace knowledgebuilderapi.Models
                 case AwardRuleType.BodyExerciseCount:
                 case AwardRuleType.HouseKeepingCount:
                 case AwardRuleType.PoliteBehavior:
-                    if (!this.CountOfFact.HasValue)
+                    if (!this.CountOfFactLow.HasValue)
+                        return false;
+                    if (!this.CountOfFactHigh.HasValue)
+                        return false;
+                    if (this.CountOfFactLow.Value > this.CountOfFactHigh.Value)
                         return false;
                     break;
 
@@ -102,7 +109,8 @@ namespace knowledgebuilderapi.Models
 
         public void UpdateData(AwardRule update)
         {
-            this.CountOfFact = update.CountOfFact;
+            this.CountOfFactLow = update.CountOfFactLow;
+            this.CountOfFactHigh = update.CountOfFactHigh;
             this.DaysFrom = update.DaysFrom;
             this.DaysTo = update.DaysTo;
             this.Desp = update.Desp;

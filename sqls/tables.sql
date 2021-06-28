@@ -49,21 +49,22 @@ CREATE TABLE [dbo].[ExerciseTag] (
 );
 
 -- Award Rules
-CREATE TABLE AwardRule (
-    [ID]            INT            IDENTITY (1, 1) NOT NULL,
-	[RuleType]		SMALLINT 		NOT NULL,
-	[TargetUser]	NVARCHAR(50)	NOT NULL,
-	[DESP]			NVARCHAR(50)	NOT NULL,
-	[ValidFrom]		DATETIME        DEFAULT (getdate()) NULL,
-	[ValidTo]		DATETIME        DEFAULT (getdate()) NULL,
-	[CountOfFact]	INT				NULL,
-	[DoneOfFact]	BIT				NULL,
-	[TimeStart]		DECIMAL			NULL,
-	[TimeEnd] 		DECIMAL 		NULL,
-	[DaysFrom]		INT				NULL,
-	[DaysTo]		INT				NULL,
-	[Point]			INT				NOT NULL,
-	PRIMARY KEY CLUSTERED ([ID] ASC)
+CREATE TABLE [dbo].[AwardRule] (
+    [ID]          INT           IDENTITY (1, 1) NOT NULL,
+    [RuleType]    SMALLINT      NOT NULL,
+    [TargetUser]  NVARCHAR (50) NOT NULL,
+    [DESP]        NVARCHAR (50) NOT NULL,
+    [ValidFrom]   DATETIME      DEFAULT (getdate()) NULL,
+    [ValidTo]     DATETIME      DEFAULT (getdate()) NULL,
+    [CountOfFactLow] INT           NULL,
+	[CountOfFactHigh] INT           NULL,
+    [DoneOfFact]  BIT           NULL,
+    [TimeStart]   DECIMAL (18)  NULL,
+    [TimeEnd]     DECIMAL (18)  NULL,
+    [DaysFrom]    INT           NULL,
+    [DaysTo]      INT           NULL,
+    [Point]       INT           NOT NULL,
+    PRIMARY KEY CLUSTERED ([ID] ASC)
 );
 
 CREATE TABLE DailyTrace (

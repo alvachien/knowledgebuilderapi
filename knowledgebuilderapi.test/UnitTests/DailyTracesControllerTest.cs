@@ -832,5 +832,546 @@ namespace knowledgebuilderapi.test.UnitTests
 
             await context.DisposeAsync();
         }
+        
+        [Fact]
+        public async Task CalculatePoints_HandwritingRule()
+        {
+            var context = this.fixture.GetCurrentDataContext();
+            DailyTracesController control = new(context);
+            // RuleMatrix
+            // Days      [Yes]   [No] 
+            // [1,1]        2     -2
+            // [2,2]        4     -5
+            // [3,3]        6     -10
+            // [4,4]        8     -20
+            // [5,INFIN]    10    -25
+            //
+            // [Yes]
+            #region [Yes]
+            AwardRule r1 = new()
+            {
+                RuleType = AwardRuleType.HandWritingHabit,
+                TargetUser = "AAA",
+                DoneOfFact = true,
+                DaysFrom = 1,
+                DaysTo = 1,
+                Point = 2,
+                ValidFrom = new DateTime(2021, 1, 1),
+                ValidTo = new DateTime(2021, 12, 31),
+                Desp = "Rule_1_1"
+            };
+            context.Add(r1);
+            r1 = new AwardRule
+            {
+                RuleType = AwardRuleType.HandWritingHabit,
+                TargetUser = "AAA",
+                DoneOfFact = true,
+                DaysFrom = 2,
+                DaysTo = 2,
+                Point = 4,
+                ValidFrom = new DateTime(2021, 1, 1),
+                ValidTo = new DateTime(2021, 12, 31),
+                Desp = "Rule_2_1"
+            };
+            context.Add(r1);
+            r1 = new AwardRule
+            {
+                RuleType = AwardRuleType.HandWritingHabit,
+                TargetUser = "AAA",
+                DoneOfFact = true,
+                DaysFrom = 3,
+                DaysTo = 3,
+                Point = 6,
+                ValidFrom = new DateTime(2021, 1, 1),
+                ValidTo = new DateTime(2021, 12, 31),
+                Desp = "Rule_3_1"
+            };
+            context.Add(r1);
+            r1 = new AwardRule
+            {
+                RuleType = AwardRuleType.HandWritingHabit,
+                TargetUser = "AAA",
+                DoneOfFact = true,
+                DaysFrom = 4,
+                DaysTo = 4,
+                Point = 8,
+                ValidFrom = new DateTime(2021, 1, 1),
+                ValidTo = new DateTime(2021, 12, 31),
+                Desp = "Rule_4_1"
+            };
+            context.Add(r1);
+            r1 = new AwardRule
+            {
+                RuleType = AwardRuleType.HandWritingHabit,
+                TargetUser = "AAA",
+                DoneOfFact = true,
+                DaysFrom = 5,
+                DaysTo = 9999,
+                Point = 10,
+                ValidFrom = new DateTime(2021, 1, 1),
+                ValidTo = new DateTime(2021, 12, 31),
+                Desp = "Rule_5_1"
+            };
+            context.Add(r1);
+            #endregion
+
+            #region [No]
+            r1 = new()
+            {
+                RuleType = AwardRuleType.HandWritingHabit,
+                TargetUser = "AAA",
+                DoneOfFact = false,
+                DaysFrom = 1,
+                DaysTo = 1,
+                Point = -2,
+                ValidFrom = new DateTime(2021, 1, 1),
+                ValidTo = new DateTime(2021, 12, 31),
+                Desp = "Rule_1_1"
+            };
+            context.Add(r1);
+            r1 = new AwardRule
+            {
+                RuleType = AwardRuleType.HandWritingHabit,
+                TargetUser = "AAA",
+                DoneOfFact = false,
+                DaysFrom = 2,
+                DaysTo = 2,
+                Point = -5,
+                ValidFrom = new DateTime(2021, 1, 1),
+                ValidTo = new DateTime(2021, 12, 31),
+                Desp = "Rule_2_1"
+            };
+            context.Add(r1);
+            r1 = new AwardRule
+            {
+                RuleType = AwardRuleType.HandWritingHabit,
+                TargetUser = "AAA",
+                DoneOfFact = false,
+                DaysFrom = 3,
+                DaysTo = 3,
+                Point = -10,
+                ValidFrom = new DateTime(2021, 1, 1),
+                ValidTo = new DateTime(2021, 12, 31),
+                Desp = "Rule_3_1"
+            };
+            context.Add(r1);
+            r1 = new AwardRule
+            {
+                RuleType = AwardRuleType.HandWritingHabit,
+                TargetUser = "AAA",
+                DoneOfFact = false,
+                DaysFrom = 4,
+                DaysTo = 4,
+                Point = -15,
+                ValidFrom = new DateTime(2021, 1, 1),
+                ValidTo = new DateTime(2021, 12, 31),
+                Desp = "Rule_4_1"
+            };
+            context.Add(r1);
+            r1 = new AwardRule
+            {
+                RuleType = AwardRuleType.HandWritingHabit,
+                TargetUser = "AAA",
+                DoneOfFact = false,
+                DaysFrom = 5,
+                DaysTo = 9999,
+                Point = -20,
+                ValidFrom = new DateTime(2021, 1, 1),
+                ValidTo = new DateTime(2021, 12, 31),
+                Desp = "Rule_5_1"
+            };
+            context.Add(r1);
+            #endregion
+
+            await context.SaveChangesAsync();
+
+            // Add first daily trace on 2021-05-01
+            DailyTrace dt = new()
+            {
+                RecordDate = new DateTime(2021, 5, 1),
+                TargetUser = "AAA",
+                HandWriting = true
+            };
+            var points = control.CalculatePoints(dt);
+            Assert.Single(points);
+            Assert.Equal(2, points[0].Point);
+            context.Add(points[0]);
+            await context.SaveChangesAsync();
+
+            // Add second daily trace on 2021-05-02
+            dt = new()
+            {
+                RecordDate = new DateTime(2021, 5, 2),
+                TargetUser = "AAA",
+                HandWriting = true
+            };
+            points = control.CalculatePoints(dt);
+            Assert.Single(points);
+            Assert.Equal(4, points[0].Point);
+            context.Add(points[0]);
+            await context.SaveChangesAsync();
+
+            // Add third daily trace on 2021-05-03
+            dt = new()
+            {
+                RecordDate = new DateTime(2021, 5, 3),
+                TargetUser = "AAA",
+                HandWriting = false
+            };
+            points = control.CalculatePoints(dt);
+            Assert.Single(points);
+            Assert.Equal(-2, points[0].Point);
+            context.Add(points[0]);
+            await context.SaveChangesAsync();
+
+            // Add fourth daily trace on 2021-05-05
+            dt = new()
+            {
+                RecordDate = new DateTime(2021, 5, 5),
+                TargetUser = "AAA",
+                HandWriting = false
+            };
+            points = control.CalculatePoints(dt);
+            Assert.Single(points);
+            Assert.Equal(-2, points[0].Point);
+            context.Add(points[0]);
+            await context.SaveChangesAsync();
+
+            // Clean award data
+            DataSetupUtility.DeleteAwardData(context);
+
+            await context.DisposeAsync();
+        }
+
+        [Fact]
+        public async Task CalculatePoints_BodyExerciseRule()
+        {
+            var context = this.fixture.GetCurrentDataContext();
+            DailyTracesController control = new(context);
+            // RuleMatrix
+            // Days        [0]    [1]    [2]  [3-9999]
+            // [1,1]        -2     1     2      3   
+            // [2,2]        -5     2     4      6
+            // [3,3]        -10    3     6      9
+            // [4,4]        -15    4     8      12
+            // [5,INFIN]    -20    5     10     15
+            //
+            int[,] dataMatrix = new int[,] { 
+                { -2, 1, 2, 3 },
+                { -5, 2, 4, 6 },
+                { -10, 3, 6, 9 },
+                { -15, 4, 8, 12 },
+                { -20, 5, 10, 15 },
+            };
+
+            for (int i = 0; i < dataMatrix.GetLength(0); i++)
+            {
+                int daysfrom = i + 1, daysto = i + 1;
+                if (daysto == 5) daysto = 9999;
+
+                for (int j = 0; j < dataMatrix.GetLength(1); j++)
+                {
+                    int countOfFactLow = j, countofFactHigh = j;
+                    if (countofFactHigh == 3) countofFactHigh = 9999;                             
+                    AwardRule r1 = new()
+                    {
+                        RuleType = AwardRuleType.BodyExerciseCount,
+                        TargetUser = "AAA",
+                        CountOfFactLow = countOfFactLow,
+                        CountOfFactHigh = countofFactHigh,
+                        DaysFrom = daysfrom,
+                        DaysTo = daysto,
+                        Point = dataMatrix[i, j],
+                        ValidFrom = new DateTime(2021, 1, 1),
+                        ValidTo = new DateTime(2021, 12, 31),
+                        Desp = String.Format("Rule_{0}_{1}", i, j)
+                    };
+                    context.Add(r1);
+                }
+            }
+
+            await context.SaveChangesAsync();
+
+            // Add first daily trace on 2021-05-01
+            DailyTrace dt = new()
+            {
+                RecordDate = new DateTime(2021, 5, 1),
+                TargetUser = "AAA",
+                BodyExerciseCount = 2
+            };
+            var points = control.CalculatePoints(dt);
+            Assert.Single(points);
+            Assert.Equal(2, points[0].Point);
+            context.Add(points[0]);
+            await context.SaveChangesAsync();
+
+            // Add second daily trace on 2021-05-02
+            dt = new()
+            {
+                RecordDate = new DateTime(2021, 5, 2),
+                TargetUser = "AAA",
+                BodyExerciseCount = 1
+            };
+            points = control.CalculatePoints(dt);
+            Assert.Single(points);
+            Assert.Equal(1, points[0].Point);
+            context.Add(points[0]);
+            await context.SaveChangesAsync();
+
+            // Add third daily trace on 2021-05-03
+            dt = new()
+            {
+                RecordDate = new DateTime(2021, 5, 3),
+                TargetUser = "AAA",
+                BodyExerciseCount = 1
+            };
+            points = control.CalculatePoints(dt);
+            Assert.Single(points);
+            Assert.Equal(2, points[0].Point);
+            context.Add(points[0]);
+            await context.SaveChangesAsync();
+
+            // Add fourth daily trace on 2021-05-05
+            dt = new()
+            {
+                RecordDate = new DateTime(2021, 5, 5),
+                TargetUser = "AAA",
+                BodyExerciseCount = 0
+            };
+            points = control.CalculatePoints(dt);
+            Assert.Single(points);
+            Assert.Equal(-2, points[0].Point);
+            context.Add(points[0]);
+            await context.SaveChangesAsync();
+
+            // Clean award data
+            DataSetupUtility.DeleteAwardData(context);
+
+            await context.DisposeAsync();
+        }
+        
+        [Fact]
+        public async Task CalculatePoints_HomeWorkRule()
+        {
+            var context = this.fixture.GetCurrentDataContext();
+            DailyTracesController control = new(context);
+            // RuleMatrix
+            // Days        [1]    [2]  [3-9999]
+            // [1,1]        1     2      3   
+            // [2,2]        2     4      6
+            // [3,3]        3     6      9
+            // [4,4]        4     8      12
+            // [5,5]        5     10     15
+            // [6,INFIN]    6     12     18
+            //
+            int[,] dataMatrix = new int[,] {
+                { 1, 2, 3 },
+                { 2, 4, 6 },
+                { 3, 6, 9 },
+                { 4, 8, 12 },
+                { 5, 10, 15 },
+                { 6, 12, 18 },
+            };
+
+            for (int i = 0; i < dataMatrix.GetLength(0); i++)
+            {
+                int daysfrom = i + 1, daysto = i + 1;
+                if (daysto == 6) daysto = 9999;
+
+                for (int j = 0; j < dataMatrix.GetLength(1); j++)
+                {
+                    int countOfFactLow = j + 1, countofFactHigh = j + 1;
+                    if (countofFactHigh == 3) countofFactHigh = 9999;
+                    AwardRule r1 = new()
+                    {
+                        RuleType = AwardRuleType.HomeWorkCount,
+                        TargetUser = "AAA",
+                        CountOfFactLow = countOfFactLow,
+                        CountOfFactHigh = countofFactHigh,
+                        DaysFrom = daysfrom,
+                        DaysTo = daysto,
+                        Point = dataMatrix[i, j],
+                        ValidFrom = new DateTime(2021, 1, 1),
+                        ValidTo = new DateTime(2021, 12, 31),
+                        Desp = String.Format("Rule_{0}_{1}", i, j)
+                    };
+                    context.Add(r1);
+                }
+            }
+
+            await context.SaveChangesAsync();
+
+            // Add first daily trace on 2021-05-01
+            DailyTrace dt = new()
+            {
+                RecordDate = new DateTime(2021, 5, 1),
+                TargetUser = "AAA",
+                HomeWorkCount = 2
+            };
+            var points = control.CalculatePoints(dt);
+            Assert.Single(points);
+            Assert.Equal(2, points[0].Point);
+            context.Add(points[0]);
+            await context.SaveChangesAsync();
+
+            // Add second daily trace on 2021-05-02
+            dt = new()
+            {
+                RecordDate = new DateTime(2021, 5, 2),
+                TargetUser = "AAA",
+                HomeWorkCount = 2
+            };
+            points = control.CalculatePoints(dt);
+            Assert.Single(points);
+            Assert.Equal(4, points[0].Point);
+            context.Add(points[0]);
+            await context.SaveChangesAsync();
+
+            // Add third daily trace on 2021-05-03
+            dt = new()
+            {
+                RecordDate = new DateTime(2021, 5, 3),
+                TargetUser = "AAA",
+                HomeWorkCount = 1
+            };
+            points = control.CalculatePoints(dt);
+            Assert.Single(points);
+            Assert.Equal(1, points[0].Point);
+            context.Add(points[0]);
+            await context.SaveChangesAsync();
+
+            // Add fourth daily trace on 2021-05-05
+            dt = new()
+            {
+                RecordDate = new DateTime(2021, 5, 5),
+                TargetUser = "AAA",
+                HomeWorkCount = 3
+            };
+            points = control.CalculatePoints(dt);
+            Assert.Single(points);
+            Assert.Equal(3, points[0].Point);
+            context.Add(points[0]);
+            await context.SaveChangesAsync();
+
+            // Clean award data
+            DataSetupUtility.DeleteAwardData(context);
+
+            await context.DisposeAsync();
+        }
+
+        [Fact]
+        public async Task CalculatePoints_MultipleRules()
+        {
+            var context = this.fixture.GetCurrentDataContext();
+            DailyTracesController control = new(context);
+            // RuleMatrix for homework
+            // Days        [1]    [2]  [3-9999]
+            // [1,1]        1     2      3   
+            // [2,2]        2     4      6
+            // [3,3]        3     6      9
+            // [4,4]        4     8      12
+            // [5,5]        5     10     15
+            // [6,INFIN]    6     12     18
+            //
+            int[,] dataMatrix = new int[,] {
+                { 1, 2, 3 },
+                { 2, 4, 6 },
+                { 3, 6, 9 },
+                { 4, 8, 12 },
+                { 5, 10, 15 },
+                { 6, 12, 18 },
+            };
+
+            for (int i = 0; i < dataMatrix.GetLength(0); i++)
+            {
+                int daysfrom = i + 1, daysto = i + 1;
+                if (daysto == 6) daysto = 9999;
+
+                for (int j = 0; j < dataMatrix.GetLength(1); j++)
+                {
+                    int countOfFactLow = j + 1, countofFactHigh = j + 1;
+                    if (countofFactHigh == 3) countofFactHigh = 9999;
+                    AwardRule r1 = new()
+                    {
+                        RuleType = AwardRuleType.HomeWorkCount,
+                        TargetUser = "AAA",
+                        CountOfFactLow = countOfFactLow,
+                        CountOfFactHigh = countofFactHigh,
+                        DaysFrom = daysfrom,
+                        DaysTo = daysto,
+                        Point = dataMatrix[i, j],
+                        ValidFrom = new DateTime(2021, 1, 1),
+                        ValidTo = new DateTime(2021, 12, 31),
+                        Desp = String.Format("Rule_{0}_{1}", i, j)
+                    };
+                    context.Add(r1);
+                }
+            }
+
+            // RuleMatrix for body exercise
+            // Days        [0]    [1]    [2]  [3-9999]
+            // [1,1]        -2     1     2      3   
+            // [2,2]        -5     2     4      6
+            // [3,3]        -10    3     6      9
+            // [4,4]        -15    4     8      12
+            // [5,INFIN]    -20    5     10     15
+            //
+            int[,] dataMatrix2 = new int[,] {
+                { -2, 1, 2, 3 },
+                { -5, 2, 4, 6 },
+                { -10, 3, 6, 9 },
+                { -15, 4, 8, 12 },
+                { -20, 5, 10, 15 },
+            };
+
+            for (int i = 0; i < dataMatrix2.GetLength(0); i++)
+            {
+                int daysfrom = i + 1, daysto = i + 1;
+                if (daysto == 5) daysto = 9999;
+
+                for (int j = 0; j < dataMatrix2.GetLength(1); j++)
+                {
+                    int countOfFactLow = j, countofFactHigh = j;
+                    if (countofFactHigh == 3) countofFactHigh = 9999;
+                    AwardRule r1 = new()
+                    {
+                        RuleType = AwardRuleType.BodyExerciseCount,
+                        TargetUser = "AAA",
+                        CountOfFactLow = countOfFactLow,
+                        CountOfFactHigh = countofFactHigh,
+                        DaysFrom = daysfrom,
+                        DaysTo = daysto,
+                        Point = dataMatrix2[i, j],
+                        ValidFrom = new DateTime(2021, 1, 1),
+                        ValidTo = new DateTime(2021, 12, 31),
+                        Desp = String.Format("Rule_{0}_{1}", i, j)
+                    };
+                    context.Add(r1);
+                }
+            }
+
+            await context.SaveChangesAsync();
+
+            // Add first daily trace on 2021-05-01
+            DailyTrace dt = new()
+            {
+                RecordDate = new DateTime(2021, 5, 1),
+                TargetUser = "AAA",
+                HomeWorkCount = 2,
+                BodyExerciseCount = 0
+            };
+            var points = control.CalculatePoints(dt);
+            Assert.Equal(2, points.Count);
+            
+            context.AddRange(points);
+            await context.SaveChangesAsync();
+
+
+            // Clean award data
+            DataSetupUtility.DeleteAwardData(context);
+
+            await context.DisposeAsync();
+        }
+
     }
 }

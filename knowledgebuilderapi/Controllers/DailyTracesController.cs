@@ -59,6 +59,9 @@ namespace knowledgebuilderapi.Controllers
 
             // Update db
             _context.DailyTraces.Add(dt);
+            if (points.Count > 0)
+                _context.AwardPoints.AddRange(points);
+
             await _context.SaveChangesAsync();
 
             return Created(dt);
@@ -67,35 +70,36 @@ namespace knowledgebuilderapi.Controllers
         // PUT: /DailyTraces/5
         public async Task<IActionResult> Put([FromODataUri] String keyTargetUser, [FromODataUri] DateTime keyRecordDate, [FromBody] DailyTrace update)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            return BadRequest();
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
 
-            if (update.TargetUser != keyTargetUser || update.RecordDate.Date != keyRecordDate.Date)
-            {
-                return BadRequest("Key is not matched");
-            }
+            //if (update.TargetUser != keyTargetUser || update.RecordDate.Date != keyRecordDate.Date)
+            //{
+            //    return BadRequest("Key is not matched");
+            //}
 
-            var existdbentry = await _context.DailyTraces
-                    .SingleOrDefaultAsync(x => x.RecordDate.Date == keyRecordDate.Date && x.TargetUser == keyTargetUser);
-            if (existdbentry == null)
-            {
-                return NotFound();
-            }
+            //var existdbentry = await _context.DailyTraces
+            //        .SingleOrDefaultAsync(x => x.RecordDate.Date == keyRecordDate.Date && x.TargetUser == keyTargetUser);
+            //if (existdbentry == null)
+            //{
+            //    return NotFound();
+            //}
 
-            existdbentry.UpdateData(update);
+            //existdbentry.UpdateData(update);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
+            //try
+            //{
+            //    await _context.SaveChangesAsync();
+            //}
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    throw;
+            //}
 
-            return Updated(update);
+            //return Updated(update);
         }
 
         //[HttpDelete("DailyTraces(TargetUser={tagetUsr},RecordDate={dtRecord})")]
@@ -108,6 +112,9 @@ namespace knowledgebuilderapi.Controllers
             }
 
             _context.DailyTraces.Remove(dt);
+            var points = _context.AwardPoints.Where(p => p.RecordDate.Date == keyRecordDate.Date && p.TargetUser == keyTargetUser && p.MatchedRuleID.HasValue);
+            if (points.Count() > 0)
+                _context.AwardPoints.RemoveRange(points);
             await _context.SaveChangesAsync();
 
             return StatusCode(204); // HttpStatusCode.NoContent
@@ -150,35 +157,35 @@ namespace knowledgebuilderapi.Controllers
             {
                 listTypes.Add(AwardRuleType.GoToBedTime);
             }
-            else if (dt.SchoolWorkTime.HasValue)
+            if (dt.SchoolWorkTime.HasValue)
             {
                 listTypes.Add(AwardRuleType.SchoolWorkTime);
             }
-            else if (dt.HandWriting.HasValue)
+            if (dt.HandWriting.HasValue)
             {
                 listTypes.Add(AwardRuleType.HandWritingHabit);
             }
-            else if (dt.HomeWorkCount.HasValue)
+            if (dt.HomeWorkCount.HasValue)
             {
                 listTypes.Add(AwardRuleType.HomeWorkCount);
             }
-            else if (dt.HouseKeepingCount.HasValue)
+            if (dt.HouseKeepingCount.HasValue)
             {
                 listTypes.Add(AwardRuleType.HouseKeepingCount);
             }
-            else if (dt.PoliteBehavior.HasValue)
+            if (dt.PoliteBehavior.HasValue)
             {
                 listTypes.Add(AwardRuleType.PoliteBehavior);
             }
-            else if (dt.ErrorsCollection.HasValue)
+            if (dt.ErrorsCollection.HasValue)
             {
                 listTypes.Add(AwardRuleType.ErrorCollectionHabit);
             }
-            else if (dt.BodyExerciseCount.HasValue)
+            if (dt.BodyExerciseCount.HasValue)
             {
                 listTypes.Add(AwardRuleType.BodyExerciseCount);
             }
-            else if (dt.CleanDesk.HasValue)
+            if (dt.CleanDesk.HasValue)
             {
                 listTypes.Add(AwardRuleType.CleanDeakHabit);
             }
@@ -279,15 +286,179 @@ namespace knowledgebuilderapi.Controllers
             }
             if (dt.HandWriting.HasValue)
             {
+                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.HandWritingHabit);
+                if (rules.Count > 0)
+                {
+                    var matchedrules = rules.FindAll(p => p.DoneOfFact.Value == dt.HandWriting.Value);
+                    if (matchedrules.Count > 0)
+                    {
+                        // Shall be matched
+                        AwardPoint pnt = new();
+
+                        var countOfDays = 0;
+
+                        // Appear in yesterday?
+                        if (prvresults.Count > 0)
+                        {
+                            foreach (var rule in matchedrules)
+                            {
+                                var pntYesterday = prvresults.FirstOrDefault(p => p.MatchedRuleID != null && p.MatchedRuleID == rule.ID);
+                                if (pntYesterday != null)
+                                {
+                                    if (pntYesterday.CountOfDay.HasValue)
+                                        countOfDays = pntYesterday.CountOfDay.Value;
+                                    break;
+                                }
+                            }
+                        }
+                        countOfDays++;
+
+                        foreach (var rule in matchedrules)
+                        {
+                            if (rule.DaysFrom <= countOfDays && rule.DaysTo >= countOfDays)
+                            {
+                                pnt.CountOfDay = countOfDays;
+                                pnt.MatchedRuleID = rule.ID;
+                                pnt.RecordDate = dt.RecordDate.Date;
+                                pnt.TargetUser = dt.TargetUser;
+                                pnt.Point = rule.Point;
+                                points.Add(pnt);
+                            }
+                        }
+                    }
+                }
             }
             if (dt.HomeWorkCount.HasValue)
             {
+                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.HomeWorkCount);
+                if (rules.Count > 0)
+                {
+                    var matchedrules = rules.FindAll(p => p.CountOfFactLow.Value <= dt.HomeWorkCount.Value && p.CountOfFactHigh.Value >= dt.HomeWorkCount.Value);
+                    if (matchedrules.Count > 0)
+                    {
+                        // Shall be matched
+                        AwardPoint pnt = new();
+
+                        var countOfDays = 0;
+
+                        // Appear in yesterday?
+                        if (prvresults.Count > 0)
+                        {
+                            foreach (var rule in matchedrules)
+                            {
+                                var pntYesterday = prvresults.FirstOrDefault(p => p.MatchedRuleID != null && p.MatchedRuleID == rule.ID);
+                                if (pntYesterday != null)
+                                {
+                                    if (pntYesterday.CountOfDay.HasValue)
+                                        countOfDays = pntYesterday.CountOfDay.Value;
+                                    break;
+                                }
+                            }
+                        }
+                        countOfDays++;
+
+                        foreach (var rule in matchedrules)
+                        {
+                            if (rule.DaysFrom <= countOfDays && rule.DaysTo >= countOfDays)
+                            {
+                                pnt.CountOfDay = countOfDays;
+                                pnt.MatchedRuleID = rule.ID;
+                                pnt.RecordDate = dt.RecordDate.Date;
+                                pnt.TargetUser = dt.TargetUser;
+                                pnt.Point = rule.Point;
+                                points.Add(pnt);
+                            }
+                        }
+                    }
+                }
             }
             if (dt.HouseKeepingCount.HasValue)
             {
+                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.HouseKeepingCount);
+                if (rules.Count > 0)
+                {
+                    var matchedrules = rules.FindAll(p => p.CountOfFactLow.Value <= dt.HouseKeepingCount.Value && p.CountOfFactHigh.Value >= dt.HouseKeepingCount.Value);
+                    if (matchedrules.Count > 0)
+                    {
+                        // Shall be matched
+                        AwardPoint pnt = new();
+
+                        var countOfDays = 0;
+
+                        // Appear in yesterday?
+                        if (prvresults.Count > 0)
+                        {
+                            foreach (var rule in matchedrules)
+                            {
+                                var pntYesterday = prvresults.FirstOrDefault(p => p.MatchedRuleID != null && p.MatchedRuleID == rule.ID);
+                                if (pntYesterday != null)
+                                {
+                                    if (pntYesterday.CountOfDay.HasValue)
+                                        countOfDays = pntYesterday.CountOfDay.Value;
+                                    break;
+                                }
+                            }
+                        }
+                        countOfDays++;
+
+                        foreach (var rule in matchedrules)
+                        {
+                            if (rule.DaysFrom <= countOfDays && rule.DaysTo >= countOfDays)
+                            {
+                                pnt.CountOfDay = countOfDays;
+                                pnt.MatchedRuleID = rule.ID;
+                                pnt.RecordDate = dt.RecordDate.Date;
+                                pnt.TargetUser = dt.TargetUser;
+                                pnt.Point = rule.Point;
+                                points.Add(pnt);
+                            }
+                        }
+                    }
+                }
             }
             if (dt.PoliteBehavior.HasValue)
             {
+                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.PoliteBehavior);
+                if (rules.Count > 0)
+                {
+                    var matchedrules = rules.FindAll(p => p.CountOfFactLow.Value <= dt.PoliteBehavior.Value && p.CountOfFactHigh.Value >= dt.PoliteBehavior.Value);
+                    if (matchedrules.Count > 0)
+                    {
+                        // Shall be matched
+                        AwardPoint pnt = new();
+
+                        var countOfDays = 0;
+
+                        // Appear in yesterday?
+                        if (prvresults.Count > 0)
+                        {
+                            foreach (var rule in matchedrules)
+                            {
+                                var pntYesterday = prvresults.FirstOrDefault(p => p.MatchedRuleID != null && p.MatchedRuleID == rule.ID);
+                                if (pntYesterday != null)
+                                {
+                                    if (pntYesterday.CountOfDay.HasValue)
+                                        countOfDays = pntYesterday.CountOfDay.Value;
+                                    break;
+                                }
+                            }
+                        }
+                        countOfDays++;
+
+                        foreach (var rule in matchedrules)
+                        {
+                            if (rule.DaysFrom <= countOfDays && rule.DaysTo >= countOfDays)
+                            {
+                                pnt.CountOfDay = countOfDays;
+                                pnt.MatchedRuleID = rule.ID;
+                                pnt.RecordDate = dt.RecordDate.Date;
+                                pnt.TargetUser = dt.TargetUser;
+                                pnt.Point = rule.Point;
+                                points.Add(pnt);
+                            }
+                        }
+                    }
+                }
             }
             if (dt.ErrorsCollection.HasValue)
             {
@@ -335,6 +506,47 @@ namespace knowledgebuilderapi.Controllers
             }
             if (dt.BodyExerciseCount.HasValue)
             {
+                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.BodyExerciseCount);
+                if (rules.Count > 0)
+                {
+                    var matchedrules = rules.FindAll(p => p.CountOfFactLow.Value <= dt.BodyExerciseCount.Value && p.CountOfFactHigh.Value >= dt.BodyExerciseCount.Value);
+                    if (matchedrules.Count > 0)
+                    {
+                        // Shall be matched
+                        AwardPoint pnt = new();
+
+                        var countOfDays = 0;
+
+                        // Appear in yesterday?
+                        if (prvresults.Count > 0)
+                        {
+                            foreach (var rule in matchedrules)
+                            {
+                                var pntYesterday = prvresults.FirstOrDefault(p => p.MatchedRuleID != null && p.MatchedRuleID == rule.ID);
+                                if (pntYesterday != null)
+                                {
+                                    if (pntYesterday.CountOfDay.HasValue)
+                                        countOfDays = pntYesterday.CountOfDay.Value;
+                                    break;
+                                }
+                            }
+                        }
+                        countOfDays++;
+
+                        foreach (var rule in matchedrules)
+                        {
+                            if (rule.DaysFrom <= countOfDays && rule.DaysTo >= countOfDays)
+                            {
+                                pnt.CountOfDay = countOfDays;
+                                pnt.MatchedRuleID = rule.ID;
+                                pnt.RecordDate = dt.RecordDate.Date;
+                                pnt.TargetUser = dt.TargetUser;
+                                pnt.Point = rule.Point;
+                                points.Add(pnt);
+                            }
+                        }
+                    }
+                }
             }
             if (dt.CleanDesk.HasValue)
             {
