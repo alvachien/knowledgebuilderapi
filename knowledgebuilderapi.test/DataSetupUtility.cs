@@ -66,8 +66,7 @@ namespace knowledgebuilderapi.test
 	            TimeEnd		DECIMAL 		NULL,
 	            DaysFrom	INT				NULL,
 	            DaysTo		INT				NULL,
-	            Point		INT				NOT NULL,
-	            PRIMARY KEY ([ID] ) )"
+	            Point		INT				NOT NULL )"
             );
 
             database.ExecuteSqlRaw(@"CREATE TABLE DailyTrace (
@@ -83,7 +82,7 @@ namespace knowledgebuilderapi.test
 	            HouseKeepingCount	SMALLINT	NULL,
 	            PoliteBehavior	SMALLINT	NULL,
 	            COMMENT			NVARCHAR(50)	NULL,
-	            PRIMARY KEY ([TargetUser], [RecordDate]) )"
+	            PRIMARY KEY (TargetUser, RecordDate) )"
             );
 
             database.ExecuteSqlRaw(@"CREATE TABLE AwardPoint (
@@ -93,8 +92,7 @@ namespace knowledgebuilderapi.test
 	            MatchedRuleID	INT			NULL,
 	            Point			INT			NOT NULL,
                 CountOfDay      INT         NULL,
-	            COMMENT		NVARCHAR(50)	NULL,
-	            PRIMARY KEY (ID) )"
+	            COMMENT		NVARCHAR(50)	NULL )"
             );
         }
 
@@ -129,6 +127,13 @@ namespace knowledgebuilderapi.test
         internal static void DeleteKnowledgeItem(kbdataContext context, int kid)
         {
             context.Database.ExecuteSqlRaw("DELETE FROM KnowledgeItem WHERE ID = " + kid.ToString());
+        }
+
+        internal static void DeleteAwardData(kbdataContext context)
+        {
+            context.Database.ExecuteSqlRaw("DELETE FROM AwardRule WHERE ID > 0 ");
+            context.Database.ExecuteSqlRaw("DELETE FROM AwardPoint WHERE ID > 0 ");
+            context.Database.ExecuteSqlRaw("DELETE FROM DailyTrace WHERE TargetUser IS NOT NULL");
         }
     }
 }
