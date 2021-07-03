@@ -33,6 +33,7 @@ namespace knowledgebuilderapi
         public DbSet<AwardRule> AwardRules { get; set; }
         public DbSet<DailyTrace> DailyTraces { get; set; }
         public DbSet<AwardPoint> AwardPoints { get; set; }
+        public DbSet<AwardPointReport> AwardPointReports { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -204,6 +205,12 @@ namespace knowledgebuilderapi
                     entity.Property(e => e.ID)
                         .ValueGeneratedOnAdd();
                 }
+            });
+
+            modelBuilder.Entity<AwardPointReport>(entity =>
+            {
+                entity.ToView("AwardPointReport");
+                entity.HasNoKey();
             });
 
             modelBuilder.Entity<Tag>(entity =>

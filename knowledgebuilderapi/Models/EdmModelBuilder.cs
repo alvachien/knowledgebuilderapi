@@ -18,6 +18,7 @@ namespace knowledgebuilderapi.Models
             modelBuilder.EntitySet<AwardRule>("AwardRules");
             modelBuilder.EntitySet<DailyTrace>("DailyTraces");            
             modelBuilder.EntitySet<AwardPoint>("AwardPoints");
+            modelBuilder.EntitySet<AwardPointReport>("AwardPointReports");
             modelBuilder.EntitySet<Tag>("Tags");
             modelBuilder.EntitySet<TagCount>("TagCounts");
             modelBuilder.EntitySet<TagCountByRefType>("TagCountByRefTypes");

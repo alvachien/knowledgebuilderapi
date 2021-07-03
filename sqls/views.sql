@@ -36,3 +36,11 @@ CREATE VIEW KnowledgeItemWithTagView AS
 	FROM KnowledgeItem as a
 	LEFT OUTER JOIN ( select RefID, STRING_AGG(Tag, ',') as Tags from KnowledgeTag GROUP BY RefID ) as b
 	on a.ID = b.RefID;
+
+-- View: AwardPointReport
+CREATE VIEW AwardPointReport AS 
+	WITH records AS ( select TargetUser, RecordDate, SUM(Point) as Point 
+			from AwardPoint group by TargetUser, RecordDate )
+	select TargetUser, RecordDate, SUM(Point) OVER ( PARTITION BY TargetUser ORDER BY RecordDate ASC  ) as Point
+	 from records;
+	

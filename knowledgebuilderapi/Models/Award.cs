@@ -215,4 +215,17 @@ namespace knowledgebuilderapi.Models
             this.Comment = update.Comment;
         }
     }
+
+    public sealed class AwardPointReport
+    {
+        [Key]
+        [Column("TargetUser", TypeName = "NVARCHAR(50)")]
+        public String TargetUser { get; set; }
+
+        [Column("RecordDate", TypeName = "DATE")]
+        public DateTime RecordDate { get; set; }
+
+        [Column("Point", TypeName = "INT")]
+        public Int32 Point { get; set; }
+    }
 }
