@@ -227,5 +227,8 @@ namespace knowledgebuilderapi.Models
 
         [Column("Point", TypeName = "INT")]
         public Int32 Point { get; set; }
+
+        [Column("AggPoint", TypeName = "INT")]
+        public Int32 AggPoint { get; set; }
     }
 }

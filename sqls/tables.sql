@@ -83,7 +83,7 @@ CREATE TABLE DailyTrace (
 	PRIMARY KEY CLUSTERED ([TargetUser] ASC, [RecordDate] ASC)
 );
 
-CREATE TABLE AwardPoints (
+CREATE TABLE AwardPoint (
     [ID]            INT            IDENTITY (1, 1) NOT NULL,
 	[TargetUser]	NVARCHAR(50)	NOT NULL,
 	[RecordDate]	DATE			NOT NULL,

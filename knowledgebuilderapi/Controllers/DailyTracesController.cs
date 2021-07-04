@@ -51,8 +51,12 @@ namespace knowledgebuilderapi.Controllers
                     }
                 }
 
-                return BadRequest();
+                return BadRequest("Invalid model state");
             }
+
+            var cnt = _context.DailyTraces.Where(p => p.TargetUser == dt.TargetUser && p.RecordDate.Date > dt.RecordDate.Date).Count();
+            if (cnt > 0)
+                return BadRequest("Cannot insert a trace on past");
 
             // Calculate the points
             List<AwardPoint> points = CalculatePoints(dt);

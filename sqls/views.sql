@@ -41,6 +41,6 @@ CREATE VIEW KnowledgeItemWithTagView AS
 CREATE VIEW AwardPointReport AS 
 	WITH records AS ( select TargetUser, RecordDate, SUM(Point) as Point 
 			from AwardPoint group by TargetUser, RecordDate )
-	select TargetUser, RecordDate, SUM(Point) OVER ( PARTITION BY TargetUser ORDER BY RecordDate ASC  ) as Point
+	select TargetUser, RecordDate, Point, SUM(Point) OVER ( PARTITION BY TargetUser ORDER BY RecordDate ASC  ) as AggPoint
 	 from records;
 	

@@ -101,6 +101,11 @@ namespace knowledgebuilderapi.Controllers
                 return NotFound();
             }
 
+            // Check whether the rule is inuse or not
+            var usedcnt = _context.AwardPoints.Where(p => p.MatchedRuleID == rule.ID).Count();
+            if (usedcnt > 0)
+                return BadRequest("Rule still in use");
+
             _context.AwardRules.Remove(rule);
             await _context.SaveChangesAsync();
 

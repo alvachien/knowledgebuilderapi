@@ -101,6 +101,11 @@ namespace knowledgebuilderapi.Controllers
                 return NotFound();
             }
 
+            if (point.MatchedRuleID.HasValue)
+            {
+                return BadRequest("Point is auto-generated one, cannot delete");
+            }
+
             _context.AwardPoints.Remove(point);
             await _context.SaveChangesAsync();
 
