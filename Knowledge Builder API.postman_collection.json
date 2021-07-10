@@ -1050,6 +1050,32 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Verify Access Code",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:44355/api/AccessCode?accessCode=Warm",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44355",
+					"path": [
+						"api",
+						"AccessCode"
+					],
+					"query": [
+						{
+							"key": "accessCode",
+							"value": "Warm"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
