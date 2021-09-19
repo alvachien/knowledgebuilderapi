@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace knowledgebuilderapi.Controllers
 {
@@ -15,17 +16,19 @@ namespace knowledgebuilderapi.Controllers
     [ApiController]
     public class AccessCodeController : ControllerBase
     {
-        private static readonly string[] AccessCodes = new[]
+        private IConfiguration _configuration;
+        public AccessCodeController(IConfiguration Configuration)
         {
-            "Angel", "Dora", "Esther", "Alva", 
-        };
+            _configuration = Configuration;
+        }
 
         [HttpPost]
         public IActionResult Post([FromQuery]String accessCode )
         {
-            if (AccessCodes.Contains(accessCode))
+            var userName = _configuration[$"UserMapping:{accessCode}"];
+            if (!String.IsNullOrEmpty(userName))
             {
-                return Ok();
+                return Ok(userName);
             }
             return BadRequest();
         }

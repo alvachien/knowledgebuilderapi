@@ -34,6 +34,9 @@ namespace knowledgebuilderapi
         public DbSet<DailyTrace> DailyTraces { get; set; }
         public DbSet<AwardPoint> AwardPoints { get; set; }
         public DbSet<AwardPointReport> AwardPointReports { get; set; }
+        public DbSet<UserCollection> UserCollections { get; set; }
+        public DbSet<UserCollectionItem> UserCollectionItems { get; set; }
+        public DbSet<ExerciseItemUserScore> ExerciseItemUserScores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -108,7 +111,13 @@ namespace knowledgebuilderapi
                     .HasForeignKey<ExerciseItemAnswer>(d => d.ID)
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.Cascade);
-                    // .HasConstraintName("FK_EXECAWR_EXECITEM");
+                // .HasConstraintName("FK_EXECAWR_EXECITEM");
+
+                entity.HasMany(d => d.UserScores)
+                    .WithOne(p => p.ReferenceItem)
+                    .HasForeignKey(d => d.ID)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_EXERCISEITEM_USRSCORE_ID");
             });
 
             modelBuilder.Entity<ExerciseItemAnswer>(entity =>
@@ -263,6 +272,70 @@ namespace knowledgebuilderapi
             {
                 entity.ToView("KnowledgeItemWithTagView");
                 entity.HasNoKey();
+            });
+
+            modelBuilder.Entity<UserCollection>(entity =>
+            {
+                if (!TestingMode)
+                {
+                    entity.Property(b => b.CreatedAt)
+                        .HasDefaultValueSql("GETDATE()");
+                    entity.Property(b => b.ModifiedAt)
+                        .HasDefaultValueSql("GETDATE()");
+
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd()
+                        .UseIdentityColumn();
+                }
+                else
+                {
+                    // Testing mode: Sqlite
+                    entity.Property(b => b.CreatedAt)
+                        .HasDefaultValueSql("CURRENT_DATE");
+                    entity.Property(b => b.ModifiedAt)
+                        .HasDefaultValueSql("CURRENT_DATE");
+
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd();
+                }
+
+                entity.HasMany(d => d.Items)
+                    .WithOne(p => p.Collection)
+                    .HasForeignKey(d => d.ID)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_USERCOLL_ITEM_ID");
+            });
+
+            modelBuilder.Entity<UserCollectionItem>(entity =>
+            {
+                entity.HasKey(d => new { d.ID, d.RefType, d.RefID });
+
+                entity.Property(b => b.RefType)
+                    .HasConversion(
+                        v => (Int32)v,
+                        v => (TagRefType)v);
+            });
+
+            modelBuilder.Entity<ExerciseItemUserScore>(entity =>
+            {
+                if (!TestingMode)
+                {
+                    entity.Property(b => b.TakenDate)
+                        .HasDefaultValueSql("GETDATE()");
+
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd()
+                        .UseIdentityColumn();
+                }
+                else
+                {
+                    // Testing mode: Sqlite
+                    entity.Property(b => b.TakenDate)
+                        .HasDefaultValueSql("CURRENT_DATE");
+
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd();
+                }
             });
         }
     }

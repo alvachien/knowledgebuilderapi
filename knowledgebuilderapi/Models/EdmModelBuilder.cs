@@ -36,6 +36,11 @@ namespace knowledgebuilderapi.Models
             simulatePointAction.ReturnsCollectionFromEntitySet<AwardPoint>("AwardPoints");
             //.Parameter<DailyTrace>("dt");
 
+            // User collection and user score -- 2021.09.19
+            modelBuilder.EntitySet<UserCollection>("UserCollections");
+            modelBuilder.EntitySet<UserCollectionItem>("UserCollectionItems");
+            modelBuilder.EntitySet<ExerciseItemUserScore>("ExerciseItemUserScores");
+
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
 
             return modelBuilder.GetEdmModel();

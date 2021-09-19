@@ -94,4 +94,32 @@ CREATE TABLE AwardPoint (
 	PRIMARY KEY CLUSTERED(ID ASC)
 );
 
+CREATE TABLE UserCollection (
+    [ID]            INT            IDENTITY (1, 1) NOT NULL,
+	[User]			NVARCHAR(50)	NOT NULL,
+	[Name]			NVARCHAR(50)	NOT NULL,
+	[COMMENT]		NVARCHAR(50)	NULL,
+    [CreatedAt]     DATETIME       DEFAULT (getdate()) NULL,
+    [ModifiedAt]    DATETIME       DEFAULT (getdate()) NULL,
+	PRIMARY KEY CLUSTERED(ID ASC)
+);
+
+CREATE TABLE UserCollectionItem (
+    [ID]            INT,
+    [RefType]    	SMALLINT      NOT NULL,
+    [RefID] 		INT           NOT NULL,
+    [CreatedAt]     DATETIME       DEFAULT (getdate()) NULL,
+	PRIMARY KEY CLUSTERED(ID ASC, RefType ASC, RefID ASC),
+	CONSTRAINT [FK_USERCOLL_ITEM_ID] FOREIGN KEY ([ID]) REFERENCES [dbo].[UserCollection] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE	
+);
+
+CREATE TABLE ExerciseItemUserScore (
+    [ID]            INT            IDENTITY (1, 1) NOT NULL,
+	[User]			NVARCHAR(50)	NOT NULL,
+    [RefID] 		INT           NOT NULL,
+    [TakenDate]     DATETIME       DEFAULT (getdate()),
+	[Score] 		INT				NOT NULL,
+	PRIMARY KEY CLUSTERED(ID ASC),
+	CONSTRAINT [FK_EXERCISEITEM_USRSCORE_ID] FOREIGN KEY ([RefID]) REFERENCES [dbo].[ExerciseItem] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE	
+);
 

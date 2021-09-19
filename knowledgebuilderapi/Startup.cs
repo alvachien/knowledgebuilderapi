@@ -84,6 +84,10 @@ namespace knowledgebuilderapi
                         .AllowCredentials();
                     });
                 });
+
+                // Test
+                var name = Configuration["UserMapping:Alva"];
+                System.Diagnostics.Debug.Write(name);
             }
             else if (Environment.EnvironmentName == "Production")
             {
@@ -125,8 +129,8 @@ namespace knowledgebuilderapi
             IEdmModel model = EdmModelBuilder.GetEdmModel();
 
             services.AddControllers().AddOData(opt => opt.Count().Filter().Expand().Select().OrderBy().SetMaxTop(100)
-                .AddModel(model)
-                .AddModel("v1", model)
+                .AddRouteComponents(model)
+                .AddRouteComponents("v1", model)
                 // .AddModel("v2{data}", model2, builder => builder.AddService<ODataBatchHandler, DefaultODataBatchHandler>(Microsoft.OData.ServiceLifetime.Singleton))
                 // .ConfigureRoute(route => route.EnableQualifiedOperationCall = false) // use this to configure the built route template
                 );

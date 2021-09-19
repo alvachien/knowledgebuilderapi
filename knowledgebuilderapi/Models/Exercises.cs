@@ -13,6 +13,7 @@ namespace knowledgebuilderapi.Models
         public ExerciseItem() : base()
         {
             Tags = new HashSet<ExerciseTag>();
+            UserScores = new HashSet<ExerciseItemUserScore>();
         }
 
         [Key]
@@ -33,6 +34,7 @@ namespace knowledgebuilderapi.Models
         public KnowledgeItem CurrentKnowledgeItem { get; set; }
         public ExerciseItemAnswer Answer { get; set; }
         public ICollection<ExerciseTag> Tags { get; set; }
+        public ICollection<ExerciseItemUserScore> UserScores { get; set; }
 
         public override Boolean Equals(Object other)
         {
@@ -70,7 +72,6 @@ namespace knowledgebuilderapi.Models
                 Content = other.Content;
         }
     }
-
 
     [Table("ExerciseItemAnswer")]
     public sealed class ExerciseItemAnswer : BaseModel
@@ -141,5 +142,49 @@ namespace knowledgebuilderapi.Models
 
         [Column("Tags")]
         public String Tags { get; set; }
+    }
+
+    [Table("ExerciseItemUserScore")]
+    public sealed class ExerciseItemUserScore
+    {
+        public ExerciseItemUserScore()
+        { }
+
+        [Key]
+        [Column("ID", TypeName = "INT")]
+        public Int32 ID { get; set; }
+
+        [Required]
+        [Column("User", TypeName = "NVARCHAR(50)")]
+        public String User { get; set; }
+
+        [Required]
+        [Column("RefID")]
+        public Int32 RefID { get; set; }
+
+        [Column("TakenDate")]
+        [DataType(DataType.Date)]
+        public DateTime? TakenDate { get; set; }
+
+        [Required]
+        [Column("Score")]
+        public Int32 Score { get; set; }
+
+        public ExerciseItem ReferenceItem { get; set; }
+
+        public void UpdateData(ExerciseItemUserScore other)
+        {
+            if (other == null)
+                throw new InvalidOperationException("Invalid parameter: Other");
+
+            if (String.CompareOrdinal(User, other.User) != 0)
+                User = other.User;
+            if (Score != other.Score)
+                Score = other.Score;
+            if (TakenDate != other.TakenDate)
+                TakenDate = other.TakenDate;
+            if (RefID != other.RefID)
+                RefID = other.RefID;
+        }
     }
 }

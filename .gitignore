@@ -346,3 +346,5 @@ healthchecksdb
 
 # Project specific
 uploads/
+appsettings.Development.json
+appsettings.*.json
