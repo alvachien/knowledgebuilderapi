@@ -48,16 +48,23 @@ namespace knowledgebuilderapi.Models
     public class UserCollectionItem
     {
         public UserCollectionItem() { }
+        public UserCollectionItem(UserCollectionItem other) : this()
+        {
+            ID = other.ID;
+            RefType = other.RefType;
+            RefID = other.RefID;
+            CreatedAt = other.CreatedAt;
+        }
 
         [Key]
         [Column("ID", TypeName = "INT")]
         public Int32 ID { get; set; }
 
-        [Required]
+        [Key]
         [Column("RefType")]
         public TagRefType RefType { get; set; }
 
-        [Required]
+        [Key]
         [Column("RefID")]
         public Int32 RefID { get; set; }
 

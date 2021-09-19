@@ -103,14 +103,46 @@ namespace knowledgebuilderapi.Controllers
             }
 
             var coll = await _context.UserCollections
+                    .Include(i => i.Items)
                     .SingleOrDefaultAsync(x => x.ID == key);
             if (coll == null)
             {
                 return NotFound();
             }
             coll.UpdateData(update);
-            coll.ModifiedAt = DateTime.Now;
             // Items
+            if (coll.Items.Count > 0)
+            {
+                if (update.Items.Count > 0)
+                {
+                    coll.Items.Clear();
+
+                    foreach (var item in update.Items)
+                    {
+                        var nitem = new UserCollectionItem(item);
+                        nitem.Collection = coll;
+                        coll.Items.Add(nitem);
+                    }
+                }
+                else
+                {
+                    // Delete all
+                    coll.Items.Clear();
+                }
+            }
+            else
+            {
+                if (update.Items.Count > 0)
+                {
+                    foreach (var item in update.Items)
+                    {
+                        var nitem = new UserCollectionItem(item);
+                        nitem.Collection = coll;
+                        coll.Items.Add(nitem);
+                    }
+                }
+            }
+            coll.ModifiedAt = DateTime.Now;
 
             try
             {
