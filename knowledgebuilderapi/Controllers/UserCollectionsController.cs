@@ -90,7 +90,7 @@ namespace knowledgebuilderapi.Controllers
         /// <summary>
         /// Support for updating Knowledge items
         /// </summary>
-        public async Task<IActionResult> Put([FromODataUri] int key, [FromODataBody] UserCollection update)
+        public async Task<IActionResult> Put([FromODataUri] int key, [FromBody] UserCollection update)
         {
             if (!ModelState.IsValid)
             {

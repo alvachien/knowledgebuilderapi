@@ -20,13 +20,16 @@ namespace knowledgebuilderapi.Models
         public Int32 ID { get; set; }
 
         [Required]
+        [StringLength(50)]
         [Column("User", TypeName = "NVARCHAR(50)")]
         public String User { get; set; }
 
         [Required]
+        [StringLength(50)]
         [Column("Name", TypeName = "NVARCHAR(50)")]
         public String Name { get; set; }
 
+        [StringLength(100)]
         [Column("Comment", TypeName = "NVARCHAR(100)")]
         public String Comment { get; set; }
 
@@ -65,7 +68,7 @@ namespace knowledgebuilderapi.Models
         public TagRefType RefType { get; set; }
 
         [Key]
-        [Column("RefID")]
+        [Column("RefID", TypeName = "INT")]
         public Int32 RefID { get; set; }
 
         [Column("CreatedAt")]

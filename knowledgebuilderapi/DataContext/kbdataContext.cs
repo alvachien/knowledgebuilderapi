@@ -312,7 +312,7 @@ namespace knowledgebuilderapi
 
                 entity.Property(b => b.RefType)
                     .HasConversion(
-                        v => (Int32)v,
+                        v => (Int16)v,
                         v => (TagRefType)v);
             });
 
