@@ -90,7 +90,7 @@ namespace knowledgebuilderapi.Controllers
         /// <summary>
         /// Support for updating Knowledge items
         /// </summary>
-        public async Task<IActionResult> Put([FromODataUri] int key, [FromBody] UserCollection update)
+        public async Task<IActionResult> Put([FromODataUri] int key, [FromODataBody] UserCollection update)
         {
             if (!ModelState.IsValid)
             {
@@ -153,7 +153,7 @@ namespace knowledgebuilderapi.Controllers
                 throw;
             }
 
-            return Updated(update);
+            return Ok(update);
         }
 
         public async Task<IActionResult> Delete([FromODataUri] int key)

@@ -115,7 +115,7 @@ namespace knowledgebuilderapi
 
                 entity.HasMany(d => d.UserScores)
                     .WithOne(p => p.ReferenceItem)
-                    .HasForeignKey(d => d.ID)
+                    .HasForeignKey(d => d.RefID)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_EXERCISEITEM_USRSCORE_ID");
             });
