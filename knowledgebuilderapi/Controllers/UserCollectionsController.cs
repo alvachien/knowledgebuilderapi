@@ -11,6 +11,7 @@ using knowledgebuilderapi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.OData.Query.Validator;
+using Microsoft.Extensions;
 
 namespace knowledgebuilderapi.Controllers
 {
@@ -102,32 +103,56 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest();
             }
 
-            var coll = await _context.UserCollections
+            var dbcoll = await _context.UserCollections
                     .Include(i => i.Items)
                     .SingleOrDefaultAsync(x => x.ID == key);
-            if (coll == null)
+            if (dbcoll == null)
             {
                 return NotFound();
             }
-            coll.UpdateData(update);
+            dbcoll.UpdateData(update);
+
             // Items
-            if (coll.Items.Count > 0)
+            if (dbcoll.Items.Count > 0)
             {
                 if (update.Items.Count > 0)
                 {
-                    coll.Items.Clear();
-
+                    List<UserCollectionItem> tmpItems = new List<UserCollectionItem>();
+                    // 1. Search for deletion
+                    foreach (var item in dbcoll.Items)
+                    {
+                        var nitem = update.Items.FirstOrDefault(p => p.RefID == item.RefID && p.RefType == item.RefType);
+                        if (nitem == null)
+                        {
+                            // Cannot find the item in new collection, means to delete
+                            tmpItems.Add(item);
+                        }
+                    }
+                    if (tmpItems.Count > 0)
+                    {
+                        foreach (var item in tmpItems)
+                        {
+                            dbcoll.Items.Remove(item);
+                        }
+                        tmpItems.Clear();
+                    }
+                    // 2. Search for insertion
                     foreach (var item in update.Items)
                     {
-                        var nitem = new UserCollectionItem(item);
-                        nitem.Collection = coll;
-                        coll.Items.Add(nitem);
+                        var nitem = dbcoll.Items.FirstOrDefault(p => p.RefID == item.RefID && p.RefType == item.RefType);
+                        if (nitem == null)
+                        {
+                            // Cannot find the item in old collection, means to insert
+                            var nitem2 = new UserCollectionItem(item);
+                            nitem2.Collection = dbcoll;
+                            dbcoll.Items.Add(nitem2);
+                        }
                     }
                 }
                 else
                 {
                     // Delete all
-                    coll.Items.Clear();
+                    dbcoll.Items.Clear();
                 }
             }
             else
@@ -137,12 +162,12 @@ namespace knowledgebuilderapi.Controllers
                     foreach (var item in update.Items)
                     {
                         var nitem = new UserCollectionItem(item);
-                        nitem.Collection = coll;
-                        coll.Items.Add(nitem);
+                        nitem.Collection = dbcoll;
+                        dbcoll.Items.Add(nitem);
                     }
                 }
             }
-            coll.ModifiedAt = DateTime.Now;
+            dbcoll.ModifiedAt = DateTime.Now;
 
             try
             {

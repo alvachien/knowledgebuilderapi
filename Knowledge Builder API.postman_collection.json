@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d41a8314-ac83-4819-afbe-651b064fd5ac",
+		"_postman_id": "3bd36533-542d-48f5-a913-55997bd74361",
 		"name": "Knowledge Builder API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1006,6 +1006,266 @@
 							"port": "44355",
 							"path": [
 								"AwardPointReports"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Exercise Item with Score",
+			"item": [
+				{
+					"name": "Get Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/ExerciseItemUserScores?$filter=User eq 'test1'",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"ExerciseItemUserScores"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "User eq 'test1'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search - Taken Date later than 2020-01-01",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/ExerciseItemUserScores?$filter=User eq 'test1' and date(TakenDate) gt 2020-01-01",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"ExerciseItemUserScores"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "User eq 'test1' and date(TakenDate) gt 2020-01-01"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search - Taken Date earlier than 2020-01-01",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/ExerciseItemUserScores?$filter=User eq 'test1' and date(TakenDate) lt 2020-01-01",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"ExerciseItemUserScores"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "User eq 'test1' and date(TakenDate) lt 2020-01-01"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Latest Score",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"User\": \"test1\",\r\n    \"RefID\": 1\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/ExerciseItemUserScores/LatestUserScore",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"ExerciseItemUserScores",
+								"LatestUserScore"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserCollection",
+			"item": [
+				{
+					"name": "Get Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/UserCollections?$filter=User eq 'test1'",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"UserCollections"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "User eq 'test1'"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Collection with Items",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/UserCollections?$expand=Items&$filter=User eq 'test1'",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"UserCollections"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Items"
+								},
+								{
+									"key": "$filter",
+									"value": "User eq 'test1'"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserCollectionItem",
+			"item": [
+				{
+					"name": "Remove Item from Collection",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"User\": \"test1\",\r\n    \"ID\": 1,\r\n    \"RefType\": \"ExerciseItem\",\r\n    \"RefID\": 2    \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/UserCollectionItems/RemoveItemFromCollection",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"UserCollectionItems",
+								"RemoveItemFromCollection"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Item To Collection",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"User\": \"test1\",\r\n    \"ID\": 1,\r\n    \"RefType\": \"ExerciseItem\",\r\n    \"RefID\": 2,\r\n    \"CreatedAt\": \"2021-09-26\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/UserCollectionItems/AddItemToCollection",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"UserCollectionItems",
+								"AddItemToCollection"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Item To Collection Extend",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"User\": \"test1\",\r\n    \"UserCollectionItems\": [\r\n        {\r\n            \"ID\": 1,\r\n            \"RefType\": \"ExerciseItem\",\r\n            \"RefID\": 2,\r\n            \"CreatedAt\": \"2021-09-26\"\r\n        }\r\n    ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/UserCollectionItems/AddItemToCollectionEx",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"UserCollectionItems",
+								"AddItemToCollectionEx"
 							]
 						}
 					},

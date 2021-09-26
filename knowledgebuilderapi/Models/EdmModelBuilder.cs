@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 
@@ -38,7 +39,28 @@ namespace knowledgebuilderapi.Models
 
             // User collection and user score -- 2021.09.19
             modelBuilder.EntitySet<UserCollection>("UserCollections");
+
             modelBuilder.EntitySet<UserCollectionItem>("UserCollectionItems");
+            var collItemEntity = modelBuilder.EntityType<UserCollectionItem>();
+            collItemEntity.Property(prop => prop.CreatedAt).AsDate();
+            var addItemAction = collItemEntity.Collection.Action("AddItemToCollection");
+            addItemAction.Parameter<String>("User");
+            addItemAction.Parameter<int>("ID");
+            addItemAction.Parameter<TagRefType>("RefType");
+            addItemAction.Parameter<int>("RefID");
+            addItemAction.Parameter<DateTime?>("CreatedAt");
+            addItemAction.ReturnsFromEntitySet<UserCollectionItem>("UserCollectionItems");
+            var delItemAction = collItemEntity.Collection.Action("RemoveItemFromCollection");
+            delItemAction.Parameter<String>("User");
+            delItemAction.Parameter<int>("ID");
+            delItemAction.Parameter<TagRefType>("RefType");
+            delItemAction.Parameter<int>("RefID");
+            delItemAction.Returns<Boolean>();
+            var addItemExAction = collItemEntity.Collection.Action("AddItemToCollectionEx");
+            addItemExAction.Parameter<String>("User");
+            addItemExAction.Parameter<HashSet<UserCollectionItem>>("UserCollectionItems");
+            addItemExAction.ReturnsFromEntitySet<UserCollectionItem>("UserCollectionItems");
+
             modelBuilder.EntitySet<ExerciseItemUserScore>("ExerciseItemUserScores");
             var userScoreEntity = modelBuilder.EntityType<ExerciseItemUserScore>();
             userScoreEntity.Property(prop => prop.TakenDate).AsDate();

@@ -145,6 +145,5 @@ namespace knowledgebuilderapi.Controllers
 
             return Ok(scores[0]);
         }
-
     }
 }
