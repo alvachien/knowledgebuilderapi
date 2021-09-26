@@ -4,11 +4,14 @@
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>609c239b-e8d5-49a0-9cd3-feb06a09011b</UserSecretsId>
     <AssemblyName>KnowledgeBuilder.API</AssemblyName>
-    <Version>0.2.36</Version>
+    <Version>0.2.39</Version>
     <Authors>Alva Chien</Authors>
     <Company>Alva Chien</Company>
     <Copyright>© Alva Chien 2021</Copyright>
     <Description>Web API for Knowledge Builder, built on .Net Core and oData</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/alvachien/knowledgebuilderapi</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/alvachien/knowledgebuilderapi</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

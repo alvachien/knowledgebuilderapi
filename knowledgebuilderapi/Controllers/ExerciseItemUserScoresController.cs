@@ -53,6 +53,14 @@ namespace knowledgebuilderapi.Controllers
 
             if (score.TakenDate == null)
                 score.TakenDate = DateTime.Now;
+
+            var scorecnt = (from dbscore in this._context.ExerciseItemUserScores
+                          where dbscore.User == score.User && dbscore.RefID == score.RefID
+                            && dbscore.TakenDate.Value.Date == score.TakenDate.Value.Date
+                          select dbscore).Count();
+            if (scorecnt > 0)
+                return BadRequest("Same record exists");
+
             _context.ExerciseItemUserScores.Add(score);
             await _context.SaveChangesAsync();
 
@@ -108,5 +116,35 @@ namespace knowledgebuilderapi.Controllers
 
             return StatusCode(204); // HttpStatusCode.NoContent
         }
+
+        [HttpPost]
+        public IActionResult LatestUserScore([FromBody] ODataActionParameters parameters)
+        {
+            if (!ModelState.IsValid)
+            {
+                foreach (var value in ModelState.Values)
+                {
+                    foreach (var err in value.Errors)
+                    {
+                        System.Diagnostics.Debug.WriteLine(err.Exception?.Message);
+                    }
+                }
+
+                return BadRequest();
+            }
+
+            String user = (String)parameters["User"];
+            int refid = (int)parameters["RefID"];
+
+            var scores = (from score in this._context.ExerciseItemUserScores
+                          where score.User == user && score.RefID == refid
+                          orderby score.TakenDate descending
+                          select score).ToList();
+            if (scores.Count <= 0)
+                return NoContent();
+
+            return Ok(scores[0]);
+        }
+
     }
 }

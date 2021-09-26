@@ -40,6 +40,12 @@ namespace knowledgebuilderapi.Models
             modelBuilder.EntitySet<UserCollection>("UserCollections");
             modelBuilder.EntitySet<UserCollectionItem>("UserCollectionItems");
             modelBuilder.EntitySet<ExerciseItemUserScore>("ExerciseItemUserScores");
+            var userScoreEntity = modelBuilder.EntityType<ExerciseItemUserScore>();
+            userScoreEntity.Property(prop => prop.TakenDate).AsDate();
+            var latestScoreAction = userScoreEntity.Collection.Action("LatestUserScore");
+            latestScoreAction.Parameter<String>("User");
+            latestScoreAction.Parameter<int>("RefID");
+            latestScoreAction.ReturnsFromEntitySet<ExerciseItemUserScore>("ExerciseItemUserScores");
 
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
 
