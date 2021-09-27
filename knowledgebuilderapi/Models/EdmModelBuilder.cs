@@ -58,7 +58,8 @@ namespace knowledgebuilderapi.Models
             delItemAction.Returns<Boolean>();
             var addItemExAction = collItemEntity.Collection.Action("AddItemToCollectionEx");
             addItemExAction.Parameter<String>("User");
-            addItemExAction.Parameter<HashSet<UserCollectionItem>>("UserCollectionItems");
+            // addItemExAction.Parameter<HashSet<UserCollectionItem>>("UserCollectionItems");
+            //addItemExAction.CollectionParameter
             addItemExAction.ReturnsFromEntitySet<UserCollectionItem>("UserCollectionItems");
 
             modelBuilder.EntitySet<ExerciseItemUserScore>("ExerciseItemUserScores");

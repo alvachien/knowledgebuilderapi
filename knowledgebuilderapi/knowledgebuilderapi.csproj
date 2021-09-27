@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>609c239b-e8d5-49a0-9cd3-feb06a09011b</UserSecretsId>
     <AssemblyName>KnowledgeBuilder.API</AssemblyName>
-    <Version>0.2.42</Version>
+    <Version>0.2.45</Version>
     <Authors>Alva Chien</Authors>
     <Company>Alva Chien</Company>
     <Copyright>© Alva Chien 2021</Copyright>
@@ -12,16 +12,17 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/alvachien/knowledgebuilderapi</PackageProjectUrl>
     <RepositoryUrl>https://github.com/alvachien/knowledgebuilderapi</RepositoryUrl>
+    <PackageTags>OData; API; Knowledge</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.7">
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="8.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.10" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
   </ItemGroup>
 </Project>
