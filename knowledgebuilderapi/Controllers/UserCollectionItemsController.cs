@@ -123,61 +123,56 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var items = (HashSet<UserCollectionItem>)parameters["UserCollectionItems"];
             String user = (String)parameters["User"];
-            int collid = (int)parameters["ID"];
-            int refid = (int)parameters["RefID"];
-            TagRefType reftype = (TagRefType)parameters["RefType"];
-            var createAtValue = parameters["CreatedAt"];
-            DateTime? createdAt = null;
-            if (createAtValue != null)
-                createdAt = ((DateTimeOffset)createAtValue).DateTime;
-            else
-                createdAt = DateTime.Today;
-            if (String.IsNullOrEmpty(user) || refid <= 0)
+            if (String.IsNullOrEmpty(user))
                 return BadRequest("Invalid input");
-
-            // Check collection header
-            var collcnt = (from collheader in this._context.UserCollections
-                           where collheader.ID == collid && collheader.User == user
-                           select collheader.ID).Count();
-            if (collcnt != 1)
-                return BadRequest("Invalid collection");
-
-            // Check existence of item
-            var itemcnt = (from collitem in this._context.UserCollectionItems
-                           where collitem.RefType == reftype && collitem.RefID == refid && collitem.ID == collid
-                           select collitem.ID).Count();
-            if (itemcnt > 0)
-                return NoContent();
-
-            // Check existence of ref. id
-            switch (reftype)
+            var items = (IEnumerable<UserCollectionItem>)parameters["UserCollectionItems"];
+            foreach (var item in items)
             {
-                case TagRefType.KnowledgeItem:
-                    break;
+                if (item != null)
+                {
+                    if (item.CreatedAt == null)
+                        item.CreatedAt = DateTime.Today;
 
-                case TagRefType.ExerciseItem:
-                default:
+                    // Check collection header
+                    var collcnt = (from collheader in this._context.UserCollections
+                                   where collheader.ID == item.ID && collheader.User == user
+                                   select collheader.ID).Count();
+                    if (collcnt != 1)
+                        return BadRequest("Invalid collection");
+
+                    // Check existence of item
+                    var itemcnt = (from collitem in this._context.UserCollectionItems
+                                   where collitem.RefType == item.RefType && collitem.RefID == item.RefID && collitem.ID == item.ID
+                                   select collitem.ID).Count();
+                    if (itemcnt > 0)
+                        return NoContent();
+
+                    // Check existence of ref. id
+                    switch (item.RefType)
                     {
-                        var refcnt = (from exec in _context.ExerciseItems
-                                      where exec.ID == refid
-                                      select exec.ID).Count();
-                        if (refcnt != 1)
-                            return BadRequest("Invalid refence ID");
-                    }
-                    break;
-            }
+                        case TagRefType.KnowledgeItem:
+                            break;
 
-            var nitem = new UserCollectionItem();
-            nitem.ID = collid;
-            nitem.RefID = refid;
-            nitem.RefType = reftype;
-            nitem.CreatedAt = createdAt;
-            this._context.UserCollectionItems.Add(nitem);
+                        case TagRefType.ExerciseItem:
+                        default:
+                            {
+                                var refcnt = (from exec in _context.ExerciseItems
+                                              where exec.ID == item.RefID
+                                              select exec.ID).Count();
+                                if (refcnt != 1)
+                                    return BadRequest("Invalid refence ID");
+                            }
+                            break;
+                    }
+
+                    var nitem = new UserCollectionItem(item);
+                    this._context.UserCollectionItems.Add(nitem);
+                }
+            }
             await this._context.SaveChangesAsync();
 
-            return Ok(nitem);
+            return Ok(items);
         }
 
         [HttpPost]
