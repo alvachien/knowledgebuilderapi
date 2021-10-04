@@ -30,7 +30,9 @@ namespace knowledgebuilderapi
         public DbSet<OverviewInfo> OverviewInfos { get; set; }
         public DbSet<ExerciseItemWithTagView> ExerciseItemWithTagViews { get; set; }
         public DbSet<KnowledgeItemWithTagView> KnowledgeItemWithTagViews { get; set; }
+        public DbSet<AwardRuleGroup> AwardRuleGroups { get; set; }
         public DbSet<AwardRule> AwardRules { get; set; }
+        public DbSet<AwardUser> AwardUsers { get; set; }
         public DbSet<DailyTrace> DailyTraces { get; set; }
         public DbSet<AwardPoint> AwardPoints { get; set; }
         public DbSet<AwardPointReport> AwardPointReports { get; set; }
@@ -147,7 +149,7 @@ namespace knowledgebuilderapi
                     .HasConstraintName("FK_EXERCISETAG_ID");
             });
 
-            modelBuilder.Entity<AwardRule>(entity =>
+            modelBuilder.Entity<AwardRuleGroup>(entity =>
             {
                 if (!TestingMode)
                 {
@@ -176,6 +178,33 @@ namespace knowledgebuilderapi
                     .HasConversion(
                         v => (Int16)v,
                         v => (AwardRuleType)v);
+
+                entity.HasMany(d => d.Rules)
+                    .WithOne(p => p.CurrentGroup)
+                    .HasForeignKey(d => d.GroupID)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_AWARDRULE_GROUPID");
+            });
+
+            modelBuilder.Entity<AwardRule>(entity =>
+            {
+                if (!TestingMode)
+                {
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd()
+                        .UseIdentityColumn();
+                }
+                else
+                {
+                    // Testing mode: Sqlite
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd();
+                }
+            });
+
+            modelBuilder.Entity<AwardUser>(entity =>
+            {
+                entity.HasKey(d => new { d.TargetUser, d.Supervisor });
             });
 
             modelBuilder.Entity<DailyTrace>(entity =>

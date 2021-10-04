@@ -65,6 +65,10 @@ namespace knowledgebuilderapi.Controllers
             return Ok(result);
         }
 
+        // POST: /UserCollections
+        /// <summary>
+        /// Support for creating user collection
+        /// </summary>
         public async Task<IActionResult> Post([FromBody] UserCollection coll)
         {
             if (!ModelState.IsValid)
@@ -89,7 +93,7 @@ namespace knowledgebuilderapi.Controllers
 
         // PUT: /UserCollections(5)
         /// <summary>
-        /// Support for updating Knowledge items
+        /// Support for updating user collection
         /// </summary>
         public async Task<IActionResult> Put([FromODataUri] int key, [FromBody] UserCollection update)
         {
@@ -180,6 +184,11 @@ namespace knowledgebuilderapi.Controllers
 
             return Ok(update);
         }
+
+        // DELETE: /UserCollections(5)
+        /// <summary>
+        /// Support for deleting user collection
+        /// </summary>
 
         public async Task<IActionResult> Delete([FromODataUri] int key)
         {

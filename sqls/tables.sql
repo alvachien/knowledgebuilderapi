@@ -49,7 +49,7 @@ CREATE TABLE [dbo].[ExerciseTag] (
 );
 
 -- Award Rules
-CREATE TABLE [dbo].[AwardRule] (
+/* CREATE TABLE [dbo].[AwardRule] (
     [ID]          INT           IDENTITY (1, 1) NOT NULL,
     [RuleType]    SMALLINT      NOT NULL,
     [TargetUser]  NVARCHAR (50) NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE [dbo].[AwardRule] (
     [DaysTo]      INT           NULL,
     [Point]       INT           NOT NULL,
     PRIMARY KEY CLUSTERED ([ID] ASC)
-);
+); */
 
 CREATE TABLE DailyTrace (
 	[TargetUser]	NVARCHAR(50)	NOT NULL,
@@ -121,5 +121,39 @@ CREATE TABLE ExerciseItemUserScore (
 	[Score] 		INT				NOT NULL,
 	PRIMARY KEY CLUSTERED(ID ASC),
 	CONSTRAINT [FK_EXERCISEITEM_USRSCORE_ID] FOREIGN KEY ([RefID]) REFERENCES [dbo].[ExerciseItem] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE	
+);
+
+-- Award Rules Group
+CREATE TABLE [dbo].[AwardRuleGroup] (
+    [ID]          INT           IDENTITY (1, 1) NOT NULL,
+    [RuleType]    SMALLINT      NOT NULL,
+    [TargetUser]  NVARCHAR (50) NOT NULL,
+    [DESP]        NVARCHAR (50) NOT NULL,
+    [ValidFrom]   DATETIME      DEFAULT (getdate()) NULL,
+    [ValidTo]     DATETIME      DEFAULT (getdate()) NULL,
+    PRIMARY KEY CLUSTERED ([ID] ASC)
+);
+
+-- Award Rules
+CREATE TABLE [dbo].[AwardRule] (
+    [ID]          INT           IDENTITY (1, 1) NOT NULL,
+	[GroupID]	  INT			NOT NULL,
+    [CountOfFactLow] INT        NULL,
+	[CountOfFactHigh] INT       NULL,
+    [DoneOfFact]  BIT           NULL,
+    [TimeStart]   DECIMAL (18)  NULL,
+    [TimeEnd]     DECIMAL (18)  NULL,
+    [DaysFrom]    INT           NULL,
+    [DaysTo]      INT           NULL,
+    [Point]       INT           NOT NULL,
+    PRIMARY KEY CLUSTERED ([ID] ASC),
+	CONSTRAINT [FK_AWARDRULE_GROUPID] FOREIGN KEY ([GroupID]) REFERENCES [dbo].[AwardRuleGroup] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE	
+);
+
+-- AwardUser
+CREATE TABLE [dbo].[AwardUser] (
+	[TargetUser]  NVARCHAR (50) NOT NULL,
+	[Supervisor] NVARCHAR(50) NOT NULL,
+	PRIMARY KEY CLUSTERED ([TargetUser] ASC, [Supervisor] ASC)
 );
 

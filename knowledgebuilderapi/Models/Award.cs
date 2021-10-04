@@ -21,9 +21,14 @@ namespace knowledgebuilderapi.Models
         HandWritingHabit        = 9,
     }
 
-    [Table("AwardRule")]
-    public sealed class AwardRule
+    [Table("AwardRuleGroup")]
+    public sealed class AwardRuleGroup
     {
+        public AwardRuleGroup()
+        {
+            Rules = new HashSet<AwardRule>();
+        }
+
         [Key]
         [Column("ID", TypeName = "INT")]
         public Int32 ID { get; set; }
@@ -42,6 +47,48 @@ namespace knowledgebuilderapi.Models
 
         [Column("ValidTo", TypeName = "DATETIME")]
         public DateTime ValidTo { get; set; }
+
+        public ICollection<AwardRule> Rules { get; set; }
+
+        public bool IsValid()
+        {
+            if (String.IsNullOrEmpty(TargetUser))
+                return false;
+            if (String.IsNullOrEmpty(Desp))
+                return false;
+
+            if (this.Rules.Count <= 0)
+                return false;
+
+            foreach(var rule in this.Rules)
+            {
+                if (!rule.IsValid(this.RuleType))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public void UpdateData(AwardRuleGroup update)
+        {
+            this.RuleType = update.RuleType;
+            this.TargetUser = update.TargetUser;
+            this.Desp = update.Desp;
+            this.ValidFrom = update.ValidFrom;
+            this.ValidTo = update.ValidTo;
+        }
+    }
+
+    [Table("AwardRule")]
+    public sealed class AwardRule
+    {
+        [Key]
+        [Column("ID", TypeName = "INT")]
+        public Int32 ID { get; set; }
+
+        [Required]
+        [Column("GroupID", TypeName = "INT")]
+        public Int32 GroupID { get; set; }
 
         [Column("CountOfFactLow", TypeName = "INT")]
         public Int32? CountOfFactLow { get; set; }
@@ -67,14 +114,11 @@ namespace knowledgebuilderapi.Models
         [Column("Point", TypeName = "INT")]
         public Int32 Point { get; set; }
 
-        public bool IsValid()
-        {
-            if (String.IsNullOrEmpty(TargetUser))
-                return false;
-            if (String.IsNullOrEmpty(Desp))
-                return false;
+        public AwardRuleGroup CurrentGroup { get; set; }
 
-            switch(RuleType)
+        public bool IsValid(AwardRuleType rtype)
+        {
+            switch(rtype)
             {
                 case AwardRuleType.GoToBedTime:
                 case AwardRuleType.SchoolWorkTime:
@@ -113,16 +157,23 @@ namespace knowledgebuilderapi.Models
             this.CountOfFactHigh = update.CountOfFactHigh;
             this.DaysFrom = update.DaysFrom;
             this.DaysTo = update.DaysTo;
-            this.Desp = update.Desp;
             this.DoneOfFact = update.DoneOfFact;
             this.Point = update.Point;
-            this.RuleType = update.RuleType;
-            this.TargetUser = update.TargetUser;
             this.TimeEnd = update.TimeEnd;
             this.TimeStart = update.TimeStart;
-            this.ValidFrom = update.ValidFrom;
-            this.ValidTo = update.ValidTo;
         }
+    }
+
+    [Table("AwardUser")]
+    public sealed class AwardUser
+    {
+        [Key]
+        [Column("TargetUser", TypeName = "NVARCHAR(50)")]
+        public String TargetUser { get; set; }
+
+        [Key]
+        [Column("Supervisor", TypeName = "NVARCHAR(50)")]
+        public String Supervisor { get; set; }
     }
 
     [Table("DailyTrace")]
