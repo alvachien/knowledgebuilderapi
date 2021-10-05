@@ -194,15 +194,20 @@ namespace knowledgebuilderapi.Controllers
                 listTypes.Add(AwardRuleType.CleanDeakHabit);
             }
 
-            var allrules = (from rtype in listTypes
-                           join rule in _context.AwardRules 
-                           on new { RuleType = rtype, TargetUser = dt.TargetUser, IsValid = true } equals new { rule.RuleType, rule.TargetUser, IsValid = rule.ValidFrom.Date <= dt.RecordDate.Date && rule.ValidTo.Date >= dt.RecordDate.Date }
-                           select rule).ToList<AwardRule>();
+            var allgrps = (from rtype in listTypes
+                            join grp in _context.AwardRuleGroups
+                           on new { RuleType = rtype, TargetUser = dt.TargetUser, IsValid = true } equals new { grp.RuleType, grp.TargetUser, IsValid = grp.ValidFrom.Date <= dt.RecordDate.Date && grp.ValidTo.Date >= dt.RecordDate.Date }
+                           select grp).ToList<AwardRuleGroup>();
 
             // Step 2. Calculate the points per rule
             if (dt.GoToBedTime.HasValue)
             {
-                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.GoToBedTime);
+                // var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.GoToBedTime);
+                var rules = (from grp in allgrps
+                                join rul in _context.AwardRules
+                                on grp.ID equals rul.GroupID
+                             where grp.RuleType == AwardRuleType.GoToBedTime
+                             select rul).ToList<AwardRule>();
                 if (rules.Count > 0)
                 {
                     var matchedrules = rules.FindAll(p => p.TimeStart <= dt.GoToBedTime.Value && p.TimeEnd >= dt.GoToBedTime.Value);
@@ -246,7 +251,12 @@ namespace knowledgebuilderapi.Controllers
             }
             if (dt.SchoolWorkTime.HasValue)
             {
-                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.SchoolWorkTime);
+                // var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.SchoolWorkTime);
+                var rules = (from grp in allgrps
+                             join rul in _context.AwardRules
+                             on grp.ID equals rul.GroupID
+                             where grp.RuleType == AwardRuleType.SchoolWorkTime
+                             select rul).ToList<AwardRule>();
                 if (rules.Count > 0)
                 {
                     var matchedrules = rules.FindAll(p => p.TimeStart <= dt.SchoolWorkTime.Value && p.TimeEnd >= dt.SchoolWorkTime.Value);
@@ -290,7 +300,13 @@ namespace knowledgebuilderapi.Controllers
             }
             if (dt.HandWriting.HasValue)
             {
-                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.HandWritingHabit);
+                // var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.HandWritingHabit);
+                var rules = (from grp in allgrps
+                             join rul in _context.AwardRules
+                             on grp.ID equals rul.GroupID
+                             where grp.RuleType == AwardRuleType.HandWritingHabit
+                             select rul).ToList<AwardRule>();
+
                 if (rules.Count > 0)
                 {
                     var matchedrules = rules.FindAll(p => p.DoneOfFact.Value == dt.HandWriting.Value);
@@ -334,7 +350,13 @@ namespace knowledgebuilderapi.Controllers
             }
             if (dt.HomeWorkCount.HasValue)
             {
-                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.HomeWorkCount);
+                // var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.HomeWorkCount);
+                var rules = (from grp in allgrps
+                             join rul in _context.AwardRules
+                             on grp.ID equals rul.GroupID
+                             where grp.RuleType == AwardRuleType.HomeWorkCount
+                             select rul).ToList<AwardRule>();
+
                 if (rules.Count > 0)
                 {
                     var matchedrules = rules.FindAll(p => p.CountOfFactLow.Value <= dt.HomeWorkCount.Value && p.CountOfFactHigh.Value >= dt.HomeWorkCount.Value);
@@ -378,7 +400,13 @@ namespace knowledgebuilderapi.Controllers
             }
             if (dt.HouseKeepingCount.HasValue)
             {
-                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.HouseKeepingCount);
+                // var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.HouseKeepingCount);
+                var rules = (from grp in allgrps
+                             join rul in _context.AwardRules
+                             on grp.ID equals rul.GroupID
+                             where grp.RuleType == AwardRuleType.HouseKeepingCount
+                             select rul).ToList<AwardRule>();
+
                 if (rules.Count > 0)
                 {
                     var matchedrules = rules.FindAll(p => p.CountOfFactLow.Value <= dt.HouseKeepingCount.Value && p.CountOfFactHigh.Value >= dt.HouseKeepingCount.Value);
@@ -422,7 +450,13 @@ namespace knowledgebuilderapi.Controllers
             }
             if (dt.PoliteBehavior.HasValue)
             {
-                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.PoliteBehavior);
+                // var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.PoliteBehavior);
+                var rules = (from grp in allgrps
+                             join rul in _context.AwardRules
+                             on grp.ID equals rul.GroupID
+                             where grp.RuleType == AwardRuleType.PoliteBehavior
+                             select rul).ToList<AwardRule>();
+
                 if (rules.Count > 0)
                 {
                     var matchedrules = rules.FindAll(p => p.CountOfFactLow.Value <= dt.PoliteBehavior.Value && p.CountOfFactHigh.Value >= dt.PoliteBehavior.Value);
@@ -466,7 +500,13 @@ namespace knowledgebuilderapi.Controllers
             }
             if (dt.ErrorsCollection.HasValue)
             {
-                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.ErrorCollectionHabit);
+                // var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.ErrorCollectionHabit);
+                var rules = (from grp in allgrps
+                             join rul in _context.AwardRules
+                             on grp.ID equals rul.GroupID
+                             where grp.RuleType == AwardRuleType.ErrorCollectionHabit
+                             select rul).ToList<AwardRule>();
+
                 if (rules.Count > 0)
                 {
                     var matchedrules = rules.FindAll(p => p.DoneOfFact.Value == dt.ErrorsCollection.Value);
@@ -510,7 +550,13 @@ namespace knowledgebuilderapi.Controllers
             }
             if (dt.BodyExerciseCount.HasValue)
             {
-                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.BodyExerciseCount);
+                // var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.BodyExerciseCount);
+                var rules = (from grp in allgrps
+                             join rul in _context.AwardRules
+                             on grp.ID equals rul.GroupID
+                             where grp.RuleType == AwardRuleType.BodyExerciseCount
+                             select rul).ToList<AwardRule>();
+
                 if (rules.Count > 0)
                 {
                     var matchedrules = rules.FindAll(p => p.CountOfFactLow.Value <= dt.BodyExerciseCount.Value && p.CountOfFactHigh.Value >= dt.BodyExerciseCount.Value);
@@ -554,7 +600,13 @@ namespace knowledgebuilderapi.Controllers
             }
             if (dt.CleanDesk.HasValue)
             {
-                var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.CleanDeakHabit);
+                // var rules = allrules.FindAll(p => p.RuleType == AwardRuleType.CleanDeakHabit);
+                var rules = (from grp in allgrps
+                             join rul in _context.AwardRules
+                             on grp.ID equals rul.GroupID
+                             where grp.RuleType == AwardRuleType.CleanDeakHabit
+                             select rul).ToList<AwardRule>();
+
                 if (rules.Count > 0)
                 {
                     var matchedrules = rules.FindAll(p => p.DoneOfFact.Value == dt.CleanDesk.Value);
