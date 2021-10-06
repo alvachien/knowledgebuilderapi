@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3bd36533-542d-48f5-a913-55997bd74361",
+		"_postman_id": "8f2fbf35-9def-4f35-a7df-91de2ce797ac",
 		"name": "Knowledge Builder API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -578,7 +578,7 @@
 			]
 		},
 		{
-			"name": "AwardRule",
+			"name": "AwardRuleGroup",
 			"item": [
 				{
 					"name": "Get Collection",
@@ -586,14 +586,39 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:44355/AwardRules",
+							"raw": "https://localhost:44355/AwardRuleGroups",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
 							"port": "44355",
 							"path": [
-								"AwardRules"
+								"AwardRuleGroups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Collection With Rules",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/AwardRuleGroups?$expand=Rules",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardRuleGroups"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "Rules"
+								}
 							]
 						}
 					},
@@ -614,14 +639,14 @@
 							}
 						},
 						"url": {
-							"raw": "https://localhost:44355/AwardRules",
+							"raw": "https://localhost:44355/AwardRuleGroups",
 							"protocol": "https",
 							"host": [
 								"localhost"
 							],
 							"port": "44355",
 							"path": [
-								"AwardRules"
+								"AwardRuleGroups"
 							]
 						}
 					},
