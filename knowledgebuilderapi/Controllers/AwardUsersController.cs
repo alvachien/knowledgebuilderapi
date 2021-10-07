@@ -23,18 +23,17 @@ namespace knowledgebuilderapi.Controllers
             _context = context;
         }
 
-        // GET: /AwardRules
+        // GET: /AwardUsers
         [EnableQuery]
         public IQueryable<AwardUser> Get()
         {
             return _context.AwardUsers;
         }
 
-        //// GET: /AwardRules(:id)
-        //[EnableQuery]
-        //public SingleResult<AwardUser> Get([FromODataUri] int key)
+        //// [EnableQuery]
+        //public SingleResult<AwardUser> Get([FromODataUri] String keyTargetUser, String keySupervior)
         //{
-        //    return SingleResult.Create(_context.AwardUsers.Where(p => p.ID == key));
+        //    return SingleResult.Create(_context.AwardUsers.Where(p => p.TargetUser == keyTargetUser && p.Supervisor == keySupervior));
         //}
 
         // POST: /AwardUsers

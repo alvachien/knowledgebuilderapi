@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8f2fbf35-9def-4f35-a7df-91de2ce797ac",
+		"_postman_id": "a028051e-0fce-4bcb-81dd-cbb592cc2241",
 		"name": "Knowledge Builder API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -631,7 +631,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"RuleType\": \"1\",\r\n    \"TargetUser\": \"AAA\",\r\n    \"Desp\": \"AAA's go to bed rule\",\r\n    \"ValidFrom\": \"2021-01-01\",\r\n    \"ValidTo\": \"2021-12-31\",\r\n    \"TimeStart\": 19.5,\r\n    \"TimeEnd\": 21.0,\r\n    \"DaysFrom\": 1,\r\n    \"DaysTo\": 1,\r\n    \"Point\": 1\r\n}",
+							"raw": "{\r\n    \"RuleType\": \"GoToBedTime\",\r\n    \"TargetUser\": \"test2\",\r\n    \"Desp\": \"Go to bed\",\r\n    \"ValidFrom\": \"2021-10-01\",\r\n    \"ValidTo\": \"2021-12-31\",\r\n    \"Rules\": [\r\n        {\r\n            \"TimeStart\": 0,\r\n            \"TimeEnd\": 20.5,\r\n            \"DaysFrom\": 1,\r\n            \"DaysTo\": 2,\r\n            \"Point\": 2\r\n        },\r\n        {\r\n            \"TimeStart\": 0,\r\n            \"TimeEnd\": 20.5,\r\n            \"DaysFrom\": 2,\r\n            \"DaysTo\": 3,\r\n            \"Point\": 4\r\n        },\r\n        {\r\n            \"TimeStart\": 0,\r\n            \"TimeEnd\": 20.5,\r\n            \"DaysFrom\": 3,\r\n            \"DaysTo\": 9999,\r\n            \"Point\": 6\r\n        },\r\n        {\r\n            \"TimeStart\": 20.5,\r\n            \"TimeEnd\": 21.5,\r\n            \"DaysFrom\": 1,\r\n            \"DaysTo\": 2,\r\n            \"Point\": 1\r\n        },\r\n        {\r\n            \"TimeStart\": 20.5,\r\n            \"TimeEnd\": 21.5,\r\n            \"DaysFrom\": 2,\r\n            \"DaysTo\": 3,\r\n            \"Point\": 2\r\n        },\r\n        {\r\n            \"TimeStart\": 20.5,\r\n            \"TimeEnd\": 21.5,\r\n            \"DaysFrom\": 3,\r\n            \"DaysTo\": 9999,\r\n            \"Point\": 3\r\n        },\r\n        {\r\n            \"TimeStart\": 21.5,\r\n            \"TimeEnd\": 24,\r\n            \"DaysFrom\": 1,\r\n            \"DaysTo\": 2,\r\n            \"Point\": -1\r\n        },\r\n        {\r\n            \"TimeStart\": 21.5,\r\n            \"TimeEnd\": 24,\r\n            \"DaysFrom\": 2,\r\n            \"DaysTo\": 3,\r\n            \"Point\": -2\r\n        },\r\n        {\r\n            \"TimeStart\": 21.5,\r\n            \"TimeEnd\": 24,\r\n            \"DaysFrom\": 3,\r\n            \"DaysTo\": 9999,\r\n            \"Point\": -4\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1291,6 +1291,49 @@
 							"path": [
 								"UserCollectionItems",
 								"AddItemToCollectionEx"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AwardUser",
+			"item": [
+				{
+					"name": "Get Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/AwardUsers",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardUsers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Entry",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/AwardUsers(TargetUser='test2',Supervisor='test1')",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardUsers(TargetUser='test2',Supervisor='test1')"
 							]
 						}
 					},

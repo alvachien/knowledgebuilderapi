@@ -99,10 +99,10 @@ namespace knowledgebuilderapi.Models
         [Column("DoneOfFact", TypeName = "BIT")]
         public Boolean? DoneOfFact { get; set; }
 
-        [Column("TimeStart", TypeName = "DECIMAL")]
+        [Column("TimeStart", TypeName = "DECIMAL(17, 4)")]
         public Decimal? TimeStart { get; set; }
 
-        [Column("TimeEnd", TypeName = "DECIMAL")]
+        [Column("TimeEnd", TypeName = "DECIMAL(17, 4)")]
         public Decimal? TimeEnd { get; set; }
 
         [Column("DaysFrom", TypeName = "INT")]
