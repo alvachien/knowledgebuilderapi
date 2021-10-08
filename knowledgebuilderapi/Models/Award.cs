@@ -99,10 +99,10 @@ namespace knowledgebuilderapi.Models
         [Column("DoneOfFact", TypeName = "BIT")]
         public Boolean? DoneOfFact { get; set; }
 
-        [Column("TimeStart", TypeName = "DECIMAL(17, 4)")]
+        [Column("TimeStart", TypeName = "DECIMAL(6, 2)")]
         public Decimal? TimeStart { get; set; }
 
-        [Column("TimeEnd", TypeName = "DECIMAL(17, 4)")]
+        [Column("TimeEnd", TypeName = "DECIMAL(6, 2)")]
         public Decimal? TimeEnd { get; set; }
 
         [Column("DaysFrom", TypeName = "INT")]
@@ -187,10 +187,10 @@ namespace knowledgebuilderapi.Models
         [Column("RecordDate", TypeName = "DATE")]
         public DateTime RecordDate { get; set; }
 
-        [Column("SchoolWorkTime", TypeName = "DECIMAL")]
+        [Column("SchoolWorkTime", TypeName = "DECIMAL(6, 2)")]
         public Decimal? SchoolWorkTime { get; set; }
 
-        [Column("GoToBedTime", TypeName = "DECIMAL")]
+        [Column("GoToBedTime", TypeName = "DECIMAL(6, 2)")]
         public Decimal? GoToBedTime { get; set; }
 
         [Column("HomeWorkCount", TypeName = "SMALLINT")]
