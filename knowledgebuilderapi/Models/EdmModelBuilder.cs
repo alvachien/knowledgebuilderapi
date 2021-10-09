@@ -78,7 +78,7 @@ namespace knowledgebuilderapi.Models
             inviteUserEntity.Property(prop => prop.LastLoginAt).AsDate();
             var loginAction = inviteUserEntity.Collection.Action("ValidInvitationCode");
             loginAction.Parameter<String>("InvitationCode");
-            loginAction.ReturnsFromEntitySet<InvitedUser>("InvitedUser");
+            loginAction.ReturnsFromEntitySet<InvitedUser>("InvitedUsers");
 
 
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
