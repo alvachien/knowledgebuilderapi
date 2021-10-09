@@ -43,4 +43,11 @@ CREATE VIEW AwardPointReport AS
 			from AwardPoint group by TargetUser, RecordDate )
 	select TargetUser, RecordDate, Point, SUM(Point) OVER ( PARTITION BY TargetUser ORDER BY RecordDate ASC  ) as AggPoint
 	 from records;
-	
+
+-- View: AwardUserView
+CREATE VIEW AwardUserView AS 
+	SELECT a.TargetUser, b.UserName, b.DisplayAs, a.Supervisor
+		FROM AwardUser AS a
+		INNER JOIN InvitedUser AS b
+		ON a.TargetUser = b.UserID
+

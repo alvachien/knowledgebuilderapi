@@ -21,6 +21,7 @@ namespace knowledgebuilderapi.Models
             modelBuilder.EntitySet<DailyTrace>("DailyTraces");            
             modelBuilder.EntitySet<AwardPoint>("AwardPoints");
             modelBuilder.EntitySet<AwardUser>("AwardUsers");
+            modelBuilder.EntitySet<AwardUserView>("AwardUserViews");
             modelBuilder.EntitySet<AwardPointReport>("AwardPointReports");
             modelBuilder.EntitySet<Tag>("Tags");
             modelBuilder.EntitySet<TagCount>("TagCounts");
@@ -70,6 +71,15 @@ namespace knowledgebuilderapi.Models
             latestScoreAction.Parameter<String>("User");
             latestScoreAction.Parameter<int>("RefID");
             latestScoreAction.ReturnsFromEntitySet<ExerciseItemUserScore>("ExerciseItemUserScores");
+
+            modelBuilder.EntitySet<InvitedUser>("InvitedUsers");
+            var inviteUserEntity = modelBuilder.EntityType<InvitedUser>();
+            inviteUserEntity.Property(prop => prop.CreatedAt).AsDate();
+            inviteUserEntity.Property(prop => prop.LastLoginAt).AsDate();
+            var loginAction = inviteUserEntity.Collection.Action("ValidInvitationCode");
+            loginAction.Parameter<String>("InvitationCode");
+            loginAction.ReturnsFromEntitySet<InvitedUser>("InvitedUser");
+
 
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
 

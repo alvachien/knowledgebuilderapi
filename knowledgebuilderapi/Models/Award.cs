@@ -165,7 +165,7 @@ namespace knowledgebuilderapi.Models
     }
 
     [Table("AwardUser")]
-    public sealed class AwardUser
+    public class AwardUser
     {
         [Key]
         [Column("TargetUser", TypeName = "NVARCHAR(50)")]
@@ -174,6 +174,22 @@ namespace knowledgebuilderapi.Models
         [Key]
         [Column("Supervisor", TypeName = "NVARCHAR(50)")]
         public String Supervisor { get; set; }
+    }
+
+    public sealed class AwardUserView
+    {
+        [Key]
+        [Column("TargetUser", TypeName = "NVARCHAR(50)")]
+        public String TargetUser { get; set; }
+
+        [Column("Supervisor", TypeName = "NVARCHAR(50)")]
+        public String Supervisor { get; set; }
+
+        [Column("UserName", TypeName = "NVARCHAR(50)")]
+        public String UserName { get; set; }
+
+        [Column("DisplayAs", TypeName = "NVARCHAR(50)")]
+        public String DisplayAs { get; set; }
     }
 
     [Table("DailyTrace")]

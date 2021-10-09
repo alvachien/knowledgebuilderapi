@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a028051e-0fce-4bcb-81dd-cbb592cc2241",
+		"_postman_id": "17eff124-e4c8-4a5c-9909-16238981f1d4",
 		"name": "Knowledge Builder API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1342,6 +1342,83 @@
 			]
 		},
 		{
+			"name": "InvitedUser",
+			"item": [
+				{
+					"name": "Get collections",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/InvitedUsers",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"InvitedUsers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Valid Invitation Code",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"InvitationCode\": \"AlvaChien\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44355/InvitedUsers/ValidInvitationCode",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"InvitedUsers",
+								"ValidInvitationCode"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AwardUserView",
+			"item": [
+				{
+					"name": "Get Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/AwardUserViews",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"AwardUserViews"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Metadata",
 			"request": {
 				"method": "GET",
@@ -1374,32 +1451,6 @@
 					"port": "44355",
 					"path": [
 						"$odata"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Verify Access Code",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "https://localhost:44355/api/AccessCode?accessCode=Warm",
-					"protocol": "https",
-					"host": [
-						"localhost"
-					],
-					"port": "44355",
-					"path": [
-						"api",
-						"AccessCode"
-					],
-					"query": [
-						{
-							"key": "accessCode",
-							"value": "Warm"
-						}
 					]
 				}
 			},

@@ -157,3 +157,18 @@ CREATE TABLE [dbo].[AwardUser] (
 	PRIMARY KEY CLUSTERED ([TargetUser] ASC, [Supervisor] ASC)
 );
 
+-- Invited USER
+CREATE TABLE [dbo].[InvitedUser] (
+	[UserID]  NVARCHAR (50) NOT NULL,
+	[InvitationCode] nvarchar(20) NOT NULL,
+	[UserName] NVARCHAR (50) NOT NULL,
+	[DisplayAs] NVARCHAR(50) NOT NULL,
+	[Deleted] BIT NULL,
+	[CreatedAt]	DATETIME DEFAULT (getdate()) NULL,
+	[LastLoginAt] DATETIME DEFAULT (getdate()) NULL,
+	PRIMARY KEY CLUSTERED ([UserID] ASC),
+	CONSTRAINT UX_INVITEDUSERS_CODE UNIQUE([InvitationCode]),
+	CONSTRAINT UX_INVITEDUSERS_DISPLAYAS UNIQUE([DisplayAs])
+);
+
+

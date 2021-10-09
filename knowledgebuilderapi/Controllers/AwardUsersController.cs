@@ -11,7 +11,6 @@ using knowledgebuilderapi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace knowledgebuilderapi.Controllers
 {
     public class AwardUsersController : ODataController

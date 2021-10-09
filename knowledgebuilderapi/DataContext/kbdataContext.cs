@@ -39,6 +39,8 @@ namespace knowledgebuilderapi
         public DbSet<UserCollection> UserCollections { get; set; }
         public DbSet<UserCollectionItem> UserCollectionItems { get; set; }
         public DbSet<ExerciseItemUserScore> ExerciseItemUserScores { get; set; }
+        public DbSet<InvitedUser> InvitedUsers { get; set; }
+        public DbSet<AwardUserView> AwardUserViews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -365,6 +367,34 @@ namespace knowledgebuilderapi
                     entity.Property(e => e.ID)
                         .ValueGeneratedOnAdd();
                 }
+            });
+
+            modelBuilder.Entity<InvitedUser>(entity =>
+            {
+                if (!TestingMode)
+                {
+                    entity.Property(b => b.CreatedAt)
+                        .HasDefaultValueSql("GETDATE()");
+                    entity.Property(b => b.LastLoginAt)
+                        .HasDefaultValueSql("GETDATE()");
+                }
+                else
+                {
+                    // Testing mode: Sqlite
+                    entity.Property(b => b.CreatedAt)
+                        .HasDefaultValueSql("CURRENT_DATE");
+                    entity.Property(b => b.LastLoginAt)
+                        .HasDefaultValueSql("CURRENT_DATE");
+                }
+
+                entity.HasIndex(p => p.InvitationCode).IsUnique();
+                entity.HasIndex(p => p.DisplayAs).IsUnique();
+            });
+
+            modelBuilder.Entity<AwardUserView>(entity =>
+            {
+                entity.ToView("AwardUserView");
+                entity.HasNoKey();
             });
         }
     }

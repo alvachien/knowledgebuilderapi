@@ -12,8 +12,10 @@ namespace knowledgebuilderapi.Controllers
         public string InputtedCode { get; set; }
     }
 
-    [Route("api/[controller]")]
-    [ApiController]
+    // The logic below used to read configuration file to valid invitation code.
+    //
+    //[Route("api/[controller]")]
+    //[ApiController]
     public class AccessCodeController : ControllerBase
     {
         private IConfiguration _configuration;
