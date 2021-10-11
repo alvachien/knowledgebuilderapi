@@ -56,20 +56,20 @@ namespace knowledgebuilderapi
                     options.UseSqlServer(this.ConnectionString));
 
                 // TBD: Authentication
-                //services.AddAuthentication("Bearer")
-                //    .AddJwtBearer("Bearer", options =>
-                //    {
-                //        options.Authority = "https://localhost:44353";
-                //        options.RequireHttpsMetadata = true;
-                //        options.SaveToken = true;
-                //        options.IncludeErrorDetails = true;
-                //        options.TokenValidationParameters = new TokenValidationParameters
-                //        {
-                //            ValidateAudience = false
-                //        };
+                services.AddAuthentication("Bearer")
+                    .AddJwtBearer("Bearer", options =>
+                    {
+                        options.Authority = "https://localhost:44353";
+                        options.RequireHttpsMetadata = true;
+                        options.SaveToken = true;
+                        options.IncludeErrorDetails = true;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateAudience = false
+                        };
 
-                //        options.Audience = "knowledgebuilder.api";
-                //    });
+                        options.Audience = "knowledgebuilder.api";
+                    });
 
                 services.AddCors(options =>
                 {
