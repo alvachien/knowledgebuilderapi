@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.OData.Deltas;
 
 namespace knowledgebuilderapi.Controllers
 {
+    [Authorize]
     public class ExerciseItemAnswersController : ODataController
     {
         private readonly kbdataContext _context;

@@ -10,9 +10,11 @@ using Microsoft.AspNetCore.OData.Deltas;
 using knowledgebuilderapi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace knowledgebuilderapi.Controllers
 {
+    [Authorize]
     public class TagCountsController : ODataController
     {
         private readonly kbdataContext _context;

@@ -12,9 +12,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.OData.Query.Validator;
 using Microsoft.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace knowledgebuilderapi.Controllers
 {
+    [Authorize]
     public class UserCollectionsController : ODataController
     {
         private readonly kbdataContext _context;
