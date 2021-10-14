@@ -68,7 +68,7 @@ namespace knowledgebuilderapi
                             ValidateAudience = false
                         };
 
-                        options.Audience = "knowledgebuilder.api";
+                        // options.Audience = "knowledgebuilder.api";
                     });
 
                 services.AddCors(options =>
