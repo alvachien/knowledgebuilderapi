@@ -76,8 +76,8 @@ namespace knowledgebuilderapi
                     options.AddPolicy(MyAllowSpecificOrigins, builder =>
                     {
                         builder.WithOrigins(
-                            "http://localhost:5005",
-                            "https://localhost:5005"
+                            "http://localhost:44367",
+                            "https://localhost:44367"
                             )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
