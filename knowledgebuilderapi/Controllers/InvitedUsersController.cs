@@ -10,10 +10,11 @@ using Microsoft.AspNetCore.OData.Deltas;
 using knowledgebuilderapi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace knowledgebuilderapi.Controllers
 {
+    [Authorize]
     public class InvitedUsersController : ODataController
     {
         private readonly kbdataContext _context;
@@ -24,39 +25,51 @@ namespace knowledgebuilderapi.Controllers
         }
 
         /// GET: /AwardPoints
-        //[EnableQuery]
-        //public IQueryable<InvitedUser> Get()
-        //{
-        //    return _context.InvitedUsers;
-        //}
-
-        [HttpPost]
-        public IActionResult ValidInvitationCode([FromBody] ODataActionParameters parameters)
+        [EnableQuery]
+        public IQueryable<InvitedUser> Get()
         {
-            if (!ModelState.IsValid)
+            String usrName = String.Empty;
+            try
             {
-                foreach (var value in ModelState.Values)
-                {
-                    foreach (var err in value.Errors)
-                    {
-                        System.Diagnostics.Debug.WriteLine(err.Exception?.Message);
-                    }
-                }
-
-                return BadRequest(ModelState);
+                usrName = ControllerUtil.GetUserID(this);
+                if (String.IsNullOrEmpty(usrName))
+                    throw new UnauthorizedAccessException();
+            }
+            catch
+            {
+                throw new UnauthorizedAccessException();
             }
 
-            String code = (String)parameters["InvitationCode"];
-
-            var user = this._context.InvitedUsers.FirstOrDefault(p => p.InvitationCode == code);
-
-            if (user == null)
-                return NotFound();
-
-            user.LastLoginAt = DateTime.Now;
-            _context.SaveChanges();
-
-            return Ok(user);
+            return _context.InvitedUsers.Where(p => p.UserID == usrName);
         }
+
+        //[HttpPost]
+        //public IActionResult ValidInvitationCode([FromBody] ODataActionParameters parameters)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        foreach (var value in ModelState.Values)
+        //        {
+        //            foreach (var err in value.Errors)
+        //            {
+        //                System.Diagnostics.Debug.WriteLine(err.Exception?.Message);
+        //            }
+        //        }
+
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    String code = (String)parameters["InvitationCode"];
+
+        //    var user = this._context.InvitedUsers.FirstOrDefault(p => p.InvitationCode == code);
+
+        //    if (user == null)
+        //        return NotFound();
+
+        //    user.LastLoginAt = DateTime.Now;
+        //    _context.SaveChanges();
+
+        //    return Ok(user);
+        //}
     }
 }
