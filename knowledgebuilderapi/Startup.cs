@@ -136,7 +136,7 @@ namespace knowledgebuilderapi
                 );
 
             // TBD: Authorization
-            //services.AddAuthorization();            
+            services.AddAuthorization();            
 
             // Response Caching
             services.AddResponseCaching();
@@ -165,8 +165,8 @@ namespace knowledgebuilderapi
             app.UseRouting();
 
             // TBD: Authentication, Authorization
-            //app.UseAuthentication();
-            //app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

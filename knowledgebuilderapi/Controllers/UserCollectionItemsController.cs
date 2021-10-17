@@ -55,6 +55,9 @@ namespace knowledgebuilderapi.Controllers
             }
 
             String user = (String)parameters["User"];
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId) || user != usrId)
+                throw new Exception("Failed ID");
             int collid = (int)parameters["ID"];
             int refid = (int)parameters["RefID"];
             TagRefType reftype = (TagRefType)parameters["RefType"];
@@ -128,6 +131,9 @@ namespace knowledgebuilderapi.Controllers
             String user = (String)parameters["User"];
             if (String.IsNullOrEmpty(user))
                 return BadRequest("Invalid input");
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId) || user != usrId)
+                throw new Exception("Failed ID");
             var items = (IEnumerable<UserCollectionItem>)parameters["UserCollectionItems"];
             foreach (var item in items)
             {
@@ -194,6 +200,9 @@ namespace knowledgebuilderapi.Controllers
             }
 
             String user = (String)parameters["User"];
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId) || user != usrId)
+                throw new Exception("Failed ID");
             int collid = (int)parameters["ID"];
             int refid = (int)parameters["RefID"];
             TagRefType reftype = (TagRefType)parameters["RefType"];

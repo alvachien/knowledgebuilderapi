@@ -26,46 +26,83 @@ namespace knowledgebuilderapi.Controllers
             _context = context;
         }
 
-        // GET: /UserCollections
-        // [EnableQuery]
-        public IActionResult Get(ODataQueryOptions<UserCollection> queryOptions)
+        /// GET: /KnowledgeItems
+        /// <summary>
+        /// Adds support for getting knowledges, for example:
+        /// 
+        /// GET /KnowledgeItems
+        /// GET /KnowledgeItems?$filter=Title eq 'Windows 95'
+        /// GET /KnowledgeItems?
+        /// 
+        /// <remarks>
+        [EnableQuery]
+        public IQueryable<UserCollection> Get()
         {
-            // var querable = accounts.AsQueryable<Account>();
-            if (queryOptions.Filter == null)
-                return BadRequest("Must specify ther User");
-            else
-            {
-                if (!queryOptions.Filter.RawValue.Contains("User EQ", StringComparison.OrdinalIgnoreCase))
-                    return BadRequest("Must specify ther User");
-            }
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId)) 
+                throw new Exception("Failed ID");
 
-            // queryOptions.Validate(new ODataValidationSettings())
-            var finalQuery = queryOptions.ApplyTo(_context.UserCollections);
-            return Ok(finalQuery);
-            //return _context.UserCollections;
+            return _context.UserCollections.Where(p => p.User == usrId);
         }
 
-        // GET: /UserCollections(:id)
-        // [EnableQuery]
-        public IActionResult Get([FromODataUri] int key, ODataQueryOptions<UserCollection> queryOptions)
+        /// GET: /KnowledgeItems(:id)
+        /// <summary>
+        /// Adds support for getting a knowledge by key, for example:
+        /// 
+        /// GET /KnowledgeItems(1)
+        /// </summary>
+        /// <param name="key">The key of the Knowledge item required</param>
+        /// <returns>The Knowledge item</returns>
+        [EnableQuery]
+        public SingleResult<UserCollection> Get([FromODataUri] int key)
         {
-            // return SingleResult.Create(_context.UserCollections.Where(p => p.ID == key));
-            var accountQuery = _context.UserCollections.Where(c => c.ID == key);
-            if (!accountQuery.Any())
-            {
-                return NotFound();
-            }
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
 
-            var finalQuery = queryOptions.ApplyTo(accountQuery.AsQueryable<UserCollection>()) as IQueryable<dynamic>;
-            var result = finalQuery.FirstOrDefault();
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
+            return SingleResult.Create(_context.UserCollections.Where(p => p.User == usrId && p.ID == key));
         }
+
+        //// GET: /UserCollections
+        //// [EnableQuery]
+        //public IActionResult Get(ODataQueryOptions<UserCollection> queryOptions)
+        //{
+        //    // var querable = accounts.AsQueryable<Account>();
+        //    if (queryOptions.Filter == null)
+        //        return BadRequest("Must specify ther User");
+        //    else
+        //    {
+        //        if (!queryOptions.Filter.RawValue.Contains("User EQ", StringComparison.OrdinalIgnoreCase))
+        //            return BadRequest("Must specify ther User");
+        //    }
+
+        //    // queryOptions.Validate(new ODataValidationSettings())
+        //    var finalQuery = queryOptions.ApplyTo(_context.UserCollections);
+        //    return Ok(finalQuery);
+        //    //return _context.UserCollections;
+        //}
+
+        //// GET: /UserCollections(:id)
+        //// [EnableQuery]
+        //public IActionResult Get([FromODataUri] int key, ODataQueryOptions<UserCollection> queryOptions)
+        //{
+        //    // return SingleResult.Create(_context.UserCollections.Where(p => p.ID == key));
+        //    var accountQuery = _context.UserCollections.Where(c => c.ID == key);
+        //    if (!accountQuery.Any())
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var finalQuery = queryOptions.ApplyTo(accountQuery.AsQueryable<UserCollection>()) as IQueryable<dynamic>;
+        //    var result = finalQuery.FirstOrDefault();
+
+        //    if (result == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return Ok(result);
+        //}
 
         // POST: /UserCollections
         /// <summary>
@@ -86,7 +123,11 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest();
             }
 
-            coll.CreatedAt = DateTime.Now;
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId) || coll.User != usrId)
+                throw new Exception("Failed ID");
+
+            coll.CreatedAt = DateTime.Now;            
             _context.UserCollections.Add(coll);
             await _context.SaveChangesAsync();
 
@@ -108,6 +149,10 @@ namespace knowledgebuilderapi.Controllers
             {
                 return BadRequest();
             }
+
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId) || update.User != usrId)
+                throw new Exception("Failed ID");
 
             var dbcoll = await _context.UserCollections
                     .Include(i => i.Items)
