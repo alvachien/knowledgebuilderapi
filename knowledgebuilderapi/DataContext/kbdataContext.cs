@@ -394,7 +394,12 @@ namespace knowledgebuilderapi
             modelBuilder.Entity<AwardUserView>(entity =>
             {
                 entity.ToView("AwardUserView");
-                entity.HasNoKey();
+                // entity.HasNoKey();
+                entity.HasKey(d => new { d.TargetUser, d.Supervisor });
+
+                entity.HasOne(d => d.CurrentUser)
+                    .WithMany(d => d.AwardUsers)
+                    .HasForeignKey(d => d.Supervisor);
             });
         }
     }

@@ -11,6 +11,11 @@ namespace knowledgebuilderapi.Models
     [Table("InvitedUser")]
     public class InvitedUser
     {
+        public InvitedUser()
+        {
+            AwardUsers = new HashSet<AwardUserView>();
+        }
+
         [Key]
         [Column("UserID", TypeName = "NVARCHAR(50)")]
         [StringLength(50)]
@@ -39,5 +44,7 @@ namespace knowledgebuilderapi.Models
 
         [Column("LastLoginAt", TypeName = "DATETIME")]
         public DateTime LastLoginAt { get; set; }
+
+        public ICollection<AwardUserView> AwardUsers { get; set; }
     }
 }

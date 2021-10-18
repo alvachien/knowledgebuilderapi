@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace knowledgebuilderapi.Controllers
 {
-    [Authorize]
+    // [Authorize]
     public class AwardUserViewsController : ODataController
     {
         private readonly kbdataContext _context;

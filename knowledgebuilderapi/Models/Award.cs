@@ -190,6 +190,8 @@ namespace knowledgebuilderapi.Models
 
         [Column("DisplayAs", TypeName = "NVARCHAR(50)")]
         public String DisplayAs { get; set; }
+
+        public InvitedUser CurrentUser { get; set; }
     }
 
     [Table("DailyTrace")]
