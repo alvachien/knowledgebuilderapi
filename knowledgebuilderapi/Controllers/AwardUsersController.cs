@@ -28,7 +28,11 @@ namespace knowledgebuilderapi.Controllers
         [EnableQuery]
         public IQueryable<AwardUser> Get()
         {
-            return _context.AwardUsers;
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            return _context.AwardUsers.Where(p => p.Supervisor == usrId);
         }
 
         //// [EnableQuery]
@@ -56,6 +60,13 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest();
             }
 
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            if (item.Supervisor != usrId)
+                throw new Exception("Wrong User");            
+
             _context.AwardUsers.Add(item);
             await _context.SaveChangesAsync();
 
@@ -73,6 +84,13 @@ namespace knowledgebuilderapi.Controllers
             {
                 return NotFound();
             }
+
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            if (usr.Supervisor != usrId)
+                throw new Exception("Invalid User");
 
             _context.AwardUsers.Remove(usr);
             await _context.SaveChangesAsync();

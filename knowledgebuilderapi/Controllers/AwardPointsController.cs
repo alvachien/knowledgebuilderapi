@@ -28,14 +28,32 @@ namespace knowledgebuilderapi.Controllers
         [EnableQuery]
         public IQueryable<AwardPoint> Get()
         {
-            return _context.AwardPoints;
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            // return _context.AwardPoints;
+            return from au in _context.AwardUsers
+                   join ap in _context.AwardPoints
+                   on au.TargetUser equals ap.TargetUser
+                   where au.Supervisor == usrId
+                   select ap;
         }
 
         /// GET: /AwardPoints(:id)
         [EnableQuery]
         public SingleResult<AwardPoint> Get([FromODataUri] int key)
         {
-            return SingleResult.Create(_context.AwardPoints.Where(p => p.ID == key));
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            return SingleResult.Create(from au in _context.AwardUsers
+                                       join ap in _context.AwardPoints
+                                       on au.TargetUser equals ap.TargetUser
+                                       where au.Supervisor == usrId
+                                        && ap.ID == key
+                                       select ap);
         }
 
         // POST: /AwardPoints
@@ -54,8 +72,19 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest();
             }
 
-            // Update db
-            _context.AwardPoints.Add(point);
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            var rst = (from au in _context.AwardUsers
+                       where au.TargetUser == point.TargetUser
+                         && au.Supervisor == usrId
+                       select au).Count();
+            if (rst != 1)
+                throw new Exception("Invalid user data");
+
+             // Update db
+             _context.AwardPoints.Add(point);
             await _context.SaveChangesAsync();
 
             return Created(point);
@@ -73,6 +102,17 @@ namespace knowledgebuilderapi.Controllers
             {
                 return BadRequest("Key is not matched");
             }
+
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            var rst = (from au in _context.AwardUsers
+                       where au.TargetUser == update.TargetUser
+                         && au.Supervisor == usrId
+                       select au).Count();
+            if (rst != 1)
+                throw new Exception("Invalid user data");
 
             // Check item need be updated
             var dbentry = await _context.AwardPoints.SingleOrDefaultAsync(x => x.ID == key);
@@ -102,6 +142,16 @@ namespace knowledgebuilderapi.Controllers
             {
                 return NotFound();
             }
+
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+            var rst = (from au in _context.AwardUsers
+                       where au.TargetUser == point.TargetUser
+                         && au.Supervisor == usrId
+                       select au).Count();
+            if (rst != 1)
+                throw new Exception("Invalid user data");
 
             if (point.MatchedRuleID.HasValue)
             {

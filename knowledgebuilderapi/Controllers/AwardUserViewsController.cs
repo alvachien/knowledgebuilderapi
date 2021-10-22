@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace knowledgebuilderapi.Controllers
 {
-    // [Authorize]
+    [Authorize]
     public class AwardUserViewsController : ODataController
     {
         private readonly kbdataContext _context;
@@ -28,7 +28,11 @@ namespace knowledgebuilderapi.Controllers
         [EnableQuery]
         public IQueryable<AwardUserView> Get()
         {
-            return _context.AwardUserViews;
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            return _context.AwardUserViews.Where(p => p.Supervisor == usrId);
         }
     }
 }

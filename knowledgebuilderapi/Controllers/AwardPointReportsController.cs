@@ -28,7 +28,16 @@ namespace knowledgebuilderapi.Controllers
         [EnableQuery]
         public IQueryable<AwardPointReport> Get()
         {
-            return _context.AwardPointReports;
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            //return _context.AwardPointReports.Where(p => p.TargetUser ;
+            return from au in _context.AwardUsers
+                      join ap in _context.AwardPointReports
+                      on au.TargetUser equals ap.TargetUser
+                      where au.Supervisor == usrId
+                      select ap;
         }
     }
 }

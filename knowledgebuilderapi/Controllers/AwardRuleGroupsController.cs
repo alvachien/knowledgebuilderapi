@@ -28,14 +28,31 @@ namespace knowledgebuilderapi.Controllers
         [EnableQuery]
         public IQueryable<AwardRuleGroup> Get()
         {
-            return _context.AwardRuleGroups;
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            return from au in _context.AwardUsers
+                   join ap in _context.AwardRuleGroups
+                   on au.TargetUser equals ap.TargetUser
+                   where au.Supervisor == usrId
+                   select ap;
         }
 
         // GET: /AwardRules(:id)
         [EnableQuery]
         public SingleResult<AwardRuleGroup> Get([FromODataUri] int key)
         {
-            return SingleResult.Create(_context.AwardRuleGroups.Where(p => p.ID == key));
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            return SingleResult.Create(from au in _context.AwardUsers
+                                       join ap in _context.AwardRuleGroups
+                                       on au.TargetUser equals ap.TargetUser
+                                       where au.Supervisor == usrId
+                                         && ap.ID == key
+                                       select ap);
         }
 
         // POST: /AwardUserGroups
@@ -56,6 +73,15 @@ namespace knowledgebuilderapi.Controllers
 
                 return BadRequest();
             }
+
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+            var rstcnt = (from au in _context.AwardUsers
+                          where au.Supervisor == usrId && au.TargetUser == item.TargetUser
+                          select au).Count();
+            if (rstcnt != 1)
+                throw new Exception("INvalid target user");
 
             // Check there is no overlap
             var grpList = (from grp in _context.AwardRuleGroups
@@ -93,6 +119,18 @@ namespace knowledgebuilderapi.Controllers
         /// </summary>
         public async Task<IActionResult> Delete([FromODataUri] int key)
         {
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            var grpcnt = (from au in _context.AwardUsers
+                          join ap in _context.AwardRuleGroups
+                            on au.TargetUser equals ap.TargetUser
+                            where au.Supervisor == usrId && ap.ID == key
+                          select ap).Count();
+            if (grpcnt != 1)
+                throw new Exception("Invalid Usser");
+
             // Check rule is inusing
             var dbgrp = await _context.AwardRuleGroups
                 .Include(i => i.Rules)
