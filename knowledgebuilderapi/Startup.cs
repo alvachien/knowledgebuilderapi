@@ -94,21 +94,20 @@ namespace knowledgebuilderapi
                 this.ConnectionString = Configuration.GetConnectionString("AliyunConnection");
                 services.AddDbContext<kbdataContext>(options => options.UseSqlServer(this.ConnectionString));
 
-                // TBD: Authentication
-                //services.AddAuthentication("Bearer")
-                //    .AddJwtBearer("Bearer", options =>
-                //    {
-                //        options.Authority = "https://www.alvachien.com/idserver";
-                //        options.RequireHttpsMetadata = true;
-                //        options.SaveToken = true;
-                //        options.IncludeErrorDetails = true;
-                //        options.TokenValidationParameters = new TokenValidationParameters
-                //        {
-                //            ValidateAudience = false
-                //        };
+                services.AddAuthentication("Bearer")
+                    .AddJwtBearer("Bearer", options =>
+                    {
+                        options.Authority = "https://www.alvachien.com/idserver";
+                        options.RequireHttpsMetadata = true;
+                        options.SaveToken = true;
+                        options.IncludeErrorDetails = true;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateAudience = false
+                        };
 
-                //        options.Audience = "knowledgebuilder.api";
-                //    });
+                        // options.Audience = "api.knowledgebuilder";
+                    });
 
                 services.AddCors(options =>
                 {
