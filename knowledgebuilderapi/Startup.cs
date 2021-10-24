@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.OData.Edm;
 using knowledgebuilderapi.Models;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Hosting;
 
 namespace knowledgebuilderapi
 {
@@ -49,7 +50,7 @@ namespace knowledgebuilderapi
         {
             services.AddCors();
 
-            if (Environment.EnvironmentName == "Development")
+            if (Environment.IsDevelopment())
             {
                 this.ConnectionString = Configuration["KBAPI.ConnectionString"];
                 services.AddDbContext<kbdataContext>(options =>
@@ -84,12 +85,8 @@ namespace knowledgebuilderapi
                         .AllowCredentials();
                     });
                 });
-
-                // Test
-                var name = Configuration["UserMapping:Alva"];
-                System.Diagnostics.Debug.Write(name);
             }
-            else if (Environment.EnvironmentName == "Production")
+            else if (Environment.IsProduction())
             {
                 this.ConnectionString = Configuration.GetConnectionString("AliyunConnection");
                 services.AddDbContext<kbdataContext>(options => options.UseSqlServer(this.ConnectionString));
@@ -146,7 +143,7 @@ namespace knowledgebuilderapi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.EnvironmentName == "Development")
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
