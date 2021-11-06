@@ -39,7 +39,7 @@ namespace knowledgebuilderapi.Controllers
             return _context.ExerciseItems;
         }
 
-        /// GET: /ExerciseItem(:id)
+        /// GET: /ExerciseItems(:id)
         /// <summary>
         /// Adds support for getting a exercise by key, for example:
         /// 

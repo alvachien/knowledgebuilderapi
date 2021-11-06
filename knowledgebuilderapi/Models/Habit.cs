@@ -9,18 +9,19 @@ namespace knowledgebuilderapi.Models
 {
     public enum HabitCategory : Int16
     {
-        GoodHabit = 1,
-        BadHabit = 2,
+        Positive = 0,
+        Negative = 1,
     }
 
     public enum HabitFrequency: Int16
     {
-        Daily = 1,
-        Weekly = 2,
-        Monthly = 3
+        Daily = 0,
+        Weekly = 1,
+        Monthly = 2
     }
 
-    public class HabitItem
+    [Table("UserHabit")]
+    public class UserHabit
     {
         [Key]
         [Column("ID", TypeName = "INT")]
@@ -50,30 +51,57 @@ namespace knowledgebuilderapi.Models
         [Column("DoneCriteria", TypeName = "INT")]
         public Int32 DoneCriteria { get; set; }
 
-        public ICollection<HabitItemRule> Rules { get; set; }
+        public ICollection<UserHabitRule> Rules { get; set; }
+        public ICollection<UserHabitRecord> Records { get; set; }
 
-        public HabitItem()
+        public UserHabit()
         {
-            Rules = new HashSet<HabitItemRule>();
+            Rules = new HashSet<UserHabitRule>();
+            Records = new HashSet<UserHabitRecord>();
         }
     }
 
-    public class HabitItemRule
+    [Table("UserHabitRule")]
+    public class UserHabitRule
     {
         [Key]
-        [Column("ID", TypeName = "INT")]
-        public Int32 ID { get; set; }
+        [Column("HabitID", TypeName = "INT")]
+        public Int32 HabitID { get; set; }
 
-        [Column("TimesFrom", TypeName = "INT")]
-        public Int32 MeetTimesFrom { get; set; }
+        [Key]
+        [Column("RuleID", TypeName = "INT")]
+        public Int32 RuleID { get; set; }
 
-        [Column("TimesTo", TypeName = "INT")]
-        public Int32 MeetTimesTo { get; set; }
+        [Column("ContinuousRecordFrom", TypeName = "INT")]
+        public Int32 ContinuousRecordFrom { get; set; }
+
+        [Column("ContinuousRecordTo", TypeName = "INT")]
+        public Int32 ContinuousRecordTo { get; set; }
 
         [Column("Point", TypeName = "INT")]
         public Int32 Point { get; set; }
 
-        public HabitItem CurrentHabit { get; set; }
+        public UserHabit CurrentHabit { get; set; }
+    }
+
+    [Table("UserHabitRecord")]
+    public class UserHabitRecord
+    {
+        [Key]
+        [Column("HabitID", TypeName = "INT")]
+        public Int32 HabitID { get; set; }
+
+        [Column("RuleID", TypeName = "INT")]
+        public Int32 RuleID { get; set; }
+
+        [Key]
+        [Column("RecordDate", TypeName = "DATE")]
+        public DateTime RecordDate { get; set; }
+
+        [Column("COMMENT", TypeName = "NVARCHAR(50)")]
+        public String Comment { get; set; }
+
+        public UserHabit CurrentHabit { get; set; }
     }
 }
 

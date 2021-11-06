@@ -82,6 +82,16 @@ namespace knowledgebuilderapi.Models
             //var displayNameAction = inviteUserEntity.Collection.Function("GetDisplayAs").Returns<String>();
             //displayNameAction.Parameter<String>("UserID");
 
+            // 2021.11.6
+            modelBuilder.EntitySet<UserHabit>("UserHabits");
+            var usrHabitEntity = modelBuilder.EntityType<UserHabit>();
+            usrHabitEntity.Property(prop => prop.ValidFrom).AsDate();
+            usrHabitEntity.Property(prop => prop.ValidTo).AsDate();
+            modelBuilder.EntitySet<UserHabitRule>("UserHabitRules");
+            modelBuilder.EntitySet<UserHabitRecord>("UserHabitRecords");
+            var usrHabitRecordEntity = modelBuilder.EntityType<UserHabitRecord>();
+            usrHabitRecordEntity.Property(prop => prop.RecordDate).AsDate();
+
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
 
             return modelBuilder.GetEdmModel();

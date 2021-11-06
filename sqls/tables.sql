@@ -172,3 +172,43 @@ CREATE TABLE [dbo].[InvitedUser] (
 );
 
 
+-- Added since 2021.11.6
+--  Habit Item
+CREATE TABLE UserHabit(
+    [ID]            INT           IDENTITY (1, 1) NOT NULL,
+    [Category]      SMALLINT      DEFAULT(0) NOT NULL,
+    [Name]          NVARCHAR(50)  NOT NULL,
+    [TargetUser]    NVARCHAR (50) NOT NULL,
+
+    [Frequency]     SMALLINT      DEFAULT(0) NOT NULL,
+    [DoneCriteria]  INT           DEFAULT(1) NOT NULL,
+
+    [Comment]       NVARCHAR(50)  NULL,
+    [ValidFrom]     DATE      DEFAULT (getdate()) NULL,
+    [ValidTo]       DATE      DEFAULT (getdate()) NULL,
+
+    PRIMARY KEY CLUSTERED ([ID] ASC),
+	CONSTRAINT [FK_USERHABIT_USER] FOREIGN KEY ([TargetUser]) REFERENCES [InvitedUser] ([UserID]) ON DELETE CASCADE ON UPDATE CASCADE	
+);
+
+-- Habit Item Rules
+CREATE TABLE UserHabitRule(
+    [HabitID]       INT            NOT NULL,
+    [RuleID]        INT            NOT NULL,
+    [ContinousRecordFrom]   INT    NULL,
+    [ContinousRecordTo]     INT    NULL,
+    [Point]         INT            NOT NULL,
+    PRIMARY KEY CLUSTERED ([HabitID] ASC, [RuleID] ASC),
+	CONSTRAINT [FK_USERHABITRULE_HABIT] FOREIGN KEY ([UserHabit]) REFERENCES [HabitItem] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE	
+);
+
+-- User Habit Record
+CREATE TABLE UserHabitRecord(
+    [HabitID]       INT            NOT NULL,
+	[RecordDate]	DATE		   DEFAULT (getdate()) NOT NULL,
+    [RuleID]        INT            NULL,
+    [Comment]       NVARCHAR(50)   NULL,
+    PRIMARY KEY CLUSTERED ([HabitID] ASC, [RecordDate] ASC),
+	CONSTRAINT [FK_USERHABITRECORD_HABIT] FOREIGN KEY ([UserHabit]) REFERENCES [HabitItem] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
+);
+

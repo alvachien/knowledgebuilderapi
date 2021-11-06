@@ -41,6 +41,9 @@ namespace knowledgebuilderapi
         public DbSet<ExerciseItemUserScore> ExerciseItemUserScores { get; set; }
         public DbSet<InvitedUser> InvitedUsers { get; set; }
         public DbSet<AwardUserView> AwardUserViews { get; set; }
+        public DbSet<UserHabit> UserHabits { get; set; }
+        public DbSet<UserHabitRule> UserHabitRules { get; set; }
+        public DbSet<UserHabitRecord> UserHabitRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -400,6 +403,74 @@ namespace knowledgebuilderapi
                 entity.HasOne(d => d.CurrentUser)
                     .WithMany(d => d.AwardUsers)
                     .HasForeignKey(d => d.Supervisor);
+            });
+
+            modelBuilder.Entity<UserHabit>(entity =>
+            {
+                if (!TestingMode)
+                {
+                    entity.Property(b => b.ValidFrom)
+                        .HasDefaultValueSql("GETDATE()");
+                    entity.Property(b => b.ValidTo)
+                        .HasDefaultValueSql("GETDATE()");
+
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd()
+                        .UseIdentityColumn();
+                }
+                else
+                {
+                    // Testing mode: Sqlite
+                    entity.Property(b => b.ValidFrom)
+                        .HasDefaultValueSql("CURRENT_DATE");
+                    entity.Property(b => b.ValidTo)
+                        .HasDefaultValueSql("CURRENT_DATE");
+
+                    entity.Property(e => e.ID)
+                        .ValueGeneratedOnAdd();
+                }
+
+                entity.Property(b => b.Category)
+                    .HasConversion(
+                        v => (short)v,
+                        v => (HabitCategory)v);
+                entity.Property(b => b.Frequency)
+                    .HasConversion(
+                        v => (short)v,
+                        v => (HabitFrequency)v);
+
+                entity.HasMany(d => d.Rules)
+                    .WithOne(p => p.CurrentHabit)
+                    .HasForeignKey(d => d.HabitID)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_USERHABITRULE_HABIT");
+                entity.HasMany(d => d.Records)
+                    .WithOne(p => p.CurrentHabit)
+                    .HasForeignKey(d => d.HabitID)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_USERHABITRECORD_HABIT");
+            });
+
+            modelBuilder.Entity<UserHabitRule>(entity =>
+            {
+                entity.HasKey(d => new { d.HabitID, d.RuleID });
+            });
+
+            modelBuilder.Entity<UserHabitRecord>(entity =>
+            {
+                entity.HasKey(d => new { d.HabitID, d.RecordDate });
+
+                if (!TestingMode)
+                {
+                    entity.Property(b => b.RecordDate)
+                        .HasDefaultValueSql("GETDATE()");
+                }
+                else
+                {
+                    // Testing mode: Sqlite
+                    entity.Property(b => b.RecordDate)
+                        .HasDefaultValueSql("CURRENT_DATE");
+                }
             });
         }
     }
