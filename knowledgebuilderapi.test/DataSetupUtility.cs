@@ -95,6 +95,62 @@ namespace knowledgebuilderapi.test
                 CountOfDay      INT         NULL,
 	            COMMENT		NVARCHAR(50)	NULL )"
             );
+
+            database.ExecuteSqlRaw(@"CREATE TABLE InvitedUser (
+	            UserID  NVARCHAR(50) NOT NULL,
+	            InvitationCode NVARCHAR(20) NOT NULL,
+	            UserName NVARCHAR(50) NOT NULL,
+	            DisplayAs NVARCHAR(50) NOT NULL,
+	            Deleted BIT NULL,
+	            CreatedAt	DATE NULL DEFAULT CURRENT_DATE,
+	            LastLoginAt DATE NULL DEFAULT CURRENT_DATE,
+	            PRIMARY KEY (UserID),
+	            CONSTRAINT UX_INVITEDUSERS_CODE UNIQUE(InvitationCode),
+	            CONSTRAINT UX_INVITEDUSERS_DISPLAYAS UNIQUE(DisplayAs) )"
+            );
+
+            database.ExecuteSqlRaw(@"CREATE TABLE AwardUser (
+	            TargetUser  NVARCHAR(50) NOT NULL,
+	            Supervisor NVARCHAR(50) NOT NULL,
+	            PRIMARY KEY (TargetUser, Supervisor) )"
+            );
+
+            // Added on 2021.11.06
+            database.ExecuteSqlRaw(@"CREATE TABLE UserHabit(
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                Category   SMALLINT  NOT NULL DEFAULT 0,
+                Name       NVARCHAR(50)  NOT NULL,
+                TargetUser NVARCHAR(50) NOT NULL,
+
+                Frequency  SMALLINT  NOT NULL DEFAULT 0,
+                DoneCriteria  INT NOT NULL DEFAULT 1,
+                StartDate     INT NULL,
+
+                Comment    NVARCHAR(50)  NULL,
+                ValidFrom  DATE   NULL   DEFAULT CURRENT_DATE,
+                ValidTo    DATE   NULL   DEFAULT CURRENT_DATE,
+
+	            CONSTRAINT FK_USERHABIT_USER FOREIGN KEY (TargetUser) REFERENCES InvitedUser (UserID) ON DELETE CASCADE ON UPDATE CASCADE )"
+            );
+
+            database.ExecuteSqlRaw(@"CREATE TABLE UserHabitRule(
+                HabitID       INT            NOT NULL,
+                RuleID        INT            NOT NULL,
+                ContinuousRecordFrom   INT    NULL,
+                ContinuousRecordTo     INT    NULL,
+                Point         INT            NOT NULL,
+                PRIMARY KEY (HabitID, RuleID),
+	            CONSTRAINT FK_USERHABITRULE_HABIT FOREIGN KEY (HabitID) REFERENCES UserHabit (ID) ON DELETE CASCADE ON UPDATE CASCADE	)"
+            );
+
+            database.ExecuteSqlRaw(@"CREATE TABLE UserHabitRecord(
+                HabitID       INT            NOT NULL,
+	            RecordDate	DATE		   NULL DEFAULT CURRENT_DATE,
+                RuleID        INT            NULL,
+                Comment       NVARCHAR(50)   NULL,
+                PRIMARY KEY (HabitID, RecordDate),
+	            CONSTRAINT FK_USERHABITRECORD_HABIT FOREIGN KEY (HabitID) REFERENCES HabitID (ID) ON DELETE CASCADE ON UPDATE CASCADE )"
+            );
         }
 
         public static void CreateDatabaseViews(DatabaseFacade database)

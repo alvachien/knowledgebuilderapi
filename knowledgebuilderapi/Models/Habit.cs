@@ -76,10 +76,10 @@ namespace knowledgebuilderapi.Models
         public Int32 RuleID { get; set; }
 
         [Column("ContinuousRecordFrom", TypeName = "INT")]
-        public Int32 ContinuousRecordFrom { get; set; }
+        public Int32? ContinuousRecordFrom { get; set; }
 
         [Column("ContinuousRecordTo", TypeName = "INT")]
-        public Int32 ContinuousRecordTo { get; set; }
+        public Int32? ContinuousRecordTo { get; set; }
 
         [Column("Point", TypeName = "INT")]
         public Int32 Point { get; set; }

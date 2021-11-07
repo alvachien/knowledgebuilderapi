@@ -38,7 +38,7 @@ namespace knowledgebuilderapi.test.UnitTests
         [Fact]
         public async Task TestCase1()
         {
-            var context = this.fixture.GetCurrentDataContext();
+            var context = fixture.GetCurrentDataContext();
             KnowledgeItemsController control = new KnowledgeItemsController(context);
 
             // Step 1. Read all - 0

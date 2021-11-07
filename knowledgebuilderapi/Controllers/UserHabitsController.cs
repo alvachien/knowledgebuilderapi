@@ -71,6 +71,44 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest();
             }
 
+            // Check 1. Validity
+            if (habit.ValidTo <= habit.ValidFrom)
+                return BadRequest("Invalid Validity");
+            switch (habit.Frequency)
+            {
+                case HabitFrequency.Weekly:
+                    if (!habit.StartDate.HasValue)
+                        return BadRequest("Invalid start date");
+                    else
+                    {
+                        try
+                        {
+                            DayOfWeek dow = (DayOfWeek)habit.StartDate.Value;
+                        }
+                        catch(Exception exp)
+                        {
+                            return BadRequest("Invalid start date");
+                        }
+                    }
+                    break;
+
+                case HabitFrequency.Monthly:
+                    if (!habit.StartDate.HasValue)
+                        return BadRequest("Invalid start date");
+                    else
+                    {
+                        if (habit.StartDate.Value > 31 || habit.StartDate < 1)
+                            return BadRequest("Invalid start date");
+                    }
+                    break;
+
+                case HabitFrequency.Daily:
+                default:
+                    if (habit.StartDate.HasValue)
+                        return BadRequest("Invalid start date");
+                    break;
+            }
+
             // Update db
             _context.UserHabits.Add(habit);
             await _context.SaveChangesAsync();

@@ -159,9 +159,9 @@ CREATE TABLE [dbo].[AwardUser] (
 
 -- Invited USER
 CREATE TABLE [dbo].[InvitedUser] (
-	[UserID]  NVARCHAR (50) NOT NULL,
-	[InvitationCode] nvarchar(20) NOT NULL,
-	[UserName] NVARCHAR (50) NOT NULL,
+	[UserID]  NVARCHAR(50) NOT NULL,
+	[InvitationCode] NVARCHAR(20) NOT NULL,
+	[UserName] NVARCHAR(50) NOT NULL,
 	[DisplayAs] NVARCHAR(50) NOT NULL,
 	[Deleted] BIT NULL,
 	[CreatedAt]	DATETIME DEFAULT (getdate()) NULL,
@@ -196,11 +196,11 @@ CREATE TABLE UserHabit(
 CREATE TABLE UserHabitRule(
     [HabitID]       INT            NOT NULL,
     [RuleID]        INT            NOT NULL,
-    [ContinousRecordFrom]   INT    NULL,
-    [ContinousRecordTo]     INT    NULL,
+    [ContinuousRecordFrom]   INT    NULL,
+    [ContinuousRecordTo]     INT    NULL,
     [Point]         INT            NOT NULL,
     PRIMARY KEY CLUSTERED ([HabitID] ASC, [RuleID] ASC),
-	CONSTRAINT [FK_USERHABITRULE_HABIT] FOREIGN KEY ([UserHabit]) REFERENCES [HabitItem] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE	
+	CONSTRAINT [FK_USERHABITRULE_HABIT] FOREIGN KEY ([HabitID]) REFERENCES [UserHabit] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE	
 );
 
 -- User Habit Record
@@ -210,6 +210,6 @@ CREATE TABLE UserHabitRecord(
     [RuleID]        INT            NULL,
     [Comment]       NVARCHAR(50)   NULL,
     PRIMARY KEY CLUSTERED ([HabitID] ASC, [RecordDate] ASC),
-	CONSTRAINT [FK_USERHABITRECORD_HABIT] FOREIGN KEY ([UserHabit]) REFERENCES [HabitItem] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT [FK_USERHABITRECORD_HABIT] FOREIGN KEY ([HabitID]) REFERENCES [UserHabit] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

@@ -69,8 +69,202 @@ namespace knowledgebuilderapi.Controllers
             switch(habits[0].Frequency)
             {
                 case HabitFrequency.Weekly:
-                    DayOfWeek dow = (DayOfWeek)habits[0].StartDate;
-                    DayOfWeek curdow = record.RecordDate.DayOfWeek;
+                    //DayOfWeek dow = (DayOfWeek)habits[0].StartDate;
+                    //DayOfWeek curdow = record.RecordDate.DayOfWeek;
+                    //switch(curdow)
+                    //{
+                    //    case DayOfWeek.Monday:
+                    //        switch(dow)
+                    //        {
+                    //            case DayOfWeek.Monday:
+                    //                dtbgn = record.RecordDate - TimeSpan.FromDays(8);
+                    //                break;
+
+                    //            case DayOfWeek.Tuesday:
+                    //                dtbgn = record.RecordDate - TimeSpan.FromDays(9);
+                    //                break;
+
+                    //            case DayOfWeek.Wednesday:
+                    //                break;
+
+                    //            case DayOfWeek.Thursday:
+                    //                break;
+
+                    //            case DayOfWeek.Friday:
+                    //                break;
+
+                    //            case DayOfWeek.Saturday:
+                    //                break;
+
+                    //            case DayOfWeek.Sunday:
+                    //            default:
+                    //                break;
+                    //        }
+                    //        break;
+
+                    //    case DayOfWeek.Tuesday:
+                    //        switch (dow)
+                    //        {
+                    //            case DayOfWeek.Monday:
+                    //                break;
+
+                    //            case DayOfWeek.Tuesday:
+                    //                break;
+
+                    //            case DayOfWeek.Wednesday:
+                    //                break;
+
+                    //            case DayOfWeek.Thursday:
+                    //                break;
+
+                    //            case DayOfWeek.Friday:
+                    //                break;
+
+                    //            case DayOfWeek.Saturday:
+                    //                break;
+
+                    //            case DayOfWeek.Sunday:
+                    //            default:
+                    //                break;
+                    //        }
+                    //        break;
+
+                    //    case DayOfWeek.Wednesday:
+                    //        switch (dow)
+                    //        {
+                    //            case DayOfWeek.Monday:
+                    //                break;
+
+                    //            case DayOfWeek.Tuesday:
+                    //                break;
+
+                    //            case DayOfWeek.Wednesday:
+                    //                break;
+
+                    //            case DayOfWeek.Thursday:
+                    //                break;
+
+                    //            case DayOfWeek.Friday:
+                    //                break;
+
+                    //            case DayOfWeek.Saturday:
+                    //                break;
+
+                    //            case DayOfWeek.Sunday:
+                    //            default:
+                    //                break;
+                    //        }
+                    //        break;
+
+                    //    case DayOfWeek.Thursday:
+                    //        switch (dow)
+                    //        {
+                    //            case DayOfWeek.Monday:
+                    //                break;
+
+                    //            case DayOfWeek.Tuesday:
+                    //                break;
+
+                    //            case DayOfWeek.Wednesday:
+                    //                break;
+
+                    //            case DayOfWeek.Thursday:
+                    //                break;
+
+                    //            case DayOfWeek.Friday:
+                    //                break;
+
+                    //            case DayOfWeek.Saturday:
+                    //                break;
+
+                    //            case DayOfWeek.Sunday:
+                    //            default:
+                    //                break;
+                    //        }
+                    //        break;
+
+                    //    case DayOfWeek.Friday:
+                    //        switch (dow)
+                    //        {
+                    //            case DayOfWeek.Monday:
+                    //                break;
+
+                    //            case DayOfWeek.Tuesday:
+                    //                break;
+
+                    //            case DayOfWeek.Wednesday:
+                    //                break;
+
+                    //            case DayOfWeek.Thursday:
+                    //                break;
+
+                    //            case DayOfWeek.Friday:
+                    //                break;
+
+                    //            case DayOfWeek.Saturday:
+                    //                break;
+
+                    //            case DayOfWeek.Sunday:
+                    //            default:
+                    //                break;
+                    //        }
+                    //        break;
+
+                    //    case DayOfWeek.Saturday:
+                    //        switch (dow)
+                    //        {
+                    //            case DayOfWeek.Monday:
+                    //                break;
+
+                    //            case DayOfWeek.Tuesday:
+                    //                break;
+
+                    //            case DayOfWeek.Wednesday:
+                    //                break;
+
+                    //            case DayOfWeek.Thursday:
+                    //                break;
+
+                    //            case DayOfWeek.Friday:
+                    //                break;
+
+                    //            case DayOfWeek.Saturday:
+                    //                break;
+
+                    //            case DayOfWeek.Sunday:
+                    //            default:
+                    //                break;
+                    //        }
+                    //        break;
+
+                    //    case DayOfWeek.Sunday:
+                    //    default:
+                    //        switch (dow)
+                    //        {
+                    //            case DayOfWeek.Monday:
+                    //                break;
+
+                    //            case DayOfWeek.Tuesday:
+                    //                break;
+
+                    //            case DayOfWeek.Wednesday:
+                    //                break;
+
+                    //            case DayOfWeek.Thursday:
+                    //                break;
+
+                    //            case DayOfWeek.Friday:
+                    //                break;
+
+                    //            case DayOfWeek.Saturday:
+                    //                break;
+
+                    //            case DayOfWeek.Sunday:
+                    //            default:
+                    //                break;
+                    //        }
+                    //        break;
+                    //}
                     dtbgn = record.RecordDate - TimeSpan.FromDays(14);
                     break;
 
@@ -101,6 +295,9 @@ namespace knowledgebuilderapi.Controllers
             // Find related records
             var records = (from dbrecord in this._context.UserHabitRecords where dbrecord.RecordDate >= dtbgn && dbrecord.RecordDate < record.RecordDate
                            select dbrecord).ToList<UserHabitRecord>();
+
+            // Now calculate the rule and the points
+
 
 
             // Update db
