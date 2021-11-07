@@ -182,10 +182,11 @@ CREATE TABLE UserHabit(
 
     [Frequency]     SMALLINT      DEFAULT(0) NOT NULL,
     [DoneCriteria]  INT           DEFAULT(1) NOT NULL,
+    [StartDate]     INT           NULL,
 
     [Comment]       NVARCHAR(50)  NULL,
-    [ValidFrom]     DATE      DEFAULT (getdate()) NULL,
-    [ValidTo]       DATE      DEFAULT (getdate()) NULL,
+    [ValidFrom]     DATE          DEFAULT (getdate()) NULL,
+    [ValidTo]       DATE          DEFAULT (getdate()) NULL,
 
     PRIMARY KEY CLUSTERED ([ID] ASC),
 	CONSTRAINT [FK_USERHABIT_USER] FOREIGN KEY ([TargetUser]) REFERENCES [InvitedUser] ([UserID]) ON DELETE CASCADE ON UPDATE CASCADE	

@@ -51,6 +51,9 @@ namespace knowledgebuilderapi.Models
         [Column("DoneCriteria", TypeName = "INT")]
         public Int32 DoneCriteria { get; set; }
 
+        [Column("StartDate", TypeName = "SMALLINT")]
+        public Int32? StartDate { get; set; }
+
         public ICollection<UserHabitRule> Rules { get; set; }
         public ICollection<UserHabitRecord> Records { get; set; }
 

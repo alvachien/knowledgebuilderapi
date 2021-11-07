@@ -69,21 +69,39 @@ namespace knowledgebuilderapi.Controllers
             switch(habits[0].Frequency)
             {
                 case HabitFrequency.Weekly:
+                    DayOfWeek dow = (DayOfWeek)habits[0].StartDate;
+                    DayOfWeek curdow = record.RecordDate.DayOfWeek;
+                    dtbgn = record.RecordDate - TimeSpan.FromDays(14);
                     break;
 
                 case HabitFrequency.Monthly:
+                    //record.RecordDate.Day
+                    Int32 dtOrig = habits[0].StartDate.Value;
+                    Int32 curdt = record.RecordDate.Day;
+                    dtbgn = record.RecordDate - TimeSpan.FromDays(60);
                     break;
 
                 case HabitFrequency.Daily:
                 default:
+                    dtbgn = record.RecordDate - TimeSpan.FromDays(2);
                     break;
             }
 
-            // Find out the rules
+            var checkrecord = (from dbrecord in _context.UserHabitRecords where dbrecord.RecordDate >= record.RecordDate && dbrecord.HabitID == record.HabitID
+                               select dbrecord).Count();
+            if (checkrecord > 0)
+                return BadRequest("Record in the past!");
+
+            // Find out all rules
             var rules = (from rule in this._context.UserHabitRules where rule.HabitID == record.HabitID select rule).ToList<UserHabitRule>();
             if (rules.Count > 0)
             {
             }
+
+            // Find related records
+            var records = (from dbrecord in this._context.UserHabitRecords where dbrecord.RecordDate >= dtbgn && dbrecord.RecordDate < record.RecordDate
+                           select dbrecord).ToList<UserHabitRecord>();
+
 
             // Update db
             _context.UserHabitRecords.Add(record);
