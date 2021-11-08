@@ -95,11 +95,14 @@ namespace knowledgebuilderapi.Models
         public Int32 HabitID { get; set; }
 
         [Column("RuleID", TypeName = "INT")]
-        public Int32 RuleID { get; set; }
+        public Int32? RuleID { get; set; }
 
         [Key]
         [Column("RecordDate", TypeName = "DATE")]
         public DateTime RecordDate { get; set; }
+
+        [Column("ContinuousCount", TypeName = "INT")]
+        public Int32 ContinuousCount { get; set; }
 
         [Column("COMMENT", TypeName = "NVARCHAR(50)")]
         public String Comment { get; set; }

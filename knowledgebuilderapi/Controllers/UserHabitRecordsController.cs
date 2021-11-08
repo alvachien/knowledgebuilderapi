@@ -69,202 +69,6 @@ namespace knowledgebuilderapi.Controllers
             switch(habits[0].Frequency)
             {
                 case HabitFrequency.Weekly:
-                    //DayOfWeek dow = (DayOfWeek)habits[0].StartDate;
-                    //DayOfWeek curdow = record.RecordDate.DayOfWeek;
-                    //switch(curdow)
-                    //{
-                    //    case DayOfWeek.Monday:
-                    //        switch(dow)
-                    //        {
-                    //            case DayOfWeek.Monday:
-                    //                dtbgn = record.RecordDate - TimeSpan.FromDays(8);
-                    //                break;
-
-                    //            case DayOfWeek.Tuesday:
-                    //                dtbgn = record.RecordDate - TimeSpan.FromDays(9);
-                    //                break;
-
-                    //            case DayOfWeek.Wednesday:
-                    //                break;
-
-                    //            case DayOfWeek.Thursday:
-                    //                break;
-
-                    //            case DayOfWeek.Friday:
-                    //                break;
-
-                    //            case DayOfWeek.Saturday:
-                    //                break;
-
-                    //            case DayOfWeek.Sunday:
-                    //            default:
-                    //                break;
-                    //        }
-                    //        break;
-
-                    //    case DayOfWeek.Tuesday:
-                    //        switch (dow)
-                    //        {
-                    //            case DayOfWeek.Monday:
-                    //                break;
-
-                    //            case DayOfWeek.Tuesday:
-                    //                break;
-
-                    //            case DayOfWeek.Wednesday:
-                    //                break;
-
-                    //            case DayOfWeek.Thursday:
-                    //                break;
-
-                    //            case DayOfWeek.Friday:
-                    //                break;
-
-                    //            case DayOfWeek.Saturday:
-                    //                break;
-
-                    //            case DayOfWeek.Sunday:
-                    //            default:
-                    //                break;
-                    //        }
-                    //        break;
-
-                    //    case DayOfWeek.Wednesday:
-                    //        switch (dow)
-                    //        {
-                    //            case DayOfWeek.Monday:
-                    //                break;
-
-                    //            case DayOfWeek.Tuesday:
-                    //                break;
-
-                    //            case DayOfWeek.Wednesday:
-                    //                break;
-
-                    //            case DayOfWeek.Thursday:
-                    //                break;
-
-                    //            case DayOfWeek.Friday:
-                    //                break;
-
-                    //            case DayOfWeek.Saturday:
-                    //                break;
-
-                    //            case DayOfWeek.Sunday:
-                    //            default:
-                    //                break;
-                    //        }
-                    //        break;
-
-                    //    case DayOfWeek.Thursday:
-                    //        switch (dow)
-                    //        {
-                    //            case DayOfWeek.Monday:
-                    //                break;
-
-                    //            case DayOfWeek.Tuesday:
-                    //                break;
-
-                    //            case DayOfWeek.Wednesday:
-                    //                break;
-
-                    //            case DayOfWeek.Thursday:
-                    //                break;
-
-                    //            case DayOfWeek.Friday:
-                    //                break;
-
-                    //            case DayOfWeek.Saturday:
-                    //                break;
-
-                    //            case DayOfWeek.Sunday:
-                    //            default:
-                    //                break;
-                    //        }
-                    //        break;
-
-                    //    case DayOfWeek.Friday:
-                    //        switch (dow)
-                    //        {
-                    //            case DayOfWeek.Monday:
-                    //                break;
-
-                    //            case DayOfWeek.Tuesday:
-                    //                break;
-
-                    //            case DayOfWeek.Wednesday:
-                    //                break;
-
-                    //            case DayOfWeek.Thursday:
-                    //                break;
-
-                    //            case DayOfWeek.Friday:
-                    //                break;
-
-                    //            case DayOfWeek.Saturday:
-                    //                break;
-
-                    //            case DayOfWeek.Sunday:
-                    //            default:
-                    //                break;
-                    //        }
-                    //        break;
-
-                    //    case DayOfWeek.Saturday:
-                    //        switch (dow)
-                    //        {
-                    //            case DayOfWeek.Monday:
-                    //                break;
-
-                    //            case DayOfWeek.Tuesday:
-                    //                break;
-
-                    //            case DayOfWeek.Wednesday:
-                    //                break;
-
-                    //            case DayOfWeek.Thursday:
-                    //                break;
-
-                    //            case DayOfWeek.Friday:
-                    //                break;
-
-                    //            case DayOfWeek.Saturday:
-                    //                break;
-
-                    //            case DayOfWeek.Sunday:
-                    //            default:
-                    //                break;
-                    //        }
-                    //        break;
-
-                    //    case DayOfWeek.Sunday:
-                    //    default:
-                    //        switch (dow)
-                    //        {
-                    //            case DayOfWeek.Monday:
-                    //                break;
-
-                    //            case DayOfWeek.Tuesday:
-                    //                break;
-
-                    //            case DayOfWeek.Wednesday:
-                    //                break;
-
-                    //            case DayOfWeek.Thursday:
-                    //                break;
-
-                    //            case DayOfWeek.Friday:
-                    //                break;
-
-                    //            case DayOfWeek.Saturday:
-                    //                break;
-
-                    //            case DayOfWeek.Sunday:
-                    //            default:
-                    //                break;
-                    //        }
-                    //        break;
-                    //}
                     dtbgn = record.RecordDate - TimeSpan.FromDays(14);
                     break;
 
@@ -277,7 +81,7 @@ namespace knowledgebuilderapi.Controllers
 
                 case HabitFrequency.Daily:
                 default:
-                    dtbgn = record.RecordDate - TimeSpan.FromDays(2);
+                    dtbgn = record.RecordDate - TimeSpan.FromDays(1);
                     break;
             }
 
@@ -287,17 +91,273 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest("Record in the past!");
 
             // Find out all rules
-            var rules = (from rule in this._context.UserHabitRules where rule.HabitID == record.HabitID select rule).ToList<UserHabitRule>();
+            var rules = (from rule in this._context.UserHabitRules where rule.HabitID == record.HabitID 
+                         orderby rule.ContinuousRecordFrom 
+                         ascending select rule).ToList<UserHabitRule>();
             if (rules.Count > 0)
             {
             }
 
             // Find related records
-            var records = (from dbrecord in this._context.UserHabitRecords where dbrecord.RecordDate >= dtbgn && dbrecord.RecordDate < record.RecordDate
+            var oldrecords = (from dbrecord in this._context.UserHabitRecords where dbrecord.RecordDate >= dtbgn && dbrecord.RecordDate < record.RecordDate
                            select dbrecord).ToList<UserHabitRecord>();
 
+            record.ContinuousCount = 1; // Default is 1
             // Now calculate the rule and the points
+            switch (habits[0].Frequency)
+            {
+                case HabitFrequency.Weekly:
+                    if (oldrecords.Count > 0)
+                    {
 
+                    }
+                    else
+                    {
+                        // New activity
+                        DayOfWeek dow = (DayOfWeek)habits[0].StartDate;
+                        DayOfWeek curdow = record.RecordDate.DayOfWeek;
+                        switch (curdow)
+                        {
+                            case DayOfWeek.Monday:
+                                switch (dow)
+                                {
+                                    case DayOfWeek.Monday:                                        
+                                        break;
+
+                                    case DayOfWeek.Tuesday:
+                                        break;
+
+                                    case DayOfWeek.Wednesday:
+                                        break;
+
+                                    case DayOfWeek.Thursday:
+                                        break;
+
+                                    case DayOfWeek.Friday:
+                                        break;
+
+                                    case DayOfWeek.Saturday:
+                                        break;
+
+                                    case DayOfWeek.Sunday:
+                                    default:
+                                        break;
+                                }
+                                break;
+
+                            case DayOfWeek.Tuesday:
+                                switch (dow)
+                                {
+                                    case DayOfWeek.Monday:
+                                        break;
+
+                                    case DayOfWeek.Tuesday:
+                                        break;
+
+                                    case DayOfWeek.Wednesday:
+                                        break;
+
+                                    case DayOfWeek.Thursday:
+                                        break;
+
+                                    case DayOfWeek.Friday:
+                                        break;
+
+                                    case DayOfWeek.Saturday:
+                                        break;
+
+                                    case DayOfWeek.Sunday:
+                                    default:
+                                        break;
+                                }
+                                break;
+
+                            case DayOfWeek.Wednesday:
+                                switch (dow)
+                                {
+                                    case DayOfWeek.Monday:
+                                        break;
+
+                                    case DayOfWeek.Tuesday:
+                                        break;
+
+                                    case DayOfWeek.Wednesday:
+                                        break;
+
+                                    case DayOfWeek.Thursday:
+                                        break;
+
+                                    case DayOfWeek.Friday:
+                                        break;
+
+                                    case DayOfWeek.Saturday:
+                                        break;
+
+                                    case DayOfWeek.Sunday:
+                                    default:
+                                        break;
+                                }
+                                break;
+
+                            case DayOfWeek.Thursday:
+                                switch (dow)
+                                {
+                                    case DayOfWeek.Monday:
+                                        break;
+
+                                    case DayOfWeek.Tuesday:
+                                        break;
+
+                                    case DayOfWeek.Wednesday:
+                                        break;
+
+                                    case DayOfWeek.Thursday:
+                                        break;
+
+                                    case DayOfWeek.Friday:
+                                        break;
+
+                                    case DayOfWeek.Saturday:
+                                        break;
+
+                                    case DayOfWeek.Sunday:
+                                    default:
+                                        break;
+                                }
+                                break;
+
+                            case DayOfWeek.Friday:
+                                switch (dow)
+                                {
+                                    case DayOfWeek.Monday:
+                                        break;
+
+                                    case DayOfWeek.Tuesday:
+                                        break;
+
+                                    case DayOfWeek.Wednesday:
+                                        break;
+
+                                    case DayOfWeek.Thursday:
+                                        break;
+
+                                    case DayOfWeek.Friday:
+                                        break;
+
+                                    case DayOfWeek.Saturday:
+                                        break;
+
+                                    case DayOfWeek.Sunday:
+                                    default:
+                                        break;
+                                }
+                                break;
+
+                            case DayOfWeek.Saturday:
+                                switch (dow)
+                                {
+                                    case DayOfWeek.Monday:
+                                        break;
+
+                                    case DayOfWeek.Tuesday:
+                                        break;
+
+                                    case DayOfWeek.Wednesday:
+                                        break;
+
+                                    case DayOfWeek.Thursday:
+                                        break;
+
+                                    case DayOfWeek.Friday:
+                                        break;
+
+                                    case DayOfWeek.Saturday:
+                                        break;
+
+                                    case DayOfWeek.Sunday:
+                                    default:
+                                        break;
+                                }
+                                break;
+
+                            case DayOfWeek.Sunday:
+                            default:
+                                switch (dow)
+                                {
+                                    case DayOfWeek.Monday:
+                                        break;
+
+                                    case DayOfWeek.Tuesday:
+                                        break;
+
+                                    case DayOfWeek.Wednesday:
+                                        break;
+
+                                    case DayOfWeek.Thursday:
+                                        break;
+
+                                    case DayOfWeek.Friday:
+                                        break;
+
+                                    case DayOfWeek.Saturday:
+                                        break;
+
+                                    case DayOfWeek.Sunday:
+                                    default:
+                                        break;
+                                }
+                                break;
+                        }
+
+                    }
+                    break;
+
+                case HabitFrequency.Monthly:
+                    if (oldrecords.Count > 0)
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+                    break;
+
+                case HabitFrequency.Daily:
+                default:
+                    if (oldrecords.Count > 0)
+                    {
+                        // Yesterday
+                        if (oldrecords[0].RuleID.HasValue)
+                        {
+                            // Rule assigned
+                            var oldruleidx = rules.FindIndex(ruleitem => ruleitem.RuleID == oldrecords[0].RuleID);
+                            if (oldruleidx != -1)
+                            {
+                                record.ContinuousCount = oldrecords[0].ContinuousCount + 1;
+
+                                var ridx = rules.FindIndex(ruleitem => ruleitem.ContinuousRecordFrom >= record.ContinuousCount);
+                                if (ridx != -1)
+                                    record.RuleID = rules[ridx].RuleID;
+                            }
+                        }
+                        else
+                        {
+                            // No rule assigned yesterday, new activity
+                            var ridx = rules.FindIndex(ruleitem => ruleitem.ContinuousRecordFrom == 1);
+                            if (ridx != -1)
+                                record.RuleID = rules[ridx].RuleID;
+                        }
+                    } 
+                    else
+                    {
+                        // New activity
+                        var ridx = rules.FindIndex(ruleitem => ruleitem.ContinuousRecordFrom == 1);
+                        if (ridx != -1)
+                            record.RuleID = rules[ridx].RuleID;
+                    }
+                    break;
+            }
 
 
             // Update db

@@ -107,6 +107,7 @@ namespace knowledgebuilderapi.test.UnitTests
             UserHabitRecord record = new UserHabitRecord();
             record.HabitID = habit.ID;
             record.RecordDate = new DateTime(2021, 11, 1);
+            record.DoneCriteria = 1;
             record.Comment = "Test1";
             var rst = control.Post(record);
             if (rst != null)

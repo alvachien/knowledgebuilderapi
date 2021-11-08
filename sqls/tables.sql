@@ -196,8 +196,8 @@ CREATE TABLE UserHabit(
 CREATE TABLE UserHabitRule(
     [HabitID]       INT            NOT NULL,
     [RuleID]        INT            NOT NULL,
-    [ContinuousRecordFrom]   INT    NULL,
-    [ContinuousRecordTo]     INT    NULL,
+    [ContinuousRecordFrom]   INT   NULL,
+    [ContinuousRecordTo]     INT   NULL,
     [Point]         INT            NOT NULL,
     PRIMARY KEY CLUSTERED ([HabitID] ASC, [RuleID] ASC),
 	CONSTRAINT [FK_USERHABITRULE_HABIT] FOREIGN KEY ([HabitID]) REFERENCES [UserHabit] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE	
@@ -208,6 +208,7 @@ CREATE TABLE UserHabitRecord(
     [HabitID]       INT            NOT NULL,
 	[RecordDate]	DATE		   DEFAULT (getdate()) NOT NULL,
     [RuleID]        INT            NULL,
+    [ContinuousCount] INT          DEFAULT(1) NOT NULL,
     [Comment]       NVARCHAR(50)   NULL,
     PRIMARY KEY CLUSTERED ([HabitID] ASC, [RecordDate] ASC),
 	CONSTRAINT [FK_USERHABITRECORD_HABIT] FOREIGN KEY ([HabitID]) REFERENCES [UserHabit] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
