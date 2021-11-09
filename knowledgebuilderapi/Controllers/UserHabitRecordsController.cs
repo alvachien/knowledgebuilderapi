@@ -121,7 +121,15 @@ namespace knowledgebuilderapi.Controllers
                             case DayOfWeek.Monday:
                                 switch (dow)
                                 {
-                                    case DayOfWeek.Monday:                                        
+                                    case DayOfWeek.Monday:
+                                        // Monday to Monday, a new start
+                                        if (habits[0].DoneCriteria == 1)
+                                        {
+                                            // Need to find out the rule
+                                            var ridx = rules.FindIndex(rl => rl.ContinuousRecordFrom >= 1);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
                                         break;
 
                                     case DayOfWeek.Tuesday:
@@ -152,6 +160,14 @@ namespace knowledgebuilderapi.Controllers
                                         break;
 
                                     case DayOfWeek.Tuesday:
+                                        // Tuesday to Tuesday, a new start
+                                        if (habits[0].DoneCriteria == 1)
+                                        {
+                                            // Need to find out the rule
+                                            var ridx = rules.FindIndex(rl => rl.ContinuousRecordFrom >= 1);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
                                         break;
 
                                     case DayOfWeek.Wednesday:
@@ -182,6 +198,13 @@ namespace knowledgebuilderapi.Controllers
                                         break;
 
                                     case DayOfWeek.Wednesday:
+                                        if (habits[0].DoneCriteria == 1)
+                                        {
+                                            // Need to find out the rule
+                                            var ridx = rules.FindIndex(rl => rl.ContinuousRecordFrom >= 1);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
                                         break;
 
                                     case DayOfWeek.Thursday:
@@ -212,6 +235,13 @@ namespace knowledgebuilderapi.Controllers
                                         break;
 
                                     case DayOfWeek.Thursday:
+                                        if (habits[0].DoneCriteria == 1)
+                                        {
+                                            // Need to find out the rule
+                                            var ridx = rules.FindIndex(rl => rl.ContinuousRecordFrom >= 1);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
                                         break;
 
                                     case DayOfWeek.Friday:
@@ -242,6 +272,13 @@ namespace knowledgebuilderapi.Controllers
                                         break;
 
                                     case DayOfWeek.Friday:
+                                        if (habits[0].DoneCriteria == 1)
+                                        {
+                                            // Need to find out the rule
+                                            var ridx = rules.FindIndex(rl => rl.ContinuousRecordFrom >= 1);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
                                         break;
 
                                     case DayOfWeek.Saturday:
@@ -272,6 +309,13 @@ namespace knowledgebuilderapi.Controllers
                                         break;
 
                                     case DayOfWeek.Saturday:
+                                        if (habits[0].DoneCriteria == 1)
+                                        {
+                                            // Need to find out the rule
+                                            var ridx = rules.FindIndex(rl => rl.ContinuousRecordFrom >= 1);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
                                         break;
 
                                     case DayOfWeek.Sunday:
@@ -304,6 +348,13 @@ namespace knowledgebuilderapi.Controllers
 
                                     case DayOfWeek.Sunday:
                                     default:
+                                        if (habits[0].DoneCriteria == 1)
+                                        {
+                                            // Need to find out the rule
+                                            var ridx = rules.FindIndex(rl => rl.ContinuousRecordFrom >= 1);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
                                         break;
                                 }
                                 break;
@@ -359,10 +410,16 @@ namespace knowledgebuilderapi.Controllers
                     break;
             }
 
-
             // Update db
             _context.UserHabitRecords.Add(record);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception exp)
+            {
+                System.Console.WriteLine(exp.Message);
+            }
 
             return Created(record);
         }

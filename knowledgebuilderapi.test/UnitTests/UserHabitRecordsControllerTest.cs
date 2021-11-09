@@ -36,8 +36,23 @@ namespace knowledgebuilderapi.test.UnitTests
         {
         }
 
-        [Fact]
-        public async Task CalculatePoints_Weekly()
+        public static IEnumerable<object[]> WeeklyDates
+        {
+            get
+            {
+                // Or this could read from a file. :)
+                return new[]
+                {
+                    new object[] { new DateTime(2021, 11, 1), 1 },
+                    new object[] { new DateTime(2021, 11, 1), 2 },
+                    new object[] { new DateTime(2021, 11, 3), 3 }
+                };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(WeeklyDates))]
+        public async Task CalculatePoints_Weekly(DateTime dtRecord, int habitDoneCriteria)
         {
             var context = this.fixture.GetCurrentDataContext();
             UserHabitRecordsController control = new(context);
@@ -74,7 +89,7 @@ namespace knowledgebuilderapi.test.UnitTests
             habit.Category = HabitCategory.Positive;
             habit.Comment = habit.Name;
             habit.Frequency = HabitFrequency.Weekly;
-            habit.DoneCriteria = 4;
+            habit.DoneCriteria = habitDoneCriteria;
             habit.StartDate = (int)DayOfWeek.Monday;
             context.UserHabits.Add(habit);
             context.SaveChanges();
@@ -106,13 +121,11 @@ namespace knowledgebuilderapi.test.UnitTests
             // Add user record.
             UserHabitRecord record = new UserHabitRecord();
             record.HabitID = habit.ID;
-            record.RecordDate = new DateTime(2021, 11, 1);
-            record.DoneCriteria = 1;
+            record.RecordDate = dtRecord;
             record.Comment = "Test1";
             var rst = control.Post(record);
             if (rst != null)
             {
-
             }
 
             await context.DisposeAsync();

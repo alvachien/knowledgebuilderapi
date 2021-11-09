@@ -116,7 +116,7 @@ namespace knowledgebuilderapi.test
             );
 
             // Added on 2021.11.06
-            database.ExecuteSqlRaw(@"CREATE TABLE UserHabit(
+            database.ExecuteSqlRaw(@"CREATE TABLE UserHabit (
                 ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 Category   SMALLINT  NOT NULL DEFAULT 0,
                 Name       NVARCHAR(50)  NOT NULL,
@@ -133,24 +133,24 @@ namespace knowledgebuilderapi.test
 	            CONSTRAINT FK_USERHABIT_USER FOREIGN KEY (TargetUser) REFERENCES InvitedUser (UserID) ON DELETE CASCADE ON UPDATE CASCADE )"
             );
 
-            database.ExecuteSqlRaw(@"CREATE TABLE UserHabitRule(
-                HabitID       INT            NOT NULL,
-                RuleID        INT            NOT NULL,
-                ContinuousRecordFrom   INT    NULL,
-                ContinuousRecordTo     INT    NULL,
-                Point         INT            NOT NULL,
+            database.ExecuteSqlRaw(@"CREATE TABLE UserHabitRule (
+                HabitID                 INT NOT NULL,
+                RuleID                  INT NOT NULL,
+                ContinuousRecordFrom    INT NULL,
+                ContinuousRecordTo      INT NULL,
+                Point                   INT NOT NULL,
                 PRIMARY KEY (HabitID, RuleID),
 	            CONSTRAINT FK_USERHABITRULE_HABIT FOREIGN KEY (HabitID) REFERENCES UserHabit (ID) ON DELETE CASCADE ON UPDATE CASCADE	)"
             );
 
-            database.ExecuteSqlRaw(@"CREATE TABLE UserHabitRecord(
-                HabitID       INT            NOT NULL,
-	            RecordDate	DATE		   NULL DEFAULT CURRENT_DATE,
-                RuleID        INT            NULL,
-                ContinuousCount INT NOT NULL DEFAULT 1,
-                Comment       NVARCHAR(50)   NULL,
+            database.ExecuteSqlRaw(@"CREATE TABLE UserHabitRecord (
+                HabitID         INT            NOT NULL,
+	            RecordDate	    DATE		   NULL DEFAULT CURRENT_DATE,
+                RuleID          INT            NULL,
+                ContinuousCount INT            NOT NULL   DEFAULT 1,
+                Comment         NVARCHAR(50)   NULL,
                 PRIMARY KEY (HabitID, RecordDate),
-	            CONSTRAINT FK_USERHABITRECORD_HABIT FOREIGN KEY (HabitID) REFERENCES HabitID (ID) ON DELETE CASCADE ON UPDATE CASCADE )"
+	            CONSTRAINT FK_USERHABITRECORD_HABIT FOREIGN KEY (HabitID) REFERENCES UserHabit (ID) ON DELETE CASCADE ON UPDATE CASCADE )"
             );
         }
 
