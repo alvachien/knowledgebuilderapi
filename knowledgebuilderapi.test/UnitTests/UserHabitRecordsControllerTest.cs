@@ -43,42 +43,75 @@ namespace knowledgebuilderapi.test.UnitTests
                 // Or this could read from a file. :)
                 return new[]
                 {
-                    new object[] { new DateTime(2021, 11, 1), 1 },
-                    new object[] { new DateTime(2021, 11, 1), 2 },
-                    new object[] { new DateTime(2021, 11, 3), 3 }
+                    new object[] { 
+                        DayOfWeek.Monday, 
+                        new DateTime[] { new DateTime(2021, 11, 1) }, 
+                        1, 
+                        true 
+                    },
+                    new object[] { 
+                        DayOfWeek.Tuesday,
+                        new DateTime[] { new DateTime(2021, 11, 2) },
+                        1, 
+                        true 
+                    },
+                    new object[] { 
+                        DayOfWeek.Wednesday,
+                        new DateTime[] { new DateTime(2021, 11, 3) },
+                        1, 
+                        true 
+                    },
+                    new object[] { 
+                        DayOfWeek.Thursday,
+                        new DateTime[] { new DateTime(2021, 11, 4) },
+                        1, 
+                        true 
+                    },
+                    new object[] { 
+                        DayOfWeek.Friday,
+                        new DateTime[] { new DateTime(2021, 11, 5) },
+                        1, 
+                        true 
+                    },
+                    new object[] { 
+                        DayOfWeek.Saturday,
+                        new DateTime[] { new DateTime(2021, 11, 6) },
+                        1, 
+                        true 
+                    },
+                    new object[] { 
+                        DayOfWeek.Sunday,
+                        new DateTime[] { new DateTime(2021, 11, 7) },
+                        1, 
+                        true 
+                    },
+
+                    new object[] { 
+                        DayOfWeek.Monday,
+                        new DateTime[] { new DateTime(2021, 11, 1) },
+                        2, 
+                        false 
+                    },
+                    new object[] { 
+                        DayOfWeek.Monday,
+                        new DateTime[] { new DateTime(2021, 11, 1) },
+                        7, 
+                        false 
+                    }
                 };
             }
         }
 
         [Theory]
         [MemberData(nameof(WeeklyDates))]
-        public async Task CalculatePoints_Weekly(DateTime dtRecord, int habitDoneCriteria)
+        public async Task CalculatePoints_Weekly(DayOfWeek dow, DateTime[] listRecordDates, int habitDoneCriteria, Boolean lastRecordHasRule)
         {
             var context = this.fixture.GetCurrentDataContext();
             UserHabitRecordsController control = new(context);
 
             // Add Invited User
             //
-            InvitedUser usr = new InvitedUser();
-            usr.DisplayAs = test_manager;
-            usr.InvitationCode = test_manager;
-            usr.UserID = test_manager;
-            usr.UserName = test_manager;
-            context.InvitedUsers.Add(usr);
-
-            usr = new InvitedUser();
-            usr.DisplayAs = test_user1;
-            usr.InvitationCode = test_user1;
-            usr.UserID = test_user1;
-            usr.UserName = test_user1;
-            context.InvitedUsers.Add(usr);
-
-            AwardUser aus = new AwardUser();
-            aus.Supervisor = test_manager;
-            aus.TargetUser = test_user1;
-            context.AwardUsers.Add(aus);
-
-            context.SaveChanges();
+            DataSetupUtility.CreateInviteUser(context, test_manager, test_user1);
 
             // Add Habit, Habit Rule
             UserHabit habit = new UserHabit();
@@ -90,9 +123,10 @@ namespace knowledgebuilderapi.test.UnitTests
             habit.Comment = habit.Name;
             habit.Frequency = HabitFrequency.Weekly;
             habit.DoneCriteria = habitDoneCriteria;
-            habit.StartDate = (int)DayOfWeek.Monday;
+            habit.StartDate = (int)dow;
             context.UserHabits.Add(habit);
             context.SaveChanges();
+            Int32 nNewHabitID = habit.ID;
 
             UserHabitRule rule1 = new UserHabitRule();
             rule1.HabitID = habit.ID;
@@ -119,14 +153,27 @@ namespace knowledgebuilderapi.test.UnitTests
             context.SaveChanges();
 
             // Add user record.
-            UserHabitRecord record = new UserHabitRecord();
-            record.HabitID = habit.ID;
-            record.RecordDate = dtRecord;
-            record.Comment = "Test1";
-            var rst = control.Post(record);
-            if (rst != null)
+            Boolean lastRst = false;
+            foreach(DateTime dt in listRecordDates)
             {
+                UserHabitRecord record = new UserHabitRecord();
+                record.HabitID = habit.ID;
+                record.RecordDate = dt;
+                record.Comment = "Test1";
+                var rst = control.Post(record);
+                Assert.NotNull(rst);
+                if (rst != null)
+                {
+                    CreatedODataResult<UserHabitRecord> rstrecord = (CreatedODataResult<UserHabitRecord>)rst.Result;
+                    Assert.NotNull(rstrecord);
+
+                    lastRst = rstrecord.Entity.RuleID.HasValue;
+                }
             }
+            Assert.Equal(lastRecordHasRule, lastRst);
+
+            DataSetupUtility.ClearUserHabitData(context, nNewHabitID);
+            DataSetupUtility.DeleteInviteUser(context, test_manager, test_user1);
 
             await context.DisposeAsync();
         }

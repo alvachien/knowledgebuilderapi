@@ -89,6 +89,9 @@ namespace knowledgebuilderapi.Controllers
                         {
                             return BadRequest("Invalid start date");
                         }
+
+                        if (habit.DoneCriteria > 7 || habit.DoneCriteria < 0)
+                            return BadRequest("Invalid done criteria");
                     }
                     break;
 
@@ -99,6 +102,9 @@ namespace knowledgebuilderapi.Controllers
                     {
                         if (habit.StartDate.Value > 31 || habit.StartDate < 1)
                             return BadRequest("Invalid start date");
+
+                        if (habit.DoneCriteria > 31 || habit.DoneCriteria < 0)
+                            return BadRequest("Invalid done criteria");
                     }
                     break;
 
@@ -106,6 +112,8 @@ namespace knowledgebuilderapi.Controllers
                 default:
                     if (habit.StartDate.HasValue)
                         return BadRequest("Invalid start date");
+                    if (habit.DoneCriteria != 1)
+                        return BadRequest("Invalid done criteria");
                     break;
             }
 

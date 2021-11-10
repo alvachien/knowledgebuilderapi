@@ -103,6 +103,7 @@ namespace knowledgebuilderapi.Controllers
                            select dbrecord).ToList<UserHabitRecord>();
 
             record.ContinuousCount = 1; // Default is 1
+
             // Now calculate the rule and the points
             switch (habits[0].Frequency)
             {
@@ -114,15 +115,16 @@ namespace knowledgebuilderapi.Controllers
                     else
                     {
                         // New activity
-                        DayOfWeek dow = (DayOfWeek)habits[0].StartDate;
+                        DayOfWeek habitdow = (DayOfWeek)habits[0].StartDate;
                         DayOfWeek curdow = record.RecordDate.DayOfWeek;
+
                         switch (curdow)
                         {
                             case DayOfWeek.Monday:
-                                switch (dow)
+                                switch (habitdow)
                                 {
                                     case DayOfWeek.Monday:
-                                        // Monday to Monday, a new start
+                                        // Monday to Monday
                                         if (habits[0].DoneCriteria == 1)
                                         {
                                             // Need to find out the rule
@@ -133,28 +135,76 @@ namespace knowledgebuilderapi.Controllers
                                         break;
 
                                     case DayOfWeek.Tuesday:
+                                        // Monday to Tuesday
+                                        if (habits[0].DoneCriteria == 1)
+                                        {
+                                            // Need to find out the rule
+                                            var ridx = rules.FindIndex(rl => rl.ContinuousRecordFrom >= 1);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
                                         break;
 
                                     case DayOfWeek.Wednesday:
+                                        // Monday to Wednesday
+                                        if (habits[0].DoneCriteria == 1)
+                                        {
+                                            // Need to find out the rule
+                                            var ridx = rules.FindIndex(rl => rl.ContinuousRecordFrom >= 1);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
                                         break;
 
                                     case DayOfWeek.Thursday:
+                                        // Monday to Thursday
+                                        if (habits[0].DoneCriteria == 1)
+                                        {
+                                            // Need to find out the rule
+                                            var ridx = rules.FindIndex(rl => rl.ContinuousRecordFrom >= 1);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
                                         break;
 
                                     case DayOfWeek.Friday:
+                                        // Monday to Friday
+                                        if (habits[0].DoneCriteria == 1)
+                                        {
+                                            // Need to find out the rule
+                                            var ridx = rules.FindIndex(rl => rl.ContinuousRecordFrom >= 1);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
                                         break;
 
                                     case DayOfWeek.Saturday:
+                                        // Monday to Saturday
+                                        if (habits[0].DoneCriteria == 1)
+                                        {
+                                            // Need to find out the rule
+                                            var ridx = rules.FindIndex(rl => rl.ContinuousRecordFrom >= 1);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
                                         break;
 
                                     case DayOfWeek.Sunday:
                                     default:
+                                        // Monday to Sunday
+                                        if (habits[0].DoneCriteria == 1)
+                                        {
+                                            // Need to find out the rule
+                                            var ridx = rules.FindIndex(rl => rl.ContinuousRecordFrom >= 1);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
                                         break;
                                 }
                                 break;
 
                             case DayOfWeek.Tuesday:
-                                switch (dow)
+                                switch (habitdow)
                                 {
                                     case DayOfWeek.Monday:
                                         break;
@@ -189,7 +239,7 @@ namespace knowledgebuilderapi.Controllers
                                 break;
 
                             case DayOfWeek.Wednesday:
-                                switch (dow)
+                                switch (habitdow)
                                 {
                                     case DayOfWeek.Monday:
                                         break;
@@ -223,7 +273,7 @@ namespace knowledgebuilderapi.Controllers
                                 break;
 
                             case DayOfWeek.Thursday:
-                                switch (dow)
+                                switch (habitdow)
                                 {
                                     case DayOfWeek.Monday:
                                         break;
@@ -257,7 +307,7 @@ namespace knowledgebuilderapi.Controllers
                                 break;
 
                             case DayOfWeek.Friday:
-                                switch (dow)
+                                switch (habitdow)
                                 {
                                     case DayOfWeek.Monday:
                                         break;
@@ -291,7 +341,7 @@ namespace knowledgebuilderapi.Controllers
                                 break;
 
                             case DayOfWeek.Saturday:
-                                switch (dow)
+                                switch (habitdow)
                                 {
                                     case DayOfWeek.Monday:
                                         break;
@@ -326,7 +376,7 @@ namespace knowledgebuilderapi.Controllers
 
                             case DayOfWeek.Sunday:
                             default:
-                                switch (dow)
+                                switch (habitdow)
                                 {
                                     case DayOfWeek.Monday:
                                         break;

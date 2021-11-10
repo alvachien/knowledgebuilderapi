@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using knowledgebuilderapi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -192,6 +193,44 @@ namespace knowledgebuilderapi.test
             context.Database.ExecuteSqlRaw("DELETE FROM AwardRule WHERE ID > 0 ");
             context.Database.ExecuteSqlRaw("DELETE FROM AwardPoint WHERE ID > 0 ");
             context.Database.ExecuteSqlRaw("DELETE FROM DailyTrace WHERE TargetUser IS NOT NULL");
+        }
+
+        internal static void ClearUserHabitData(kbdataContext context, Int32 habitID)
+        {
+            context.Database.ExecuteSqlRaw("DELETE FROM UserHabit WHERE ID = " + habitID);
+        }
+
+        internal static void CreateInviteUser(kbdataContext context, String supervisor, String testUser)
+        {
+            // Add Invited User
+            //
+            InvitedUser usr = new InvitedUser();
+            usr.DisplayAs = supervisor;
+            usr.InvitationCode = supervisor;
+            usr.UserID = supervisor;
+            usr.UserName = supervisor;
+            context.InvitedUsers.Add(usr);
+
+            usr = new InvitedUser();
+            usr.DisplayAs = testUser;
+            usr.InvitationCode = testUser;
+            usr.UserID = testUser;
+            usr.UserName = testUser;
+            context.InvitedUsers.Add(usr);
+
+            AwardUser aus = new AwardUser();
+            aus.Supervisor = supervisor;
+            aus.TargetUser = testUser;
+            context.AwardUsers.Add(aus);
+
+            context.SaveChanges();
+        }
+
+        internal static void DeleteInviteUser(kbdataContext context, String supervisor, String testUser)
+        {
+            context.Database.ExecuteSqlRaw("DELETE FROM InvitedUser WHERE UserID = '" + supervisor + "'");
+            context.Database.ExecuteSqlRaw("DELETE FROM InvitedUser WHERE UserID = '" + testUser + "'");
+            context.Database.ExecuteSqlRaw("DELETE FROM AwardUser WHERE Supervisor = '" + supervisor + "' AND TargetUser = '" + testUser + "'");
         }
     }
 }
