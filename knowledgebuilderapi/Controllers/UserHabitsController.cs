@@ -100,10 +100,10 @@ namespace knowledgebuilderapi.Controllers
                         return BadRequest("Invalid start date");
                     else
                     {
-                        if (habit.StartDate.Value > 31 || habit.StartDate < 1)
+                        if (habit.StartDate.Value > 28 || habit.StartDate < 1)
                             return BadRequest("Invalid start date");
 
-                        if (habit.DoneCriteria > 31 || habit.DoneCriteria < 0)
+                        if (habit.DoneCriteria > 28 || habit.DoneCriteria < 0)
                             return BadRequest("Invalid done criteria");
                     }
                     break;
