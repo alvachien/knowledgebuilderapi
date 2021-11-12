@@ -106,18 +106,12 @@ namespace knowledgebuilderapi.Controllers
                     HabitWeeklyTrace firstWeek = new HabitWeeklyTrace();
                     HabitWeeklyTrace secondWeek = new HabitWeeklyTrace();
                     HabitWeeklyTrace.analyzeUserRecord(oldrecords, dtbgn, firstWeek, secondWeek);
-
                     break;
 
                 case HabitFrequency.Monthly:
-                    if (oldrecords.Count > 0)
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
+                    HabitMonthlyTrace firstMonth = new HabitMonthlyTrace();
+                    HabitMonthlyTrace secondMonth = new HabitMonthlyTrace();
+                    HabitMonthlyTrace.analyzeUserRecord(oldrecords, dtbgn, firstMonth, secondMonth);
                     break;
 
                 case HabitFrequency.Daily:
