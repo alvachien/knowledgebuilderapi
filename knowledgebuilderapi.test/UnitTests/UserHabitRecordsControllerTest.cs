@@ -43,60 +43,104 @@ namespace knowledgebuilderapi.test.UnitTests
                 // Or this could read from a file. :)
                 return new[]
                 {
+                    // Target: 1 time per week
                     new object[] { 
                         DayOfWeek.Monday, 
                         new DateTime[] { new DateTime(2021, 11, 1) }, 
-                        1, 
-                        true 
+                        1, 1, new DateTime[] { new DateTime(2021, 11, 1) }
                     },
                     new object[] { 
                         DayOfWeek.Tuesday,
                         new DateTime[] { new DateTime(2021, 11, 2) },
-                        1, 
-                        true 
+                        1, 1, new DateTime[] { new DateTime(2021, 11, 2) }
                     },
                     new object[] { 
                         DayOfWeek.Wednesday,
                         new DateTime[] { new DateTime(2021, 11, 3) },
-                        1, 
-                        true 
+                        1, 1, new DateTime[] { new DateTime(2021, 11, 3) }
                     },
                     new object[] { 
                         DayOfWeek.Thursday,
                         new DateTime[] { new DateTime(2021, 11, 4) },
-                        1, 
-                        true 
+                        1, 1, new DateTime[] {  new DateTime(2021, 11, 4) }
                     },
                     new object[] { 
                         DayOfWeek.Friday,
                         new DateTime[] { new DateTime(2021, 11, 5) },
-                        1, 
-                        true 
+                        1, 1, new DateTime[] { new DateTime(2021, 11, 5) }
                     },
                     new object[] { 
                         DayOfWeek.Saturday,
                         new DateTime[] { new DateTime(2021, 11, 6) },
-                        1, 
-                        true 
+                        1, 1, new DateTime[] { new DateTime(2021, 11, 6) }
                     },
                     new object[] { 
                         DayOfWeek.Sunday,
                         new DateTime[] { new DateTime(2021, 11, 7) },
-                        1, 
-                        true 
+                        1, 1, new DateTime[] { new DateTime(2021, 11, 7) }
                     },
 
+                    // Target: 2 times per week
                     new object[] { 
                         DayOfWeek.Monday,
                         new DateTime[] { new DateTime(2021, 11, 1) },
-                        2, 
-                        false 
+                        2, 1, new DateTime[] { }
                     },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new DateTime[] { new DateTime(2021, 11, 1), new DateTime(2021, 11, 2) },
+                        2, 2, new DateTime[] {  new DateTime(2021, 11, 2) }
+                    },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new DateTime[] { new DateTime(2021, 11, 1), new DateTime(2021, 11, 2), new DateTime(2021, 11,3) },
+                        2, 3, new DateTime[] { new DateTime(2021, 11, 3) }
+                    },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new DateTime[] { new DateTime(2021, 11, 1), new DateTime(2021, 11, 2), new DateTime(2021, 11,3), new DateTime(2021, 11, 4) },
+                        2, 4, new DateTime[] { new DateTime(2021, 11, 4) }
+                    },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new DateTime[] { new DateTime(2021, 11, 1), new DateTime(2021, 11, 2), new DateTime(2021, 11, 3),
+                                        new DateTime(2021, 11, 8), new DateTime(2021, 11, 9), new DateTime(2021, 11, 11), },
+                        2, 6, new DateTime[] { new DateTime(2021, 11, 3), new DateTime(2021, 11, 11) }
+                    },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new DateTime[] { new DateTime(2021, 11, 1), 
+                                        new DateTime(2021, 11, 8), new DateTime(2021, 11, 9), new DateTime(2021, 11, 11), },
+                        2, 4, new DateTime[] { new DateTime(2021, 11, 11) }
+                    },
+
+                    // Target: 4 times per week
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new DateTime[] { new DateTime(2021, 11, 1), new DateTime(2021, 11, 2), new DateTime(2021, 11,3) },
+                        4, 3, new DateTime[] { }
+                    },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new DateTime[] { new DateTime(2021, 11, 1), new DateTime(2021, 11, 2), new DateTime(2021, 11,3), new DateTime(2021, 11, 4) },
+                        4, 4, new DateTime[] { new DateTime(2021, 11, 4) }
+                    },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new DateTime[] { new DateTime(2021, 11, 1), new DateTime(2021, 11, 2), new DateTime(2021, 11,3), new DateTime(2021, 11, 4), new DateTime(2021, 11, 5) },
+                        4, 5, new DateTime[] { new DateTime(2021, 11, 5) }
+                    },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new DateTime[] { new DateTime(2021, 11, 1), new DateTime(2021, 11, 2), new DateTime(2021, 11,3), new DateTime(2021, 11, 4), new DateTime(2021, 11, 5), new DateTime(2021, 11, 6) },
+                        4, 6, new DateTime[] { new DateTime(2021, 11, 6) }
+                    },
+
+                    // Target: 7 times per week
                     new object[] { 
                         DayOfWeek.Monday,
                         new DateTime[] { new DateTime(2021, 11, 1) },
-                        7, 
-                        false 
+                        7, 1, new DateTime[] { }
                     }
                 };
             }
@@ -104,7 +148,8 @@ namespace knowledgebuilderapi.test.UnitTests
 
         [Theory]
         [MemberData(nameof(WeeklyDates))]
-        public async Task CalculatePoints_Weekly(DayOfWeek dow, DateTime[] listRecordDates, int habitDoneCriteria, Boolean lastRecordHasRule)
+        public async Task CalculatePoints_Weekly_NumberOfTimes(DayOfWeek dow, DateTime[] arRecordDates, int completeCondition, int recordCount, 
+            DateTime[] arTargetRuleDate)
         {
             var context = this.fixture.GetCurrentDataContext();
             UserHabitRecordsController control = new(context);
@@ -122,7 +167,8 @@ namespace knowledgebuilderapi.test.UnitTests
             habit.Category = HabitCategory.Positive;
             habit.Comment = habit.Name;
             habit.Frequency = HabitFrequency.Weekly;
-            habit.DoneCriteria = habitDoneCriteria;
+            habit.CompleteCategory = HabitCompleteCategory.NumberOfTimes;
+            habit.CompleteCondition = completeCondition;
             habit.StartDate = (int)dow;
             context.UserHabits.Add(habit);
             context.SaveChanges();
@@ -153,8 +199,8 @@ namespace knowledgebuilderapi.test.UnitTests
             context.SaveChanges();
 
             // Add user record.
-            Boolean lastRst = false;
-            foreach(DateTime dt in listRecordDates)
+            //Boolean lastRst = false;
+            foreach(DateTime dt in arRecordDates)
             {
                 UserHabitRecord record = new UserHabitRecord();
                 record.HabitID = habit.ID;
@@ -167,13 +213,44 @@ namespace knowledgebuilderapi.test.UnitTests
                     CreatedODataResult<UserHabitRecord> rstrecord = (CreatedODataResult<UserHabitRecord>)rst.Result;
                     Assert.NotNull(rstrecord);
 
-                    lastRst = rstrecord.Entity.RuleID.HasValue;
+                    //lastRst = rstrecord.Entity.RuleID.HasValue;
                 }
             }
-            Assert.Equal(lastRecordHasRule, lastRst);
+
+            // Check on DB directly
+            var dbrecords = (from dbrecord in context.UserHabitRecords
+                         where dbrecord.HabitID == habit.ID
+                         select dbrecord).ToList();
+            Assert.Equal(recordCount, dbrecords.Count);
+
+            // Ensure rule is assigned correctly
+            if (arTargetRuleDate.Length > 0)
+            {
+                var rulecnt = 0;
+                dbrecords.ForEach(dbr =>
+                {
+                    if (dbr.RuleID != null)
+                    {
+                        rulecnt++;
+
+                        var ridx = -1;
+                        for(int i = 0; i < arTargetRuleDate.Length; i ++)
+                        {
+                            if (arTargetRuleDate[i].Date == dbr.RecordDate.Date)
+                            {
+                                ridx = i;
+                                return;
+                            }
+                        }
+                        Assert.NotEqual(-1, ridx);
+                    }
+                });
+                Assert.Equal(arTargetRuleDate.Length, rulecnt);
+            }
 
             DataSetupUtility.ClearUserHabitData(context, nNewHabitID);
             DataSetupUtility.DeleteInviteUser(context, test_manager, test_user1);
+            context.SaveChanges();
 
             await context.DisposeAsync();
         }

@@ -72,53 +72,39 @@ namespace knowledgebuilderapi.test.UnitTests
                 {
                     new object[]
                     {
-                        new List<UserHabitRecord>
-                        {
-                        },
                         new DateTime(2021, 11, 3),
+                        new List<UserHabitRecord> { },
                         0,
                         0
                     },
                     new object[]
                     {
+                        new DateTime(2021, 11, 3),
                         new List<UserHabitRecord>
                         {
-                            new UserHabitRecord
-                            {
-                                RecordDate = new DateTime(2021, 11, 7)
-                            }
+                            new UserHabitRecord  { RecordDate = new DateTime(2021, 11, 7) }
                         },
-                        new DateTime(2021, 11, 3),
                         1,
                         0
                     },
                     new object[]
                     {
+                        new DateTime(2021, 11, 3),
                         new List<UserHabitRecord>
                         {
-                            new UserHabitRecord
-                            {
-                                RecordDate = new DateTime(2021, 11, 9)
-                            }
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 9) }
                         },
-                        new DateTime(2021, 11, 3),
                         1,
                         0
                     },
                     new object[]
                     {
+                        new DateTime(2021, 11, 3),
                         new List<UserHabitRecord>
                         {
-                            new UserHabitRecord
-                            {
-                                RecordDate = new DateTime(2021, 11, 9)
-                            },
-                            new UserHabitRecord
-                            {
-                                RecordDate = new DateTime(2021, 11, 10)
-                            }
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 9) },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 10) }
                         },
-                        new DateTime(2021, 11, 3),
                         1,
                         1
                     }
@@ -137,7 +123,7 @@ namespace knowledgebuilderapi.test.UnitTests
 
         [Theory]
         [MemberData(nameof(WeeklyHabitRecords))]
-        public void analyzeUserRecord(List<UserHabitRecord> habitRecords, DateTime dtBegin, int firstWeekCount, int secondWeekCount)
+        public void analyzeUserRecord(DateTime dtBegin, List<UserHabitRecord> habitRecords, int firstWeekCount, int secondWeekCount)
         {
             HabitWeeklyTrace firstWeek = new HabitWeeklyTrace();
             HabitWeeklyTrace secondWeek = new HabitWeeklyTrace();

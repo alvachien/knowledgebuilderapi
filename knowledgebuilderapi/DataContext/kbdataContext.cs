@@ -438,6 +438,10 @@ namespace knowledgebuilderapi
                     .HasConversion(
                         v => (short)v,
                         v => (HabitFrequency)v);
+                entity.Property(b => b.CompleteCategory)
+                    .HasConversion(
+                        v => (short)v,
+                        v => (HabitCompleteCategory)v);
 
                 entity.HasMany(d => d.Rules)
                     .WithOne(p => p.CurrentHabit)
@@ -458,7 +462,7 @@ namespace knowledgebuilderapi
 
             modelBuilder.Entity<UserHabitRecord>(entity =>
             {
-                entity.HasKey(d => new { d.HabitID, d.RecordDate });
+                entity.HasKey(d => new { d.HabitID, d.RecordDate, d.SubID });
 
                 if (!TestingMode)
                 {

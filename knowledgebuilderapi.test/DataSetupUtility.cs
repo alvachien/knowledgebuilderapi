@@ -124,7 +124,9 @@ namespace knowledgebuilderapi.test
                 TargetUser NVARCHAR(50) NOT NULL,
 
                 Frequency  SMALLINT  NOT NULL DEFAULT 0,
-                DoneCriteria  INT NOT NULL DEFAULT 1,
+                CompleteCategory  SMALLINT NOT NULL DEFAULT 0,
+                CompleteCondition  INT  NOT NULL  DEFAULT 1,
+
                 StartDate     INT NULL,
 
                 Comment    NVARCHAR(50)  NULL,
@@ -146,9 +148,11 @@ namespace knowledgebuilderapi.test
 
             database.ExecuteSqlRaw(@"CREATE TABLE UserHabitRecord (
                 HabitID         INT            NOT NULL,
-	            RecordDate	    DATE		   NULL DEFAULT CURRENT_DATE,
+	            RecordDate	    DATE		   NOT NULL DEFAULT CURRENT_DATE,
+                SubID           INT            NOT NULL DEFAULT 1,
+                CompleteFact    INT            NULL,
                 RuleID          INT            NULL,
-                ContinuousCount INT            NOT NULL   DEFAULT 1,
+                ContinuousCount INT            NOT NULL DEFAULT 1,
                 Comment         NVARCHAR(50)   NULL,
                 PRIMARY KEY (HabitID, RecordDate),
 	            CONSTRAINT FK_USERHABITRECORD_HABIT FOREIGN KEY (HabitID) REFERENCES UserHabit (ID) ON DELETE CASCADE ON UPDATE CASCADE )"
@@ -222,8 +226,6 @@ namespace knowledgebuilderapi.test
             aus.Supervisor = supervisor;
             aus.TargetUser = testUser;
             context.AwardUsers.Add(aus);
-
-            context.SaveChanges();
         }
 
         internal static void DeleteInviteUser(kbdataContext context, String supervisor, String testUser)

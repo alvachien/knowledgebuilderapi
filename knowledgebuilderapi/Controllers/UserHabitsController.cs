@@ -90,8 +90,19 @@ namespace knowledgebuilderapi.Controllers
                             return BadRequest("Invalid start date");
                         }
 
-                        if (habit.DoneCriteria > 7 || habit.DoneCriteria < 0)
-                            return BadRequest("Invalid done criteria");
+                        switch (habit.CompleteCategory)
+                        {
+                            case HabitCompleteCategory.NumberOfCount:
+                                if (habit.CompleteCondition <= 0)
+                                    return BadRequest("Invalid done criteria");
+                                break;
+
+                            case HabitCompleteCategory.NumberOfTimes:
+                            default:
+                                if (habit.CompleteCondition> 7 || habit.CompleteCondition <= 0)
+                                    return BadRequest("Invalid done criteria");
+                                break;
+                        }
                     }
                     break;
 
@@ -103,8 +114,19 @@ namespace knowledgebuilderapi.Controllers
                         if (habit.StartDate.Value > 28 || habit.StartDate < 1)
                             return BadRequest("Invalid start date");
 
-                        if (habit.DoneCriteria > 28 || habit.DoneCriteria < 0)
-                            return BadRequest("Invalid done criteria");
+                        switch (habit.CompleteCategory)
+                        {
+                            case HabitCompleteCategory.NumberOfCount:
+                                if (habit.CompleteCondition <= 0)
+                                    return BadRequest("Invalid done criteria");
+                                break;
+
+                            case HabitCompleteCategory.NumberOfTimes:
+                            default:
+                                if (habit.CompleteCondition > 28 || habit.CompleteCondition <= 0)
+                                    return BadRequest("Invalid done criteria");
+                                break;
+                        }
                     }
                     break;
 
@@ -112,8 +134,19 @@ namespace knowledgebuilderapi.Controllers
                 default:
                     if (habit.StartDate.HasValue)
                         return BadRequest("Invalid start date");
-                    if (habit.DoneCriteria != 1)
-                        return BadRequest("Invalid done criteria");
+                    switch (habit.CompleteCategory)
+                    {
+                        case HabitCompleteCategory.NumberOfCount:
+                            if (habit.CompleteCondition <= 0)
+                                return BadRequest("Invalid done criteria");
+                            break;
+
+                        case HabitCompleteCategory.NumberOfTimes:
+                        default:
+                            if (habit.CompleteCondition != 1)
+                                return BadRequest("Invalid done criteria");
+                            break;
+                    }
                     break;
             }
 

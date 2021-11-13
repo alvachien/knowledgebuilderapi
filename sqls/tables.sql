@@ -181,7 +181,8 @@ CREATE TABLE UserHabit(
     [TargetUser]    NVARCHAR (50) NOT NULL,
 
     [Frequency]     SMALLINT      DEFAULT(0) NOT NULL,
-    [DoneCriteria]  INT           DEFAULT(1) NOT NULL,
+    [CompleteCategory]  SMALLINT  DEFAULT(0) NOT NULL,
+    [CompleteCondition]  INT    DEFAULT(1) NOT NULL,
     [StartDate]     INT           NULL,
 
     [Comment]       NVARCHAR(50)  NULL,
@@ -208,6 +209,7 @@ CREATE TABLE UserHabitRecord(
     [HabitID]       INT            NOT NULL,
 	[RecordDate]	DATE		   DEFAULT (getdate()) NOT NULL,
     [SubID]         INT            DEFAULT (1) NOT NULL,    -- For daily rule, it could happen several times
+    [CompleteFact]  INT            NULL,
     [RuleID]        INT            NULL,
     [ContinuousCount] INT          DEFAULT(1) NOT NULL,
     [Comment]       NVARCHAR(50)   NULL,

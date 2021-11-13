@@ -106,12 +106,105 @@ namespace knowledgebuilderapi.Controllers
                     HabitWeeklyTrace firstWeek = new HabitWeeklyTrace();
                     HabitWeeklyTrace secondWeek = new HabitWeeklyTrace();
                     HabitWeeklyTrace.analyzeUserRecord(oldrecords, dtbgn, firstWeek, secondWeek);
+                    // First week
+                    int? firstweekrule = firstWeek.getRuleID();
+                    int firstweekcontcnt = 0;
+                    //int? firstweekFact = firstWeek.getCompleteFact();
+                    if (firstweekrule.HasValue)
+                        firstweekcontcnt = firstWeek.getRuleContinuousCount().GetValueOrDefault();                    
+
+                    // Second week
+                    int? secondweekrule = secondWeek.getRuleID();
+                    if (firstweekrule.HasValue)
+                    {
+                        // Start since last week
+                        switch (habits[0].CompleteCategory)
+                        {
+                            case HabitCompleteCategory.NumberOfCount:
+                                break;
+
+                            case HabitCompleteCategory.NumberOfTimes:
+                            default:
+                                {
+                                    int nexistcnt = secondWeek.getNumberOfTimes();
+                                    if (secondweekrule.HasValue)
+                                    {
+                                        // Already has rule assigned, move the rule ID to new created one
+                                        var existRecord = secondWeek.getRecordWithRule();
+                                        var existDBRecord = _context.UserHabitRecords
+                                            .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
+
+                                        record.RuleID = existDBRecord.Result.RuleID;
+                                        record.ContinuousCount = existDBRecord.Result.ContinuousCount;
+
+                                        existDBRecord.Result.RuleID = null;
+                                        existDBRecord.Result.ContinuousCount = 0;
+                                    }
+                                    else
+                                    {
+                                        if (nexistcnt + 1 == habits[0].CompleteCondition)
+                                        {
+                                            // Workout the rule then
+                                            var ncontcnt = firstweekcontcnt + 1;
+                                            var ridx = rules.FindIndex(ruleitem => ncontcnt >= ruleitem.ContinuousRecordFrom && ruleitem.ContinuousRecordTo > ncontcnt );
+                                            if (ridx != -1)
+                                            {
+                                                record.ContinuousCount = ncontcnt;
+                                                record.RuleID = rules[ridx].RuleID;
+                                            }                                                
+                                        }
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        // New start in this week
+                        switch(habits[0].CompleteCategory)
+                        {
+                            case HabitCompleteCategory.NumberOfCount:
+                                break;
+
+                            case HabitCompleteCategory.NumberOfTimes:
+                            default:
+                                {
+                                    int nexistcnt = secondWeek.getNumberOfTimes();
+                                    if (secondweekrule.HasValue)
+                                    {
+                                        // Already has rule assigned, move the rule ID to new created one
+                                        var existRecord = secondWeek.getRecordWithRule();
+                                        var existDBRecord = _context.UserHabitRecords
+                                            .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
+
+                                        record.RuleID = existDBRecord.Result.RuleID;
+                                        record.ContinuousCount = existDBRecord.Result.ContinuousCount;
+
+                                        existDBRecord.Result.RuleID = null;
+                                        existDBRecord.Result.ContinuousCount = 0;
+                                    }
+                                    else
+                                    {
+                                        if (nexistcnt + 1 == habits[0].CompleteCondition)
+                                        {
+                                            // Workout the rule then
+                                            var ridx = rules.FindIndex(ruleitem => record.ContinuousCount >= ruleitem.ContinuousRecordFrom && record.ContinuousCount < ruleitem.ContinuousRecordTo );
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
+                                    }
+                                }
+                                break;
+                        }
+                    }
                     break;
 
                 case HabitFrequency.Monthly:
                     HabitMonthlyTrace firstMonth = new HabitMonthlyTrace();
                     HabitMonthlyTrace secondMonth = new HabitMonthlyTrace();
                     HabitMonthlyTrace.analyzeUserRecord(oldrecords, dtbgn, firstMonth, secondMonth);
+                    // First month
+                    // Second month
                     break;
 
                 case HabitFrequency.Daily:

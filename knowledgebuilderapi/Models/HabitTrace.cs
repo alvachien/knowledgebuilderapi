@@ -50,6 +50,78 @@ namespace knowledgebuilderapi.Models
             return nCount;
         }
 
+        public int? getRuleID()
+        {
+            int? ruleID = null;
+
+            foreach(KeyValuePair<DayOfWeek, UserHabitRecord> kvp in records)
+            {
+                if (kvp.Value != null && kvp.Value.RuleID.HasValue)
+                {
+                    ruleID = kvp.Value.RuleID;
+                }
+            }
+
+            return ruleID;
+        }
+
+        public UserHabitRecord getRecordWithRule()
+        {
+            UserHabitRecord record = null;
+
+            foreach (KeyValuePair<DayOfWeek, UserHabitRecord> kvp in records)
+            {
+                if (kvp.Value != null)
+                {
+                    record = kvp.Value;
+                }
+            }
+            return record;
+        }
+
+        public int? getRuleContinuousCount()
+        {
+            int? cdays = null;
+            foreach (KeyValuePair<DayOfWeek, UserHabitRecord> kvp in records)
+            {
+                if (kvp.Value != null && kvp.Value.RuleID.HasValue)
+                {
+                    cdays = kvp.Value.ContinuousCount;
+                }
+            }
+
+            return cdays;
+        }
+
+        public int getNumberOfTimes()
+        {
+            int count = 0;
+            foreach (KeyValuePair<DayOfWeek, UserHabitRecord> kvp in records)
+            {
+                if (kvp.Value != null)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        public int? getNumberOfCount()
+        {
+            int? cfact = null;
+            foreach (KeyValuePair<DayOfWeek, UserHabitRecord> kvp in records)
+            {
+                if (kvp.Value != null && kvp.Value.CompleteFact.HasValue)
+                {
+                    if (cfact.HasValue)
+                        cfact = cfact.Value + kvp.Value.CompleteFact.Value;
+                    else
+                        cfact = kvp.Value.CompleteFact.Value;
+                }
+            }
+            return cfact;
+        }
+
         public static DateTime getDBSelectionDate(DayOfWeek dow, DateTime recordDate)
         {
             int nPrvDays = (int)recordDate.DayOfWeek - (int)dow;
@@ -128,7 +200,6 @@ namespace knowledgebuilderapi.Models
             return nCount;
         }
 
-
         public static DateTime getDBSelectionDate(int dateInMonth, DateTime recordDate)
         {
             int nPrvDays = recordDate.Day - dateInMonth;
@@ -165,6 +236,8 @@ namespace knowledgebuilderapi.Models
                         if (idx != -1)
                             firstMonth.setRecord(dtCur.Day, listRecords[idx]);
                     }
+
+                    dtCur = dtCur.AddDays(1);
                 }
             }
         }

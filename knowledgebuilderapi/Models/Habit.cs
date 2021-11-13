@@ -15,9 +15,15 @@ namespace knowledgebuilderapi.Models
 
     public enum HabitFrequency: Int16
     {
-        Daily = 0,
-        Weekly = 1,
-        Monthly = 2
+        Daily       = 0,
+        Weekly      = 1,
+        Monthly     = 2
+    }
+
+    public enum HabitCompleteCategory: Int16
+    {
+        NumberOfTimes   = 0,
+        NumberOfCount   = 1,
     }
 
     [Table("UserHabit")]
@@ -29,7 +35,6 @@ namespace knowledgebuilderapi.Models
 
         [Column("Category", TypeName = "SMALLINT")]
         public HabitCategory Category { get; set; }
-
 
         [Column("Name", TypeName = "NVARCHAR(50)")]
         public String Name { get; set; }
@@ -48,8 +53,11 @@ namespace knowledgebuilderapi.Models
         [Column("Frequency", TypeName = "SMALLINT")]
         public HabitFrequency Frequency { get; set; }
 
-        [Column("DoneCriteria", TypeName = "INT")]
-        public Int32 DoneCriteria { get; set; }
+        [Column("CompleteCategory", TypeName = "SMALLINT")]
+        public HabitCompleteCategory CompleteCategory { get; set; }
+
+        [Column("CompleteCondition", TypeName = "INT")]
+        public Int32 CompleteCondition { get; set; }
 
         [Column("StartDate", TypeName = "SMALLINT")]
         public Int32? StartDate { get; set; }
@@ -97,6 +105,14 @@ namespace knowledgebuilderapi.Models
         [Key]
         [Column("RecordDate", TypeName = "DATE")]
         public DateTime RecordDate { get; set; }
+
+        [Key]
+        [Column("SubID", TypeName = "INT")]
+        // Sub. ID: for same Habit occurs several times in same date
+        public Int32 SubID { get; set; }
+
+        [Column("CompleteFact", TypeName = "INT")]
+        public Int32? CompleteFact { get; set; }
 
         [Column("RuleID", TypeName = "INT")]
         public Int32? RuleID { get; set; }
