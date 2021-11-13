@@ -30,13 +30,16 @@ namespace knowledgebuilderapi.test.UnitTests
         public UserHabitRecordsControllerTest(SqliteDatabaseFixture fixture)
         {
             this.fixture = fixture;
+
+            this.createUser();
         }
 
         public void Dispose()
         {
+            this.clearUser();
         }
 
-        public static IEnumerable<object[]> WeeklyDates
+        public static IEnumerable<object[]> WeeklyDateNumberOfTimes
         {
             get
             {
@@ -146,17 +149,51 @@ namespace knowledgebuilderapi.test.UnitTests
             }
         }
 
+        public static IEnumerable<object[]> WeeklyDateNumberOfCount
+        {
+            get
+            {
+                // Or this could read from a file. :)
+                return new[]
+                {
+                    // Target: 1 time per week
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new UserHabitRecord[] { new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 100 } },
+                        1, 100, new DateTime[] { new DateTime(2021, 11, 1) }
+                    },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new UserHabitRecord[] { new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 50 } },
+                        1, 100, new DateTime[] { }
+                    }
+                };
+            }
+        }
+
+        private void createUser()
+        {
+            // Create invite user
+            var context = this.fixture.GetCurrentDataContext();
+
+            DataSetupUtility.CreateInviteUser(context, test_manager, test_user1);
+            context.SaveChanges();
+        }
+        private void clearUser()
+        {
+            var context = this.fixture.GetCurrentDataContext();
+            DataSetupUtility.DeleteInviteUser(context, test_manager, test_user1);
+            context.SaveChanges();
+            context.Dispose();
+        }
+
         [Theory]
-        [MemberData(nameof(WeeklyDates))]
+        [MemberData(nameof(WeeklyDateNumberOfTimes))]
         public async Task CalculatePoints_Weekly_NumberOfTimes(DayOfWeek dow, DateTime[] arRecordDates, int completeCondition, int recordCount, 
             DateTime[] arTargetRuleDate)
         {
             var context = this.fixture.GetCurrentDataContext();
             UserHabitRecordsController control = new(context);
-
-            // Add Invited User
-            //
-            DataSetupUtility.CreateInviteUser(context, test_manager, test_user1);
 
             // Add Habit, Habit Rule
             UserHabit habit = new UserHabit();
@@ -250,6 +287,58 @@ namespace knowledgebuilderapi.test.UnitTests
 
             DataSetupUtility.ClearUserHabitData(context, nNewHabitID);
             DataSetupUtility.DeleteInviteUser(context, test_manager, test_user1);
+            context.SaveChanges();
+
+            await context.DisposeAsync();
+        }
+
+        [Theory]
+        [MemberData(nameof(WeeklyDateNumberOfCount))]
+        public async Task CalculatePoints_Weekly_NumberOfCounts(DayOfWeek dow, UserHabitRecord[] records, int completeCondition, int recordCount, 
+            DateTime[] arTargetRuleDate)
+        {
+            var context = this.fixture.GetCurrentDataContext();
+
+            UserHabitRecordsController control = new(context);
+
+            // Add Habit, Habit Rules
+            UserHabit habit = new UserHabit();
+            habit.TargetUser = test_user1;
+            habit.ValidFrom = new DateTime(2021, 1, 1);
+            habit.ValidTo = new DateTime(2022, 12, 31);
+            habit.Name = "Habit_1";
+            habit.Category = HabitCategory.Positive;
+            habit.Comment = habit.Name;
+            habit.Frequency = HabitFrequency.Weekly;
+            habit.CompleteCategory = HabitCompleteCategory.NumberOfCount;
+            habit.CompleteCondition = completeCondition;
+            habit.StartDate = (int)dow;
+            context.UserHabits.Add(habit);
+            context.SaveChanges();
+            Int32 nNewHabitID = habit.ID;
+
+            UserHabitRule rule1 = new UserHabitRule();
+            rule1.HabitID = habit.ID;
+            rule1.RuleID = 1;
+            rule1.ContinuousRecordFrom = 1;
+            rule1.ContinuousRecordTo = 2;
+            rule1.Point = 1;
+            context.UserHabitRules.Add(rule1);
+
+            UserHabitRule rule2 = new UserHabitRule();
+            rule2.HabitID = habit.ID;
+            rule2.RuleID = 2;
+            rule2.ContinuousRecordFrom = 2;
+            rule1.ContinuousRecordTo = 3;
+            rule2.Point = 2;
+            context.UserHabitRules.Add(rule2);
+
+            UserHabitRule rule3 = new UserHabitRule();
+            rule3.HabitID = habit.ID;
+            rule3.RuleID = 3;
+            rule3.ContinuousRecordFrom = 3;
+            rule3.Point = 4;
+            context.UserHabitRules.Add(rule3);
             context.SaveChanges();
 
             await context.DisposeAsync();
