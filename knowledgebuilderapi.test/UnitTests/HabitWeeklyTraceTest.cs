@@ -107,11 +107,25 @@ namespace knowledgebuilderapi.test.UnitTests
                         },
                         1,
                         1
+                    },
+                    new object[]
+                    {
+                        new DateTime(2021, 11, 3),
+                        new List<UserHabitRecord>
+                        {
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 9), SubID = 1 },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 9), SubID = 2 },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 10), SubID = 1 },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 10), SubID = 2 },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 10), SubID = 3 },
+                        },
+                        2,
+                        3
                     }
+
                 };
             }
         }
-
 
         [Theory]
         [MemberData(nameof(WeeklyDates))]
@@ -129,8 +143,8 @@ namespace knowledgebuilderapi.test.UnitTests
             HabitWeeklyTrace secondWeek = new HabitWeeklyTrace();
 
             HabitWeeklyTrace.analyzeUserRecord(habitRecords, dtBegin, firstWeek, secondWeek);
-            Assert.Equal(firstWeek.getRecordCount(), firstWeekCount);
-            Assert.Equal(secondWeek.getRecordCount(), secondWeekCount);
+            Assert.Equal(firstWeekCount, firstWeek.getRecordCount());
+            Assert.Equal(secondWeekCount, secondWeek.getRecordCount());
         }
     }
 }

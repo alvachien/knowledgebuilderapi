@@ -82,19 +82,52 @@ namespace knowledgebuilderapi.Controllers
                     break;
             }
 
-            var checkrecord = (from dbrecord in _context.UserHabitRecords where dbrecord.RecordDate >= record.RecordDate && dbrecord.HabitID == record.HabitID
-                               select dbrecord).Count();
-            if (checkrecord > 0)
-                return BadRequest("Record in the past!");
+            // Basic check on the record itself
+            switch (habits[0].CompleteCategory)
+            {
+                case HabitCompleteCategory.NumberOfCount:
+                    {
+                        if (record.CompleteFact.GetValueOrDefault() <= 0)
+                            return BadRequest("Record must provide complete fact");
+                        var checkrecord = (from dbrecord in _context.UserHabitRecords
+                                           where dbrecord.RecordDate > record.RecordDate && dbrecord.HabitID == record.HabitID
+                                           select dbrecord).Count();
+                        if (checkrecord > 0)
+                            return BadRequest("Record in the past!");
+
+                        checkrecord = (from dbrecord in _context.UserHabitRecords
+                                       where dbrecord.RecordDate == record.RecordDate && dbrecord.HabitID == record.HabitID
+                                            && dbrecord.SubID == record.SubID
+                                       select dbrecord).Count();
+                        if (checkrecord > 0)
+                            return BadRequest("Conflicted Sub ID!");
+                    }
+                    break;
+
+                case HabitCompleteCategory.NumberOfTimes:
+                default:
+                    {
+                        var checkrecord = (from dbrecord in _context.UserHabitRecords
+                                           where dbrecord.RecordDate >= record.RecordDate && dbrecord.HabitID == record.HabitID
+                                           select dbrecord).Count();
+                        if (checkrecord > 0)
+                            return BadRequest("Record in the past!");
+                    }
+                    break;
+            }
 
             // Find out all rules
-            var rules = (from rule in this._context.UserHabitRules where rule.HabitID == record.HabitID 
+            var rules = (from rule in this._context.UserHabitRules 
+                         where rule.HabitID == record.HabitID 
                          orderby rule.ContinuousRecordFrom 
                          ascending select rule).ToList<UserHabitRule>();
             if (rules.Count > 0) { }
+            else
+                return BadRequest("No rule defined");
 
             // Find related records
-            var oldrecords = (from dbrecord in this._context.UserHabitRecords where dbrecord.RecordDate >= dtbgn && dbrecord.RecordDate < record.RecordDate
+            var oldrecords = (from dbrecord in _context.UserHabitRecords 
+                              where dbrecord.HabitID == record.HabitID && dbrecord.RecordDate >= dtbgn && dbrecord.RecordDate <= record.RecordDate
                            select dbrecord).ToList<UserHabitRecord>();
 
             record.ContinuousCount = 1; // Default is 1
@@ -109,7 +142,6 @@ namespace knowledgebuilderapi.Controllers
                     // First week
                     int? firstweekrule = firstWeek.getRuleID();
                     int firstweekcontcnt = 0;
-                    //int? firstweekFact = firstWeek.getCompleteFact();
                     if (firstweekrule.HasValue)
                         firstweekcontcnt = firstWeek.getRuleContinuousCount().GetValueOrDefault();                    
 
@@ -121,6 +153,36 @@ namespace knowledgebuilderapi.Controllers
                         switch (habits[0].CompleteCategory)
                         {
                             case HabitCompleteCategory.NumberOfCount:
+                                {
+                                    int nexistcnt = secondWeek.getNumberOfCount().GetValueOrDefault();
+                                    if (secondweekrule.HasValue)
+                                    {
+                                        // Already has rule assigned, move the rule ID to new created one
+                                        var existRecord = secondWeek.getRecordWithRule();
+                                        var existDBRecord = _context.UserHabitRecords
+                                            .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
+
+                                        record.RuleID = existDBRecord.Result.RuleID;
+                                        record.ContinuousCount = existDBRecord.Result.ContinuousCount;
+
+                                        existDBRecord.Result.RuleID = null;
+                                        existDBRecord.Result.ContinuousCount = 0;
+                                    }
+                                    else
+                                    {
+                                        if (nexistcnt + record.CompleteFact.GetValueOrDefault() >= habits[0].CompleteCondition)
+                                        {
+                                            // Workout the new rule (maybe) then
+                                            var ncontcnt = firstweekcontcnt + 1;
+                                            var ridx = rules.FindIndex(ruleitem => ncontcnt >= ruleitem.ContinuousRecordFrom && ruleitem.ContinuousRecordTo > ncontcnt);
+                                            if (ridx != -1)
+                                            {
+                                                record.ContinuousCount = ncontcnt;
+                                                record.RuleID = rules[ridx].RuleID;
+                                            }
+                                        }
+                                    }
+                                }
                                 break;
 
                             case HabitCompleteCategory.NumberOfTimes:
@@ -151,7 +213,7 @@ namespace knowledgebuilderapi.Controllers
                                             {
                                                 record.ContinuousCount = ncontcnt;
                                                 record.RuleID = rules[ridx].RuleID;
-                                            }                                                
+                                            }
                                         }
                                     }
                                 }
@@ -164,6 +226,32 @@ namespace knowledgebuilderapi.Controllers
                         switch(habits[0].CompleteCategory)
                         {
                             case HabitCompleteCategory.NumberOfCount:
+                                {
+                                    int nexistcnt = secondWeek.getNumberOfCount().GetValueOrDefault();
+                                    if (secondweekrule.HasValue)
+                                    {
+                                        // Already has rule assigned, move the rule ID to new created one
+                                        var existRecord = secondWeek.getRecordWithRule();
+                                        var existDBRecord = _context.UserHabitRecords
+                                            .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
+
+                                        record.RuleID = existDBRecord.Result.RuleID;
+                                        record.ContinuousCount = existDBRecord.Result.ContinuousCount;
+
+                                        existDBRecord.Result.RuleID = null;
+                                        existDBRecord.Result.ContinuousCount = 0;
+                                    }
+                                    else
+                                    {
+                                        if (nexistcnt + record.CompleteFact.GetValueOrDefault() >= habits[0].CompleteCondition)
+                                        {
+                                            // Workout the rule then
+                                            var ridx = rules.FindIndex(ruleitem => record.ContinuousCount >= ruleitem.ContinuousRecordFrom && record.ContinuousCount < ruleitem.ContinuousRecordTo);
+                                            if (ridx != -1)
+                                                record.RuleID = rules[ridx].RuleID;
+                                        }
+                                    }
+                                }
                                 break;
 
                             case HabitCompleteCategory.NumberOfTimes:
@@ -252,6 +340,7 @@ namespace knowledgebuilderapi.Controllers
             catch(Exception exp)
             {
                 System.Console.WriteLine(exp.Message);
+                throw;
             }
 
             return Created(record);

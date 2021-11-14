@@ -7,7 +7,7 @@ namespace knowledgebuilderapi.Models
 {
     public class HabitWeeklyTrace
     {
-        private Dictionary<DayOfWeek, UserHabitRecord> records = new Dictionary<DayOfWeek, UserHabitRecord>();
+        private readonly Dictionary<DayOfWeek, List<UserHabitRecord>> dictRecords = new Dictionary<DayOfWeek, List<UserHabitRecord>>();
         
         public DayOfWeek StartWeekDay 
         { 
@@ -23,30 +23,37 @@ namespace knowledgebuilderapi.Models
         public HabitWeeklyTrace()
         {
             foreach (DayOfWeek dow in Enum.GetValues(typeof(DayOfWeek)))
-                this.records.Add(dow, null);
+                dictRecords.Add(dow, new List<UserHabitRecord>());
         }
 
-        public UserHabitRecord getRecord(DayOfWeek dow)
+        public List<UserHabitRecord> getRecord(DayOfWeek dow)
         {
-            return this.records[dow];
+            return dictRecords[dow];
         }
 
-        public void setRecord(DayOfWeek dow, UserHabitRecord record)
+        public void addRecord(DayOfWeek dow, UserHabitRecord record)
         {
-            this.records[dow] = record;
+            dictRecords[dow].Add(record);
+        }
+
+        public void setRecord(DayOfWeek dow, List<UserHabitRecord> listRecords)
+        {
+            dictRecords[dow].Clear();
+            foreach (UserHabitRecord record in listRecords)
+                dictRecords[dow].Add(record);
         }
 
         public void resetRecords()
         {
-            foreach (DayOfWeek dow in records.Keys)
-                records[dow] = null;
+            foreach (DayOfWeek dow in dictRecords.Keys)
+                dictRecords[dow].Clear();
         }
 
         public int getRecordCount()
         {
             int nCount = 0;
-            foreach (UserHabitRecord record in records.Values)
-                if (record != null) nCount++;
+            foreach (List<UserHabitRecord> record in dictRecords.Values)
+                nCount += record.Count;
             return nCount;
         }
 
@@ -54,11 +61,12 @@ namespace knowledgebuilderapi.Models
         {
             int? ruleID = null;
 
-            foreach(KeyValuePair<DayOfWeek, UserHabitRecord> kvp in records)
+            foreach(KeyValuePair<DayOfWeek, List<UserHabitRecord>> kvp in dictRecords)
             {
-                if (kvp.Value != null && kvp.Value.RuleID.HasValue)
+                foreach(var record in kvp.Value)
                 {
-                    ruleID = kvp.Value.RuleID;
+                    if (record.RuleID.HasValue)
+                        ruleID = record.RuleID;
                 }
             }
 
@@ -67,26 +75,28 @@ namespace knowledgebuilderapi.Models
 
         public UserHabitRecord getRecordWithRule()
         {
-            UserHabitRecord record = null;
+            UserHabitRecord rtnrecord = null;
 
-            foreach (KeyValuePair<DayOfWeek, UserHabitRecord> kvp in records)
+            foreach (KeyValuePair<DayOfWeek, List<UserHabitRecord>> kvp in dictRecords)
             {
-                if (kvp.Value != null)
+                foreach (var record in kvp.Value)
                 {
-                    record = kvp.Value;
+                    if (record.RuleID.HasValue)
+                        rtnrecord = record;
                 }
             }
-            return record;
+            return rtnrecord;
         }
 
         public int? getRuleContinuousCount()
         {
             int? cdays = null;
-            foreach (KeyValuePair<DayOfWeek, UserHabitRecord> kvp in records)
+            foreach (KeyValuePair<DayOfWeek, List<UserHabitRecord>> kvp in dictRecords)
             {
-                if (kvp.Value != null && kvp.Value.RuleID.HasValue)
+                foreach (var record in kvp.Value)
                 {
-                    cdays = kvp.Value.ContinuousCount;
+                    if (record.RuleID.HasValue)
+                        cdays = record.ContinuousCount;
                 }
             }
 
@@ -96,12 +106,9 @@ namespace knowledgebuilderapi.Models
         public int getNumberOfTimes()
         {
             int count = 0;
-            foreach (KeyValuePair<DayOfWeek, UserHabitRecord> kvp in records)
+            foreach (KeyValuePair<DayOfWeek, List<UserHabitRecord>> kvp in dictRecords)
             {
-                if (kvp.Value != null)
-                {
-                    count++;
-                }
+                count += kvp.Value.Count;
             }
             return count;
         }
@@ -109,14 +116,14 @@ namespace knowledgebuilderapi.Models
         public int? getNumberOfCount()
         {
             int? cfact = null;
-            foreach (KeyValuePair<DayOfWeek, UserHabitRecord> kvp in records)
+            foreach (KeyValuePair<DayOfWeek, List<UserHabitRecord>> kvp in dictRecords)
             {
-                if (kvp.Value != null && kvp.Value.CompleteFact.HasValue)
+                foreach (var record in kvp.Value)
                 {
                     if (cfact.HasValue)
-                        cfact = cfact.Value + kvp.Value.CompleteFact.Value;
+                        cfact = cfact.Value + record.CompleteFact.Value;
                     else
-                        cfact = kvp.Value.CompleteFact.Value;
+                        cfact = record.CompleteFact.Value;
                 }
             }
             return cfact;
@@ -147,16 +154,15 @@ namespace knowledgebuilderapi.Models
                 {
                     DateTime dtCur = dtBegin.AddDays(i).Date;
 
-                    var idx = listRecords.FindIndex(rcd => rcd.RecordDate.Date == dtCur);
-                    if (i >= 7)
+                    foreach(UserHabitRecord record in listRecords)
                     {
-                        if (idx != -1)
-                            secondWeek.setRecord(dtCur.DayOfWeek, listRecords[idx]);
-                    }
-                    else
-                    {
-                        if (idx != -1)
-                            firstWeek.setRecord(dtCur.DayOfWeek, listRecords[idx]);                        
+                        if (record.RecordDate.Date == dtCur)
+                        {
+                            if (i >= 7) // Second week
+                                secondWeek.addRecord(dtCur.DayOfWeek, record);
+                            else // First week
+                                firstWeek.addRecord(dtCur.DayOfWeek, record);
+                        }
                     }
                 }
             }
@@ -165,7 +171,7 @@ namespace knowledgebuilderapi.Models
 
     public class HabitMonthlyTrace
     {
-        private Dictionary<Int32, UserHabitRecord> records = new Dictionary<int, UserHabitRecord>();
+        private readonly Dictionary<Int32, List<UserHabitRecord>> dictRecords = new Dictionary<int, List<UserHabitRecord>>();
 
         // The start date. Such as '2021-11-03';
         public DateTime StartDate { get; set; }
@@ -173,30 +179,30 @@ namespace knowledgebuilderapi.Models
         public HabitMonthlyTrace()
         {
             for (int i = 1; i < 32; i++)
-                this.records.Add(i, null);
+                dictRecords.Add(i, new List<UserHabitRecord>());
         }
 
-        public UserHabitRecord getRecord(Int32 date)
+        public List<UserHabitRecord> getRecord(Int32 date)
         {
-            return this.records[date];
+            return dictRecords[date];
         }
 
-        public void setRecord(Int32 date, UserHabitRecord record)
+        public void addRecord(Int32 date, UserHabitRecord record)
         {
-            this.records[date] = record;
+            dictRecords[date].Add(record);
         }
 
         public void resetRecords()
         {
-            foreach (int nkey in records.Keys)
-                records[nkey] = null;
+            foreach (int nkey in dictRecords.Keys)
+                dictRecords[nkey].Clear();
         }
 
         public int getRecordCount()
         {
             int nCount = 0;
-            foreach (UserHabitRecord record in records.Values)
-                if (record != null) nCount++;
+            foreach (List<UserHabitRecord> record in dictRecords.Values)
+                nCount += record.Count;
             return nCount;
         }
 
@@ -212,32 +218,33 @@ namespace knowledgebuilderapi.Models
             return dtbgn;
         }
 
-        public static void analyzeUserRecord(List<UserHabitRecord> listRecords, DateTime dtBegin, HabitMonthlyTrace firstMonth, HabitMonthlyTrace secondMonth)
+        public static void analyzeUserRecord(List<UserHabitRecord> listRecords, DateTime dtBegin, 
+            HabitMonthlyTrace firstMonth, HabitMonthlyTrace secondMonth)
         {
             firstMonth.resetRecords();
             firstMonth.StartDate = dtBegin.Date;
             secondMonth.resetRecords();
-            secondMonth.StartDate = dtBegin.AddDays(7).Date;
-
             DateTime dtSecondMonth = dtBegin.AddMonths(1).Date;
+            secondMonth.StartDate = dtSecondMonth;
+
             DateTime dtEnd = dtBegin.AddMonths(2).Date;
+
             if (listRecords.Count > 0)
-            {
+            {                
                 for (DateTime dtCur = dtBegin.Date; dtCur < dtEnd; )
                 {
-                    var idx = listRecords.FindIndex(rcd => rcd.RecordDate.Date == dtCur);
-                    if (dtCur >= dtSecondMonth)
+                    foreach (UserHabitRecord record in listRecords)
                     {
-                        if (idx != -1)
-                            secondMonth.setRecord(dtCur.Day, listRecords[idx]);
-                    }
-                    else
-                    {
-                        if (idx != -1)
-                            firstMonth.setRecord(dtCur.Day, listRecords[idx]);
+                        if (record.RecordDate.Date == dtCur)
+                        {
+                            if (dtCur >= dtSecondMonth) // Second month
+                                secondMonth.addRecord(dtCur.Day, record);
+                            else // First month
+                                firstMonth.addRecord(dtCur.Day, record);
+                        }
                     }
 
-                    dtCur = dtCur.AddDays(1);
+                    dtCur = dtCur.AddDays(1).Date;
                 }
             }
         }

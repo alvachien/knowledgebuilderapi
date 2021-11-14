@@ -154,7 +154,7 @@ namespace knowledgebuilderapi.test
                 RuleID          INT            NULL,
                 ContinuousCount INT            NOT NULL DEFAULT 1,
                 Comment         NVARCHAR(50)   NULL,
-                PRIMARY KEY (HabitID, RecordDate),
+                PRIMARY KEY (HabitID, RecordDate, SubID),
 	            CONSTRAINT FK_USERHABITRECORD_HABIT FOREIGN KEY (HabitID) REFERENCES UserHabit (ID) ON DELETE CASCADE ON UPDATE CASCADE )"
             );
         }

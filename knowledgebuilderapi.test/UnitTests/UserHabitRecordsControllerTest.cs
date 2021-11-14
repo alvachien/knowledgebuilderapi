@@ -43,7 +43,6 @@ namespace knowledgebuilderapi.test.UnitTests
         {
             get
             {
-                // Or this could read from a file. :)
                 return new[]
                 {
                     // Target: 1 time per week
@@ -153,19 +152,66 @@ namespace knowledgebuilderapi.test.UnitTests
         {
             get
             {
-                // Or this could read from a file. :)
                 return new[]
                 {
-                    // Target: 1 time per week
+                    // Target: 100 exercises per week
                     new object[] {
                         DayOfWeek.Monday,
-                        new UserHabitRecord[] { new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 100 } },
-                        1, 100, new DateTime[] { new DateTime(2021, 11, 1) }
+                        new UserHabitRecord[] { new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 100, Comment = "Test1" } },
+                        100, 1, new DateTime[] { new DateTime(2021, 11, 1) }
                     },
                     new object[] {
                         DayOfWeek.Monday,
-                        new UserHabitRecord[] { new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 50 } },
-                        1, 100, new DateTime[] { }
+                        new UserHabitRecord[] { new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 90, Comment = "Test1" } },
+                        100, 1, Array.Empty<DateTime>()
+                    },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new UserHabitRecord[] { new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 110, Comment = "Test1" } },
+                        100, 1, new DateTime[] { new DateTime(2021, 11, 1) }
+                    },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new UserHabitRecord[] {
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 3), SubID = 1, CompleteFact = 40, Comment = "Test1" },
+                        },
+                        100, 3, new DateTime[] { new DateTime(2021, 11, 3) }
+                    },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new UserHabitRecord[] {
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 2, CompleteFact = 40, Comment = "Test1" },
+                        },
+                        100, 3, new DateTime[] { new DateTime(2021, 11, 2) }
+                    },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new UserHabitRecord[] {
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 1, CompleteFact = 30, Comment = "Test2" },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 2, CompleteFact = 40, Comment = "Test2" },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 3), SubID = 1, CompleteFact = 20, Comment = "Test3" },
+                        },
+                        100, 4, new DateTime[] { new DateTime(2021, 11, 3) }
+                    },
+                    new object[] {
+                        DayOfWeek.Monday,
+                        new UserHabitRecord[] {
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 1, CompleteFact = 30, Comment = "Test2" },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 2, CompleteFact = 40, Comment = "Test2" },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 3), SubID = 1, CompleteFact = 20, Comment = "Test3" },
+
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 8), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 9), SubID = 1, CompleteFact = 30, Comment = "Test2" },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 9), SubID = 2, CompleteFact = 40, Comment = "Test2" },
+                            new UserHabitRecord { RecordDate = new DateTime(2021, 11, 10), SubID = 1, CompleteFact = 20, Comment = "Test3" },
+                        },
+                        100, 8, new DateTime[] { new DateTime(2021, 11, 3), new DateTime(2021, 11, 10) }
                     }
                 };
             }
@@ -286,7 +332,6 @@ namespace knowledgebuilderapi.test.UnitTests
             }
 
             DataSetupUtility.ClearUserHabitData(context, nNewHabitID);
-            DataSetupUtility.DeleteInviteUser(context, test_manager, test_user1);
             context.SaveChanges();
 
             await context.DisposeAsync();
@@ -339,6 +384,53 @@ namespace knowledgebuilderapi.test.UnitTests
             rule3.ContinuousRecordFrom = 3;
             rule3.Point = 4;
             context.UserHabitRules.Add(rule3);
+            context.SaveChanges();
+
+            // Add user record.
+            foreach (UserHabitRecord record in records)
+            {
+                record.HabitID = nNewHabitID;
+                var rst = control.Post(record);
+                Assert.NotNull(rst);
+                if (rst != null)
+                {
+                    CreatedODataResult<UserHabitRecord> rstrecord = (CreatedODataResult<UserHabitRecord>)rst.Result;
+                    Assert.NotNull(rstrecord);
+                }
+            }
+
+            // Check on DB directly
+            var dbrecords = (from dbrecord in context.UserHabitRecords
+                             where dbrecord.HabitID == nNewHabitID
+                             select dbrecord).ToList();
+            Assert.Equal(recordCount, dbrecords.Count);
+
+            // Ensure rule is assigned correctly
+            if (arTargetRuleDate.Length > 0)
+            {
+                var rulecnt = 0;
+                dbrecords.ForEach(dbr =>
+                {
+                    if (dbr.RuleID != null)
+                    {
+                        rulecnt++;
+
+                        var ridx = -1;
+                        for (int i = 0; i < arTargetRuleDate.Length; i++)
+                        {
+                            if (arTargetRuleDate[i].Date == dbr.RecordDate.Date)
+                            {
+                                ridx = i;
+                                return;
+                            }
+                        }
+                        Assert.NotEqual(-1, ridx);
+                    }
+                });
+                Assert.Equal(arTargetRuleDate.Length, rulecnt);
+            }
+
+            DataSetupUtility.ClearUserHabitData(context, nNewHabitID);
             context.SaveChanges();
 
             await context.DisposeAsync();

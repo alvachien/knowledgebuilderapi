@@ -52,8 +52,8 @@ namespace knowledgebuilderapi.test.UnitTests
             HabitMonthlyTrace secondMonth = new HabitMonthlyTrace();
 
             HabitMonthlyTrace.analyzeUserRecord(habitRecords, dtBegin, firstMonth, secondMonth);
-            Assert.Equal(firstMonth.getRecordCount(), firstMonthRecordCount);
-            Assert.Equal(secondMonth.getRecordCount(), secondMonthRecordCount);
+            Assert.Equal(firstMonthRecordCount, firstMonth.getRecordCount());
+            Assert.Equal(secondMonthRecordCount, secondMonth.getRecordCount());
         }
     }
 
@@ -130,8 +130,7 @@ namespace knowledgebuilderapi.test.UnitTests
                         HabitID = 1,
                         SubID = 1,
                     }
-                },
-                
+                },                
                 1,
                 0
             };
