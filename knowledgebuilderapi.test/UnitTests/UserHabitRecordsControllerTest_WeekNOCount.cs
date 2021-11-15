@@ -17,26 +17,29 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
 using Xunit.Abstractions;
+using System.Text.Json;
 
 namespace knowledgebuilderapi.test.UnitTests
 {
     public class UserHabitRecordsControllerTestData_WeekNoOfCount : IXunitSerializable
     {
-        public DayOfWeek Dow { get; private set; }
-        public List<UserHabitRecord> RecordList { get; private set; }
-        public int CompleteCondition { get; private set; }
-        public int RecordCount { get; private set; }
-        public List<DateTime> TargetRuleDateList { get; private set; }
-        public Guid InstanceID { get; private set; }
+        // public static int CreateSequenceID { get; set; }
+        public DayOfWeek Dow { get; set; }
+        public List<UserHabitRecord> RecordList { get; set; }
+        public int CompleteCondition { get; set; }
+        public int RecordCount { get; set; }
+        public List<DateTime> TargetRuleDateList { get; set; }
 
         public UserHabitRecordsControllerTestData_WeekNoOfCount()
         {
             this.RecordList = new List<UserHabitRecord>();
             this.TargetRuleDateList = new List<DateTime>();
-            this.InstanceID = new Guid();
+            // this.CaseID = Guid.NewGuid();
         }
-        public UserHabitRecordsControllerTestData_WeekNoOfCount(DayOfWeek dow,
-            List<UserHabitRecord> records, int completeCondition, int recordCount,
+        public UserHabitRecordsControllerTestData_WeekNoOfCount(
+            DayOfWeek dow,
+            List<UserHabitRecord> records, 
+            int completeCondition, int recordCount,
             List<DateTime> arTargetRuleDate) : this()
         {
             this.Dow = dow;
@@ -48,28 +51,29 @@ namespace knowledgebuilderapi.test.UnitTests
 
         public void Deserialize(IXunitSerializationInfo info)
         {
-            Dow = info.GetValue<DayOfWeek>("Dow");
-            //RecordList = info.GetValue<List<UserHabitRecord>>("RecordList");
-            CompleteCondition = info.GetValue<int>("CompleteCondition");
-            RecordCount = info.GetValue<int>("RecordCount");
-            TargetRuleDateList = info.GetValue<List<DateTime>>("TargetRuleDateList");
-            InstanceID = Guid.Parse(info.GetValue<String>(nameof(InstanceID)));
+            String val = info.GetValue<String>("Value");
+            UserHabitRecordsControllerTestData_WeekNoOfCount other = JsonSerializer.Deserialize<UserHabitRecordsControllerTestData_WeekNoOfCount>(val);
+
+            // CaseID = other.CaseID;
+            Dow = other.Dow;
+            CompleteCondition = other.CompleteCondition;
+            RecordCount = other.RecordCount;
+            if (other.RecordList.Count > 0)
+                RecordList.AddRange(other.RecordList);
+            if (other.TargetRuleDateList.Count > 0)
+                TargetRuleDateList.AddRange(other.TargetRuleDateList);
         }
 
         public void Serialize(IXunitSerializationInfo info)
         {
-            info.AddValue(nameof(Dow), Dow, typeof(DayOfWeek));
-            //info.AddValue("RecordList", RecordList, typeof(List<UserHabitRecord>));
-            info.AddValue("CompleteCondition", CompleteCondition, typeof(int));
-            info.AddValue("RecordCount", RecordCount, typeof(int));
-            info.AddValue("TargetRuleDateList", TargetRuleDateList, typeof(List<DateTime>));
-            info.AddValue(nameof(InstanceID), InstanceID.ToString("N"), typeof(String));
+            String val = JsonSerializer.Serialize(this);
+            info.AddValue("Value", val, typeof(String));
         }
 
-        public override string ToString()
-        {
-            return this.InstanceID.ToString("N");
-        }
+        //public override string ToString()
+        //{
+        //    return this.CaseID.ToString();
+        //}
     }
 
     [Collection("KBAPI_UnitTests#1")]
@@ -87,62 +91,75 @@ namespace knowledgebuilderapi.test.UnitTests
                 new UserHabitRecordsControllerTestData_WeekNoOfCount(
                     DayOfWeek.Monday,
                     new List<UserHabitRecord> { new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 100, Comment = "Test1" } },
-                    100, 1, new List<DateTime> { new DateTime(2021, 11, 1) }),
+                    100, 1,
+                    new List<DateTime> { new DateTime(2021, 11, 1) }
+                    ),
                 new UserHabitRecordsControllerTestData_WeekNoOfCount(
                     DayOfWeek.Monday,
                     new List<UserHabitRecord> { new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 90, Comment = "Test1" } },
-                    100, 1, new List<DateTime> {} ),
+                    100, 1,
+                    new List<DateTime> {} 
+                    ),
                 new UserHabitRecordsControllerTestData_WeekNoOfCount(
                     DayOfWeek.Monday,
                     new List<UserHabitRecord> { new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 110, Comment = "Test1" } },
-                    100, 1, new List<DateTime> { new DateTime(2021, 11, 1) } )
+                    100, 1,
+                    new List<DateTime> { new DateTime(2021, 11, 1) } 
+                    ),
+                new UserHabitRecordsControllerTestData_WeekNoOfCount(
+                    DayOfWeek.Monday,
+                    new List<UserHabitRecord> {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 3), SubID = 1, CompleteFact = 40, Comment = "Test1" }, },
+                    100, 3, 
+                    new List<DateTime> { new DateTime(2021, 11, 3) }
+                    ),
+                new UserHabitRecordsControllerTestData_WeekNoOfCount(
+                    DayOfWeek.Monday,
+                    new List<UserHabitRecord> {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 2, CompleteFact = 40, Comment = "Test1" }, },
+                    100, 3, new List<DateTime> { new DateTime(2021, 11, 2) }
+                    ),
+                new UserHabitRecordsControllerTestData_WeekNoOfCount(
+                    DayOfWeek.Monday,
+                    new List<UserHabitRecord> {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 1, CompleteFact = 30, Comment = "Test2" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 2, CompleteFact = 40, Comment = "Test2" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 3), SubID = 1, CompleteFact = 20, Comment = "Test3" }, },
+                    100, 4, new List<DateTime> { new DateTime(2021, 11, 3) }
+                    ),
+                new UserHabitRecordsControllerTestData_WeekNoOfCount(
+                    DayOfWeek.Monday,
+                    new List<UserHabitRecord> {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 1, CompleteFact = 30, Comment = "Test2" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 2, CompleteFact = 40, Comment = "Test2" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 3), SubID = 1, CompleteFact = 20, Comment = "Test3" },
+
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 8), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 9), SubID = 1, CompleteFact = 30, Comment = "Test2" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 9), SubID = 2, CompleteFact = 40, Comment = "Test2" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 10), SubID = 1, CompleteFact = 20, Comment = "Test3" }, },
+                    100, 8, new List<DateTime> { new DateTime(2021, 11, 3), new DateTime(2021, 11, 10) }
+                    ),
+                new UserHabitRecordsControllerTestData_WeekNoOfCount(
+                    DayOfWeek.Tuesday,
+                    new List<UserHabitRecord> {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 1, CompleteFact = 30, Comment = "Test2" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 2, CompleteFact = 40, Comment = "Test2" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 3), SubID = 1, CompleteFact = 80, Comment = "Test3" },
+
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 9), SubID = 1, CompleteFact = 30, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 10), SubID = 1, CompleteFact = 30, Comment = "Test2" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 10), SubID = 2, CompleteFact = 40, Comment = "Test2" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 11), SubID = 1, CompleteFact = 20, Comment = "Test3" }, },
+                    100, 7, new List<DateTime> { new DateTime(2021, 11, 3), new DateTime(2021, 11, 11) }
+                    )
             };
-
-        //    public static IEnumerable<object[]> GetInputtedData()
-        //    {
-        //        // Target: 100 exercises per week
-
-
-        //        yield return new object[] { new UserHabitRecordsControllerTestData_WeekNoOfCount(
-        //            DayOfWeek.Monday,
-        //            new List<UserHabitRecord> { 
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1), SubID = 1, CompleteFact = 30, Comment = "Test1" },
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 1, CompleteFact = 30, Comment = "Test1" },
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 3), SubID = 1, CompleteFact = 40, Comment = "Test1" }, },
-        //            100, 3, new List<DateTime> { new DateTime(2021, 11, 3) })
-        //        };
-        //        yield return new object[] { new UserHabitRecordsControllerTestData_WeekNoOfCount(
-        //            DayOfWeek.Monday,
-        //            new List<UserHabitRecord> {
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1), SubID = 1, CompleteFact = 30, Comment = "Test1" },
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 1, CompleteFact = 30, Comment = "Test1" },
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 2, CompleteFact = 40, Comment = "Test1" }, },
-        //            100, 3, new List<DateTime> { new DateTime(2021, 11, 2) })
-        //        };
-        //        yield return new object[] { new UserHabitRecordsControllerTestData_WeekNoOfCount(
-        //            DayOfWeek.Monday,
-        //            new List<UserHabitRecord> {
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1), SubID = 1, CompleteFact = 30, Comment = "Test1" },
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 1, CompleteFact = 30, Comment = "Test2" },
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 2, CompleteFact = 40, Comment = "Test2" },
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 3), SubID = 1, CompleteFact = 20, Comment = "Test3" }, },
-        //            100, 4, new List<DateTime> { new DateTime(2021, 11, 3) })
-        //        };
-        //        yield return new object[] { new UserHabitRecordsControllerTestData_WeekNoOfCount(
-        //            DayOfWeek.Monday,
-        //            new List<UserHabitRecord> {
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1), SubID = 1, CompleteFact = 30, Comment = "Test1" },
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 1, CompleteFact = 30, Comment = "Test2" },
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 2), SubID = 2, CompleteFact = 40, Comment = "Test2" },
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 3), SubID = 1, CompleteFact = 20, Comment = "Test3" },
-
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 8), SubID = 1, CompleteFact = 30, Comment = "Test1" },
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 9), SubID = 1, CompleteFact = 30, Comment = "Test2" },
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 9), SubID = 2, CompleteFact = 40, Comment = "Test2" },
-        //                new UserHabitRecord { RecordDate = new DateTime(2021, 11, 10), SubID = 1, CompleteFact = 20, Comment = "Test3" }, },
-        //            100, 8, new List<DateTime> { new DateTime(2021, 11, 3), new DateTime(2021, 11, 10) })
-        //        };
-        //    }
 
         [Theory]
         [MemberData(nameof(InputtedData), MemberType = typeof(UserHabitRecordsControllerTest_WeekNOCount))]
