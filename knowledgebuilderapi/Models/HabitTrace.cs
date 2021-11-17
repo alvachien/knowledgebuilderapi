@@ -249,4 +249,114 @@ namespace knowledgebuilderapi.Models
             }
         }
     }
+
+    public class HabitDailyTrace
+    {
+        private readonly List<UserHabitRecord> RecordList = new List<UserHabitRecord>();
+
+        public DateTime StartDate { get; set; }
+        
+        public HabitDailyTrace()
+        { }
+
+        public void addRecord(UserHabitRecord record)
+        {
+            RecordList.Add(record);
+        }
+
+        public void setRecord(List<UserHabitRecord> listRecords)
+        {
+            RecordList.Clear();
+            foreach (UserHabitRecord record in listRecords)
+                RecordList.Add(record);
+        }
+
+        public void resetRecords()
+        {
+            RecordList.Clear();
+        }
+
+        public int getRecordCount()
+        {
+            return RecordList.Count;
+        }
+
+        public int? getRuleID()
+        {
+            int? ruleID = null;
+
+            foreach (var record in RecordList)
+            {
+                if (record.RuleID.HasValue)
+                    ruleID = record.RuleID;
+            }
+
+            return ruleID;
+        }
+
+        public UserHabitRecord getRecordWithRule()
+        {
+            UserHabitRecord rtnrecord = null;
+
+            foreach (var record in RecordList)
+            {
+                if (record.RuleID.HasValue)
+                    rtnrecord = record;
+            }
+
+            return rtnrecord;
+        }
+
+        public int? getRuleContinuousCount()
+        {
+            int? cdays = null;
+
+            foreach (var record in RecordList)
+            {
+                if (record.RuleID.HasValue)
+                    cdays = record.ContinuousCount;
+            }
+
+            return cdays;
+        }
+
+        public int getNumberOfTimes()
+        {
+            return getRecordCount();
+        }
+
+        public int? getNumberOfCount()
+        {
+            int? cfact = null;
+
+            foreach (var record in RecordList)
+            {
+                if (cfact.HasValue)
+                    cfact = cfact.Value + record.CompleteFact.Value;
+                else
+                    cfact = record.CompleteFact.Value;
+            }
+
+            return cfact;
+        }
+
+        public static void analyzeUserRecord(List<UserHabitRecord> listRecords, DateTime dtBegin, HabitDailyTrace yesterday, HabitDailyTrace today)
+        {
+            yesterday.resetRecords();
+            yesterday.StartDate = dtBegin;
+            today.resetRecords();
+            today.StartDate = dtBegin.AddDays(1);
+
+            if (listRecords.Count > 0)
+            {
+                listRecords.ForEach(record =>
+                {
+                    if (record.RecordDate == yesterday.StartDate)
+                        yesterday.addRecord(record);
+                    else if(record.RecordDate == today.StartDate)
+                        today.addRecord(record);
+                });
+            }
+        }
+    }
 }

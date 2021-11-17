@@ -128,7 +128,7 @@ namespace knowledgebuilderapi.Controllers
             // Find related records
             var oldrecords = (from dbrecord in _context.UserHabitRecords 
                               where dbrecord.HabitID == record.HabitID && dbrecord.RecordDate >= dtbgn && dbrecord.RecordDate <= record.RecordDate
-                           select dbrecord).ToList<UserHabitRecord>();
+                              select dbrecord).ToList<UserHabitRecord>();
 
             record.ContinuousCount = 1; // Default is 1
 
@@ -136,44 +136,258 @@ namespace knowledgebuilderapi.Controllers
             switch (habits[0].Frequency)
             {
                 case HabitFrequency.Weekly:
-                    HabitWeeklyTrace firstWeek = new HabitWeeklyTrace();
-                    HabitWeeklyTrace secondWeek = new HabitWeeklyTrace();
-                    HabitWeeklyTrace.analyzeUserRecord(oldrecords, dtbgn, firstWeek, secondWeek);
-                    // First week
-                    int? firstweekrule = firstWeek.getRuleID();
-                    int firstweekcontcnt = 0;
-                    if (firstweekrule.HasValue)
-                        firstweekcontcnt = firstWeek.getRuleContinuousCount().GetValueOrDefault();                    
-
-                    // Second week
-                    int? secondweekrule = secondWeek.getRuleID();
-                    if (firstweekrule.HasValue)
                     {
-                        // Start since last week
-                        switch (habits[0].CompleteCategory)
+                        HabitWeeklyTrace firstWeek = new HabitWeeklyTrace();
+                        HabitWeeklyTrace secondWeek = new HabitWeeklyTrace();
+                        HabitWeeklyTrace.analyzeUserRecord(oldrecords, dtbgn, firstWeek, secondWeek);
+                        // First week
+                        int? firstweekrule = firstWeek.getRuleID();
+                        int firstweekcontcnt = 0;
+                        if (firstweekrule.HasValue)
+                            firstweekcontcnt = firstWeek.getRuleContinuousCount().GetValueOrDefault();
+
+                        // Second week
+                        int? secondweekrule = secondWeek.getRuleID();
+                        if (firstweekrule.HasValue)
                         {
-                            case HabitCompleteCategory.NumberOfCount:
-                                {
-                                    int nexistcnt = secondWeek.getNumberOfCount().GetValueOrDefault();
-                                    if (secondweekrule.HasValue)
+                            // Start since last week
+                            switch (habits[0].CompleteCategory)
+                            {
+                                case HabitCompleteCategory.NumberOfCount:
                                     {
-                                        // Already has rule assigned, move the rule ID to new created one
-                                        var existRecord = secondWeek.getRecordWithRule();
-                                        var existDBRecord = _context.UserHabitRecords
-                                            .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
-
-                                        record.RuleID = existDBRecord.Result.RuleID;
-                                        record.ContinuousCount = existDBRecord.Result.ContinuousCount;
-
-                                        existDBRecord.Result.RuleID = null;
-                                        existDBRecord.Result.ContinuousCount = 0;
-                                    }
-                                    else
-                                    {
-                                        if (nexistcnt + record.CompleteFact.GetValueOrDefault() >= habits[0].CompleteCondition)
+                                        int nexistcnt = secondWeek.getNumberOfCount().GetValueOrDefault();
+                                        if (secondweekrule.HasValue)
                                         {
-                                            // Workout the new rule (maybe) then
-                                            var ncontcnt = firstweekcontcnt + 1;
+                                            // Already has rule assigned, move the rule ID to new created one
+                                            var existRecord = secondWeek.getRecordWithRule();
+                                            var existDBRecord = _context.UserHabitRecords
+                                                .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
+
+                                            record.RuleID = existDBRecord.Result.RuleID;
+                                            record.ContinuousCount = existDBRecord.Result.ContinuousCount;
+
+                                            existDBRecord.Result.RuleID = null;
+                                            existDBRecord.Result.ContinuousCount = 0;
+                                        }
+                                        else
+                                        {
+                                            if (nexistcnt + record.CompleteFact.GetValueOrDefault() >= habits[0].CompleteCondition)
+                                            {
+                                                // Workout the new rule (maybe) then
+                                                var ncontcnt = firstweekcontcnt + 1;
+                                                var ridx = rules.FindIndex(ruleitem => ncontcnt >= ruleitem.ContinuousRecordFrom && ruleitem.ContinuousRecordTo > ncontcnt);
+                                                if (ridx != -1)
+                                                {
+                                                    record.ContinuousCount = ncontcnt;
+                                                    record.RuleID = rules[ridx].RuleID;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    break;
+
+                                case HabitCompleteCategory.NumberOfTimes:
+                                default:
+                                    {
+                                        int nexistcnt = secondWeek.getNumberOfTimes();
+                                        if (secondweekrule.HasValue)
+                                        {
+                                            // Already has rule assigned, move the rule ID to new created one
+                                            var existRecord = secondWeek.getRecordWithRule();
+                                            var existDBRecord = _context.UserHabitRecords
+                                                .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
+
+                                            record.RuleID = existDBRecord.Result.RuleID;
+                                            record.ContinuousCount = existDBRecord.Result.ContinuousCount;
+
+                                            existDBRecord.Result.RuleID = null;
+                                            existDBRecord.Result.ContinuousCount = 0;
+                                        }
+                                        else
+                                        {
+                                            if (nexistcnt + 1 == habits[0].CompleteCondition)
+                                            {
+                                                // Workout the rule then
+                                                var ncontcnt = firstweekcontcnt + 1;
+                                                var ridx = rules.FindIndex(ruleitem => ncontcnt >= ruleitem.ContinuousRecordFrom && ruleitem.ContinuousRecordTo > ncontcnt);
+                                                if (ridx != -1)
+                                                {
+                                                    record.ContinuousCount = ncontcnt;
+                                                    record.RuleID = rules[ridx].RuleID;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            // New start in this week
+                            switch (habits[0].CompleteCategory)
+                            {
+                                case HabitCompleteCategory.NumberOfCount:
+                                    {
+                                        int nexistcnt = secondWeek.getNumberOfCount().GetValueOrDefault();
+                                        if (secondweekrule.HasValue)
+                                        {
+                                            // Already has rule assigned, move the rule ID to new created one
+                                            var existRecord = secondWeek.getRecordWithRule();
+                                            var existDBRecord = _context.UserHabitRecords
+                                                .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
+
+                                            record.RuleID = existDBRecord.Result.RuleID;
+                                            record.ContinuousCount = existDBRecord.Result.ContinuousCount;
+
+                                            existDBRecord.Result.RuleID = null;
+                                            existDBRecord.Result.ContinuousCount = 0;
+                                        }
+                                        else
+                                        {
+                                            if (nexistcnt + record.CompleteFact.GetValueOrDefault() >= habits[0].CompleteCondition)
+                                            {
+                                                // Workout the rule then
+                                                var ridx = rules.FindIndex(ruleitem => record.ContinuousCount >= ruleitem.ContinuousRecordFrom && record.ContinuousCount < ruleitem.ContinuousRecordTo);
+                                                if (ridx != -1)
+                                                    record.RuleID = rules[ridx].RuleID;
+                                            }
+                                        }
+                                    }
+                                    break;
+
+                                case HabitCompleteCategory.NumberOfTimes:
+                                default:
+                                    {
+                                        int nexistcnt = secondWeek.getNumberOfTimes();
+                                        if (secondweekrule.HasValue)
+                                        {
+                                            // Already has rule assigned, move the rule ID to new created one
+                                            var existRecord = secondWeek.getRecordWithRule();
+                                            var existDBRecord = _context.UserHabitRecords
+                                                .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
+
+                                            record.RuleID = existDBRecord.Result.RuleID;
+                                            record.ContinuousCount = existDBRecord.Result.ContinuousCount;
+
+                                            existDBRecord.Result.RuleID = null;
+                                            existDBRecord.Result.ContinuousCount = 0;
+                                        }
+                                        else
+                                        {
+                                            if (nexistcnt + 1 == habits[0].CompleteCondition)
+                                            {
+                                                // Workout the rule then
+                                                var ridx = rules.FindIndex(ruleitem => record.ContinuousCount >= ruleitem.ContinuousRecordFrom && record.ContinuousCount < ruleitem.ContinuousRecordTo);
+                                                if (ridx != -1)
+                                                    record.RuleID = rules[ridx].RuleID;
+                                            }
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+
+                case HabitFrequency.Monthly:
+                    {
+                        HabitMonthlyTrace firstMonth = new HabitMonthlyTrace();
+                        HabitMonthlyTrace secondMonth = new HabitMonthlyTrace();
+                        HabitMonthlyTrace.analyzeUserRecord(oldrecords, dtbgn, firstMonth, secondMonth);
+                        // First month
+                        // Second month
+                    }
+                    break;
+
+                case HabitFrequency.Daily:
+                default:
+                    {
+                        HabitDailyTrace yesterday = new HabitDailyTrace();
+                        HabitDailyTrace today = new HabitDailyTrace();
+                        HabitDailyTrace.analyzeUserRecord(oldrecords, dtbgn, yesterday, today);
+                        int? yesterdayrule = yesterday.getRuleID();
+                        int yesterdaycontcnt = 0;
+                        if (yesterdayrule.HasValue)
+                            yesterdaycontcnt = yesterday.getRuleContinuousCount().GetValueOrDefault();
+
+                        int? todayrule = today.getRuleID();
+                        if (yesterdayrule.HasValue)
+                        {
+                            switch (habits[0].CompleteCategory)
+                            {
+                                case HabitCompleteCategory.NumberOfCount:
+                                    {
+                                        int nexistcnt = today.getNumberOfCount().GetValueOrDefault();
+                                        if (todayrule.HasValue)
+                                        {
+                                            // Already has rule assigned, move the rule ID to new created one
+                                            var existRecord = today.getRecordWithRule();
+                                            var existDBRecord = _context.UserHabitRecords
+                                                .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
+
+                                            record.RuleID = existDBRecord.Result.RuleID;
+                                            record.ContinuousCount = existDBRecord.Result.ContinuousCount;
+
+                                            existDBRecord.Result.RuleID = null;
+                                            existDBRecord.Result.ContinuousCount = 0;
+                                        }
+                                        else
+                                        {
+                                            if (nexistcnt + record.CompleteFact.GetValueOrDefault() >= habits[0].CompleteCondition)
+                                            {
+                                                // Workout the new rule (maybe) then
+                                                var ncontcnt = yesterdaycontcnt + 1;
+                                                var ridx = rules.FindIndex(ruleitem => ncontcnt >= ruleitem.ContinuousRecordFrom && ruleitem.ContinuousRecordTo > ncontcnt);
+                                                if (ridx != -1)
+                                                {
+                                                    record.ContinuousCount = ncontcnt;
+                                                    record.RuleID = rules[ridx].RuleID;
+                                                }
+                                            }
+                                            else
+                                                record.ContinuousCount = 0;
+                                        }
+                                    }
+                                    break;
+
+                                case HabitCompleteCategory.NumberOfTimes:
+                                default:
+                                    {
+                                        int nexistcnt = today.getNumberOfTimes();
+                                        if (todayrule.HasValue)
+                                        {
+                                            // Shall never happen
+                                            throw new Exception("Unexpected");
+                                        }
+                                        else
+                                        {
+                                            // Workout the rule then
+                                            var ncontcnt = yesterdaycontcnt + 1;
+                                            var ridx = rules.FindIndex(ruleitem => ncontcnt >= ruleitem.ContinuousRecordFrom && ruleitem.ContinuousRecordTo > ncontcnt);
+                                            if (ridx != -1)
+                                            {
+                                                record.ContinuousCount = ncontcnt;
+                                                record.RuleID = rules[ridx].RuleID;
+                                            }
+                                            else
+                                                record.ContinuousCount = 0;
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            var ncontcnt = yesterdaycontcnt + 1;
+                            // New start of the day
+                            switch (habits[0].CompleteCategory)
+                            {
+                                case HabitCompleteCategory.NumberOfCount:
+                                    {
+                                        int completedFact = today.getNumberOfCount().GetValueOrDefault();
+                                        completedFact += record.CompleteFact.GetValueOrDefault();
+                                        if (completedFact >= habits[0].CompleteCondition)
+                                        {
                                             var ridx = rules.FindIndex(ruleitem => ncontcnt >= ruleitem.ContinuousRecordFrom && ruleitem.ContinuousRecordTo > ncontcnt);
                                             if (ridx != -1)
                                             {
@@ -181,152 +395,27 @@ namespace knowledgebuilderapi.Controllers
                                                 record.RuleID = rules[ridx].RuleID;
                                             }
                                         }
+                                        else
+                                            record.ContinuousCount = 0;
                                     }
-                                }
-                                break;
+                                    break;
 
-                            case HabitCompleteCategory.NumberOfTimes:
-                            default:
-                                {
-                                    int nexistcnt = secondWeek.getNumberOfTimes();
-                                    if (secondweekrule.HasValue)
+                                case HabitCompleteCategory.NumberOfTimes:
+                                default:
                                     {
-                                        // Already has rule assigned, move the rule ID to new created one
-                                        var existRecord = secondWeek.getRecordWithRule();
-                                        var existDBRecord = _context.UserHabitRecords
-                                            .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
-
-                                        record.RuleID = existDBRecord.Result.RuleID;
-                                        record.ContinuousCount = existDBRecord.Result.ContinuousCount;
-
-                                        existDBRecord.Result.RuleID = null;
-                                        existDBRecord.Result.ContinuousCount = 0;
-                                    }
-                                    else
-                                    {
-                                        if (nexistcnt + 1 == habits[0].CompleteCondition)
+                                        // Workout the rule then
+                                        var ridx = rules.FindIndex(ruleitem => ncontcnt >= ruleitem.ContinuousRecordFrom && ruleitem.ContinuousRecordTo > ncontcnt);
+                                        if (ridx != -1)
                                         {
-                                            // Workout the rule then
-                                            var ncontcnt = firstweekcontcnt + 1;
-                                            var ridx = rules.FindIndex(ruleitem => ncontcnt >= ruleitem.ContinuousRecordFrom && ruleitem.ContinuousRecordTo > ncontcnt );
-                                            if (ridx != -1)
-                                            {
-                                                record.ContinuousCount = ncontcnt;
-                                                record.RuleID = rules[ridx].RuleID;
-                                            }
+                                            record.ContinuousCount = ncontcnt;
+                                            record.RuleID = rules[ridx].RuleID;
                                         }
+                                        else
+                                            record.ContinuousCount = 0;
                                     }
-                                }
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        // New start in this week
-                        switch(habits[0].CompleteCategory)
-                        {
-                            case HabitCompleteCategory.NumberOfCount:
-                                {
-                                    int nexistcnt = secondWeek.getNumberOfCount().GetValueOrDefault();
-                                    if (secondweekrule.HasValue)
-                                    {
-                                        // Already has rule assigned, move the rule ID to new created one
-                                        var existRecord = secondWeek.getRecordWithRule();
-                                        var existDBRecord = _context.UserHabitRecords
-                                            .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
-
-                                        record.RuleID = existDBRecord.Result.RuleID;
-                                        record.ContinuousCount = existDBRecord.Result.ContinuousCount;
-
-                                        existDBRecord.Result.RuleID = null;
-                                        existDBRecord.Result.ContinuousCount = 0;
-                                    }
-                                    else
-                                    {
-                                        if (nexistcnt + record.CompleteFact.GetValueOrDefault() >= habits[0].CompleteCondition)
-                                        {
-                                            // Workout the rule then
-                                            var ridx = rules.FindIndex(ruleitem => record.ContinuousCount >= ruleitem.ContinuousRecordFrom && record.ContinuousCount < ruleitem.ContinuousRecordTo);
-                                            if (ridx != -1)
-                                                record.RuleID = rules[ridx].RuleID;
-                                        }
-                                    }
-                                }
-                                break;
-
-                            case HabitCompleteCategory.NumberOfTimes:
-                            default:
-                                {
-                                    int nexistcnt = secondWeek.getNumberOfTimes();
-                                    if (secondweekrule.HasValue)
-                                    {
-                                        // Already has rule assigned, move the rule ID to new created one
-                                        var existRecord = secondWeek.getRecordWithRule();
-                                        var existDBRecord = _context.UserHabitRecords
-                                            .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
-
-                                        record.RuleID = existDBRecord.Result.RuleID;
-                                        record.ContinuousCount = existDBRecord.Result.ContinuousCount;
-
-                                        existDBRecord.Result.RuleID = null;
-                                        existDBRecord.Result.ContinuousCount = 0;
-                                    }
-                                    else
-                                    {
-                                        if (nexistcnt + 1 == habits[0].CompleteCondition)
-                                        {
-                                            // Workout the rule then
-                                            var ridx = rules.FindIndex(ruleitem => record.ContinuousCount >= ruleitem.ContinuousRecordFrom && record.ContinuousCount < ruleitem.ContinuousRecordTo );
-                                            if (ridx != -1)
-                                                record.RuleID = rules[ridx].RuleID;
-                                        }
-                                    }
-                                }
-                                break;
-                        }
-                    }
-                    break;
-
-                case HabitFrequency.Monthly:
-                    HabitMonthlyTrace firstMonth = new HabitMonthlyTrace();
-                    HabitMonthlyTrace secondMonth = new HabitMonthlyTrace();
-                    HabitMonthlyTrace.analyzeUserRecord(oldrecords, dtbgn, firstMonth, secondMonth);
-                    // First month
-                    // Second month
-                    break;
-
-                case HabitFrequency.Daily:
-                default:
-                    if (oldrecords.Count > 0)
-                    {
-                        // Yesterday
-                        if (oldrecords[0].RuleID.HasValue)
-                        {
-                            // Rule assigned
-                            var oldruleidx = rules.FindIndex(ruleitem => ruleitem.RuleID == oldrecords[0].RuleID);
-                            if (oldruleidx != -1)
-                            {
-                                record.ContinuousCount = oldrecords[0].ContinuousCount + 1;
-
-                                var ridx = rules.FindIndex(ruleitem => ruleitem.ContinuousRecordFrom >= record.ContinuousCount);
-                                if (ridx != -1)
-                                    record.RuleID = rules[ridx].RuleID;
+                                    break;
                             }
                         }
-                        else
-                        {
-                            // No rule assigned yesterday, new activity
-                            var ridx = rules.FindIndex(ruleitem => ruleitem.ContinuousRecordFrom == 1);
-                            if (ridx != -1)
-                                record.RuleID = rules[ridx].RuleID;
-                        }
-                    } 
-                    else
-                    {
-                        // New activity
-                        var ridx = rules.FindIndex(ruleitem => ruleitem.ContinuousRecordFrom == 1);
-                        if (ridx != -1)
-                            record.RuleID = rules[ridx].RuleID;
                     }
                     break;
             }

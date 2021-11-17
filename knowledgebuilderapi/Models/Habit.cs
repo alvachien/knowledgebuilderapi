@@ -56,9 +56,34 @@ namespace knowledgebuilderapi.Models
         [Column("CompleteCategory", TypeName = "SMALLINT")]
         public HabitCompleteCategory CompleteCategory { get; set; }
 
+        /// <summary>
+        /// Complete Condition
+        /// 
+        /// Depends on the Complete Category & Frequency.
+        /// If CompleteCategory is Number Of Times:
+        ///     Frequency is Weekly.
+        ///         Count of the record per week.
+        ///     Frequency is Monthly.
+        ///         Count of the record per month.
+        ///     Frequency is Daily.
+        ///         Not relevant.
+        ///     
+        /// If CompleteCategory is Number Of Count:
+        ///     Frequency is Weekly.
+        ///         Sum of record's CompleteFact per week.
+        ///     Frequency is Monthly.
+        ///         Sum of record's CompleteFact per month.
+        ///     Frequency is Daily.
+        ///         Sum of record's CompleteFact per day.
+        /// 
+        /// </summary>
         [Column("CompleteCondition", TypeName = "INT")]
         public Int32 CompleteCondition { get; set; }
 
+        /// <summary>
+        /// Start Date.
+        ///     Only valid for Weekly and Montly.
+        /// </summary>
         [Column("StartDate", TypeName = "SMALLINT")]
         public Int32? StartDate { get; set; }
 
