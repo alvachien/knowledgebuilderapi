@@ -28,12 +28,12 @@ namespace knowledgebuilderapi.test.UnitTests
         public List<UserHabitRecord> RecordList { get; set; }
         public int CompleteCondition { get; set; }
         public int RecordCount { get; set; }
-        public List<DateTime> TargetRuleDateList { get; set; }
+        public List<DateTime> ExpectedRuleDateList { get; set; }
 
         public UserHabitRecordsControllerTestData_WeekNoOfCount()
         {
             this.RecordList = new List<UserHabitRecord>();
-            this.TargetRuleDateList = new List<DateTime>();
+            this.ExpectedRuleDateList = new List<DateTime>();
             // this.CaseID = Guid.NewGuid();
         }
         public UserHabitRecordsControllerTestData_WeekNoOfCount(
@@ -46,7 +46,7 @@ namespace knowledgebuilderapi.test.UnitTests
             this.RecordList.AddRange(records);
             this.CompleteCondition = completeCondition;
             this.RecordCount = recordCount;
-            this.TargetRuleDateList.AddRange(arTargetRuleDate);
+            this.ExpectedRuleDateList.AddRange(arTargetRuleDate);
         }
 
         public void Deserialize(IXunitSerializationInfo info)
@@ -60,8 +60,8 @@ namespace knowledgebuilderapi.test.UnitTests
             RecordCount = other.RecordCount;
             if (other.RecordList.Count > 0)
                 RecordList.AddRange(other.RecordList);
-            if (other.TargetRuleDateList.Count > 0)
-                TargetRuleDateList.AddRange(other.TargetRuleDateList);
+            if (other.ExpectedRuleDateList.Count > 0)
+                ExpectedRuleDateList.AddRange(other.ExpectedRuleDateList);
         }
 
         public void Serialize(IXunitSerializationInfo info)
@@ -229,7 +229,7 @@ namespace knowledgebuilderapi.test.UnitTests
             Assert.Equal(testData.RecordCount, dbrecords.Count);
 
             // Ensure rule is assigned correctly
-            if (testData.TargetRuleDateList.Count > 0)
+            if (testData.ExpectedRuleDateList.Count > 0)
             {
                 var rulecnt = 0;
                 dbrecords.ForEach(dbr =>
@@ -238,11 +238,11 @@ namespace knowledgebuilderapi.test.UnitTests
                     {
                         rulecnt++;
 
-                        var ridx = testData.TargetRuleDateList.FindIndex(rd => rd.Date == dbr.RecordDate.Date);
+                        var ridx = testData.ExpectedRuleDateList.FindIndex(rd => rd.Date == dbr.RecordDate.Date);
                         Assert.NotEqual(-1, ridx);
                     }
                 });
-                Assert.Equal(testData.TargetRuleDateList.Count, rulecnt);
+                Assert.Equal(testData.ExpectedRuleDateList.Count, rulecnt);
             }
 
             DataSetupUtility.ClearUserHabitData(context, nNewHabitID);

@@ -22,20 +22,19 @@ namespace knowledgebuilderapi.test.UnitTests
     public class UserHabitRecordsControllerTestData_MonthNoOfCount : IXunitSerializable
     {
         public int DateInMonth { get; set; }
-        public List<DateTime> RecordDateList { get; set; }
-        public List<UserHabitRule> RuleList { get; set; }
+        public List<UserHabitRecord> RecordList { get; set; }
         public int CompleteCondition { get; set; }
-        public List<UserHabitRecord> ExpectedRecordList { get; set; }
+        public int RecordCount { get; set; }
+        public List<DateTime> ExpectedRuleDateList { get; set; }
 
         public UserHabitRecordsControllerTestData_MonthNoOfCount()
         {
-            RecordDateList = new List<DateTime>();
-            RuleList = new List<UserHabitRule>();
-            ExpectedRecordList = new List<UserHabitRecord>();
+            RecordList = new List<UserHabitRecord>();
+            ExpectedRuleDateList = new List<DateTime>();
         }
 
         public UserHabitRecordsControllerTestData_MonthNoOfCount(int dateInMonth,
-            List<DateTime> listRecordDates, int completeCondition,
+            List<UserHabitRecord> listRecords, int completeCondition,
             List<UserHabitRule> ruleList,
             List<UserHabitRecord> listExpectedRecords) : this()
         {
