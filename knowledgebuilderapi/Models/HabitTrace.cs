@@ -206,6 +206,78 @@ namespace knowledgebuilderapi.Models
             return nCount;
         }
 
+        public int? getRuleID()
+        {
+            int? ruleID = null;
+
+            foreach (KeyValuePair<Int32, List<UserHabitRecord>> kvp in dictRecords)
+            {
+                foreach (var record in kvp.Value)
+                {
+                    if (record.RuleID.HasValue)
+                        ruleID = record.RuleID;
+                }
+            }
+
+            return ruleID;
+        }
+
+        public UserHabitRecord getRecordWithRule()
+        {
+            UserHabitRecord rtnrecord = null;
+
+            foreach (KeyValuePair<Int32, List<UserHabitRecord>> kvp in dictRecords)
+            {
+                foreach (var record in kvp.Value)
+                {
+                    if (record.RuleID.HasValue)
+                        rtnrecord = record;
+                }
+            }
+            return rtnrecord;
+        }
+
+        public int? getRuleContinuousCount()
+        {
+            int? cdays = null;
+            foreach (KeyValuePair<Int32, List<UserHabitRecord>> kvp in dictRecords)
+            {
+                foreach (var record in kvp.Value)
+                {
+                    if (record.RuleID.HasValue)
+                        cdays = record.ContinuousCount;
+                }
+            }
+
+            return cdays;
+        }
+
+        public int getNumberOfTimes()
+        {
+            int count = 0;
+            foreach (KeyValuePair<Int32, List<UserHabitRecord>> kvp in dictRecords)
+            {
+                count += kvp.Value.Count;
+            }
+            return count;
+        }
+
+        public int? getNumberOfCount()
+        {
+            int? cfact = null;
+            foreach (KeyValuePair<Int32, List<UserHabitRecord>> kvp in dictRecords)
+            {
+                foreach (var record in kvp.Value)
+                {
+                    if (cfact.HasValue)
+                        cfact = cfact.Value + record.CompleteFact.Value;
+                    else
+                        cfact = record.CompleteFact.Value;
+                }
+            }
+            return cfact;
+        }
+
         public static DateTime getDBSelectionDate(int dateInMonth, DateTime recordDate)
         {
             int nPrvDays = recordDate.Day - dateInMonth;

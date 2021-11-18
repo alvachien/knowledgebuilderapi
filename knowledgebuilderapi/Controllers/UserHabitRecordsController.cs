@@ -294,8 +294,158 @@ namespace knowledgebuilderapi.Controllers
                         HabitMonthlyTrace firstMonth = new HabitMonthlyTrace();
                         HabitMonthlyTrace secondMonth = new HabitMonthlyTrace();
                         HabitMonthlyTrace.analyzeUserRecord(oldrecords, dtbgn, firstMonth, secondMonth);
-                        // First month
-                        // Second month
+                        int? firstMonthRule = firstMonth.getRuleID();
+                        int firstMonthContCount = 0;
+                        if (firstMonthRule.HasValue)
+                            firstMonthContCount = firstMonth.getRuleContinuousCount().GetValueOrDefault();
+
+                        int? secondMonthRule = secondMonth.getRuleID();
+                        if (firstMonthRule.HasValue)
+                        {
+                            // Start since last month
+                            switch (habits[0].CompleteCategory)
+                            {
+                                case HabitCompleteCategory.NumberOfCount:
+                                    {
+                                        int nexistcnt = secondMonth.getNumberOfCount().GetValueOrDefault();
+                                        if (secondMonthRule.HasValue)
+                                        {
+                                            // Already has rule assigned, move the rule ID to new created one
+                                            var existRecord = secondMonth.getRecordWithRule();
+                                            var existDBRecord = _context.UserHabitRecords
+                                                .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
+
+                                            record.RuleID = existDBRecord.Result.RuleID;
+                                            record.ContinuousCount = existDBRecord.Result.ContinuousCount;
+
+                                            existDBRecord.Result.RuleID = null;
+                                            existDBRecord.Result.ContinuousCount = 0;
+                                        }
+                                        else
+                                        {
+                                            if (nexistcnt + record.CompleteFact.GetValueOrDefault() >= habits[0].CompleteCondition)
+                                            {
+                                                // Workout the new rule (maybe) then
+                                                var ncontcnt = firstMonthContCount + 1;
+                                                var ridx = rules.FindIndex(ruleitem => ncontcnt >= ruleitem.ContinuousRecordFrom && ruleitem.ContinuousRecordTo > ncontcnt);
+                                                if (ridx != -1)
+                                                {
+                                                    record.ContinuousCount = ncontcnt;
+                                                    record.RuleID = rules[ridx].RuleID;
+                                                }
+                                                else
+                                                    record.ContinuousCount = firstMonthContCount;
+                                            }
+                                            else
+                                                record.ContinuousCount = firstMonthContCount;
+                                        }
+                                    }
+                                    break;
+
+                                case HabitCompleteCategory.NumberOfTimes:
+                                default:
+                                    {
+                                        int nexistcnt = secondMonth.getNumberOfTimes();
+                                        if (secondMonthRule.HasValue)
+                                        {
+                                            // Already has rule assigned, move the rule ID to new created one
+                                            var existRecord = secondMonth.getRecordWithRule();
+                                            var existDBRecord = _context.UserHabitRecords
+                                                .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
+
+                                            record.RuleID = existDBRecord.Result.RuleID;
+                                            record.ContinuousCount = existDBRecord.Result.ContinuousCount;
+
+                                            existDBRecord.Result.RuleID = null;
+                                            existDBRecord.Result.ContinuousCount = 0;
+                                        }
+                                        else
+                                        {
+                                            if (nexistcnt + 1 == habits[0].CompleteCondition)
+                                            {
+                                                // Workout the rule then
+                                                var ncontcnt = firstMonthContCount + 1;
+                                                var ridx = rules.FindIndex(ruleitem => ncontcnt >= ruleitem.ContinuousRecordFrom && ruleitem.ContinuousRecordTo > ncontcnt);
+                                                if (ridx != -1)
+                                                {
+                                                    record.ContinuousCount = ncontcnt;
+                                                    record.RuleID = rules[ridx].RuleID;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            // New start in this month
+                            switch (habits[0].CompleteCategory)
+                            {
+                                case HabitCompleteCategory.NumberOfCount:
+                                    {
+                                        int nexistcnt = secondMonth.getNumberOfCount().GetValueOrDefault();
+                                        if (secondMonthRule.HasValue)
+                                        {
+                                            // Already has rule assigned, move the rule ID to new created one
+                                            var existRecord = secondMonth.getRecordWithRule();
+                                            var existDBRecord = _context.UserHabitRecords
+                                                .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
+
+                                            record.RuleID = existDBRecord.Result.RuleID;
+                                            record.ContinuousCount = existDBRecord.Result.ContinuousCount;
+
+                                            existDBRecord.Result.RuleID = null;
+                                            existDBRecord.Result.ContinuousCount = 0;
+                                        }
+                                        else
+                                        {
+                                            if (nexistcnt + record.CompleteFact.GetValueOrDefault() >= habits[0].CompleteCondition)
+                                            {
+                                                // Workout the rule then
+                                                var ridx = rules.FindIndex(ruleitem => record.ContinuousCount >= ruleitem.ContinuousRecordFrom && record.ContinuousCount < ruleitem.ContinuousRecordTo);
+                                                if (ridx != -1)
+                                                    record.RuleID = rules[ridx].RuleID;
+                                            }
+                                        }
+                                    }
+                                    break;
+
+                                case HabitCompleteCategory.NumberOfTimes:
+                                default:
+                                    {
+                                        int nexistcnt = secondMonth.getNumberOfTimes();
+                                        if (secondMonthRule.HasValue)
+                                        {
+                                            // Already has rule assigned, move the rule ID to new created one
+                                            var existRecord = secondMonth.getRecordWithRule();
+                                            var existDBRecord = _context.UserHabitRecords
+                                                .SingleOrDefaultAsync(x => x.HabitID == existRecord.HabitID && x.RecordDate == existRecord.RecordDate && x.SubID == existRecord.SubID);
+
+                                            record.RuleID = existDBRecord.Result.RuleID;
+                                            record.ContinuousCount = existDBRecord.Result.ContinuousCount;
+
+                                            existDBRecord.Result.RuleID = null;
+                                            existDBRecord.Result.ContinuousCount = 0;
+                                        }
+                                        else
+                                        {
+                                            if (nexistcnt + 1 == habits[0].CompleteCondition)
+                                            {
+                                                // Workout the rule then
+                                                var ridx = rules.FindIndex(ruleitem => record.ContinuousCount >= ruleitem.ContinuousRecordFrom && record.ContinuousCount < ruleitem.ContinuousRecordTo);
+                                                if (ridx != -1)
+                                                    record.RuleID = rules[ridx].RuleID;
+                                                else
+                                                    record.ContinuousCount = 0;
+                                            }
+                                            else
+                                                record.ContinuousCount = 0;
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
                     }
                     break;
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Linq;
 using knowledgebuilderapi.Models;
 using knowledgebuilderapi.Controllers;
 using System.Threading.Tasks;
@@ -80,26 +82,108 @@ namespace knowledgebuilderapi.test.UnitTests
 
         public static TheoryData<UserHabitRecordsControllerTestData_MonthNoOfTimes> InputtedData =>
             new TheoryData<UserHabitRecordsControllerTestData_MonthNoOfTimes> {
+                // Continuous day 1
                 new UserHabitRecordsControllerTestData_MonthNoOfTimes(
                     1, 
                     new List<DateTime> { new DateTime(2021, 11, 1), }, 
                     1, 
                     new List<UserHabitRule>
                     {
-                        new UserHabitRule { ContinuousRecordFrom = 1, ContinuousRecordTo = 2, RuleID = 1, }
+                        new UserHabitRule { ContinuousRecordFrom = 1, ContinuousRecordTo = 2, RuleID = 1, Point = 1, }
                     },
                     new List<UserHabitRecord>
                     {
                         new UserHabitRecord { 
+                            RecordDate = new DateTime(2021, 11, 1), RuleID = 1, ContinuousCount = 1
+                        },
+                    }),
+                new UserHabitRecordsControllerTestData_MonthNoOfTimes(
+                    1,
+                    new List<DateTime> { new DateTime(2021, 11, 1), new DateTime(2021, 11, 3) },
+                    1,
+                    new List<UserHabitRule>
+                    {
+                        new UserHabitRule { ContinuousRecordFrom = 1, ContinuousRecordTo = 2, RuleID = 1, Point = 1, }
+                    },
+                    new List<UserHabitRecord>
+                    {
+                        new UserHabitRecord {
+                            RecordDate = new DateTime(2021, 11, 1), 
+                        },
+                        new UserHabitRecord {
+                            RecordDate = new DateTime(2021, 11, 3), RuleID = 1, ContinuousCount = 1
+                        },
+                    }),
+                new UserHabitRecordsControllerTestData_MonthNoOfTimes(
+                    1,
+                    new List<DateTime> { new DateTime(2021, 11, 1), new DateTime(2021, 11, 3), new DateTime(2021, 11, 11) },
+                    3,
+                    new List<UserHabitRule>
+                    {
+                        new UserHabitRule { ContinuousRecordFrom = 1, ContinuousRecordTo = 2, RuleID = 1, Point = 1, }
+                    },
+                    new List<UserHabitRecord>
+                    {
+                        new UserHabitRecord {
                             RecordDate = new DateTime(2021, 11, 1),
+                        },
+                        new UserHabitRecord {
+                            RecordDate = new DateTime(2021, 11, 3),
+                        },
+                        new UserHabitRecord {
+                            RecordDate = new DateTime(2021, 11, 11), RuleID = 1, ContinuousCount = 1
+                        },
+                    }),
+
+                // Continuous day 2
+                new UserHabitRecordsControllerTestData_MonthNoOfTimes(
+                    3,
+                    new List<DateTime> { new DateTime(2021, 11, 1), new DateTime(2021, 11, 3), new DateTime(2021, 11, 11) },
+                    1,
+                    new List<UserHabitRule>
+                    {
+                        new UserHabitRule { ContinuousRecordFrom = 1, ContinuousRecordTo = 3, RuleID = 1, Point = 1, }
+                    },
+                    new List<UserHabitRecord>
+                    {
+                        new UserHabitRecord {
+                            RecordDate = new DateTime(2021, 11, 1), RuleID = 1, ContinuousCount = 1,
+                        },
+                        new UserHabitRecord {
+                            RecordDate = new DateTime(2021, 11, 3),
+                        },
+                        new UserHabitRecord {
+                            RecordDate = new DateTime(2021, 11, 11), RuleID = 1, ContinuousCount = 2
+                        },
+                    }),
+                new UserHabitRecordsControllerTestData_MonthNoOfTimes(
+                    3,
+                    new List<DateTime> { new DateTime(2021, 11, 1), new DateTime(2021, 11, 2), new DateTime(2021, 11, 3), new DateTime(2021, 11, 11) },
+                    2,
+                    new List<UserHabitRule>
+                    {
+                        new UserHabitRule { ContinuousRecordFrom = 1, ContinuousRecordTo = 3, RuleID = 1, Point = 1, }
+                    },
+                    new List<UserHabitRecord>
+                    {
+                        new UserHabitRecord {
+                            RecordDate = new DateTime(2021, 11, 1), ContinuousCount = 0,
+                        },
+                        new UserHabitRecord {
+                            RecordDate = new DateTime(2021, 11, 2), RuleID = 1, ContinuousCount = 1,
+                        },
+                        new UserHabitRecord {
+                            RecordDate = new DateTime(2021, 11, 3), ContinuousCount = 1,
+                        },
+                        new UserHabitRecord {
+                            RecordDate = new DateTime(2021, 11, 11), RuleID = 1, ContinuousCount = 2,
                         },
                     }),
             };
 
-
         [Theory]
         [MemberData(nameof(InputtedData))]
-        public async Task CalculatePoints_NumberOfCount(UserHabitRecordsControllerTestData_MonthNoOfTimes testData)
+        public async Task CalculatePoints(UserHabitRecordsControllerTestData_MonthNoOfTimes testData)
         {
             var context = this.fixture.GetCurrentDataContext();
             UserHabitRecordsController control = new(context);
@@ -112,9 +196,10 @@ namespace knowledgebuilderapi.test.UnitTests
             habit.Name = "Habit_Monthly_1";
             habit.Category = HabitCategory.Positive;
             habit.Comment = habit.Name;
-            habit.Frequency = HabitFrequency.Daily;
-            habit.CompleteCategory = HabitCompleteCategory.NumberOfCount;
+            habit.Frequency = HabitFrequency.Monthly;
+            habit.CompleteCategory = HabitCompleteCategory.NumberOfTimes;
             habit.CompleteCondition = testData.CompleteCondition;
+            habit.StartDate = testData.DateInMonth;
             context.UserHabits.Add(habit);
             context.SaveChanges();
             Int32 nNewHabitID = habit.ID;
