@@ -84,10 +84,12 @@ namespace knowledgebuilderapi.Controllers
                         try
                         {
                             DayOfWeek dow = (DayOfWeek)habit.StartDate.Value;
+                            if (!Enum.IsDefined(typeof(DayOfWeek), dow))
+                                throw new Exception("Invalid start date");
                         }
                         catch(Exception exp)
                         {
-                            return BadRequest("Invalid start date");
+                            return BadRequest(exp.Message);
                         }
 
                         switch (habit.CompleteCategory)

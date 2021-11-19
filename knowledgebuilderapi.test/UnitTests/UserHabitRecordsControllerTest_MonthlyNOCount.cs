@@ -23,6 +23,7 @@ namespace knowledgebuilderapi.test.UnitTests
     {
         public int DateInMonth { get; set; }
         public List<UserHabitRecord> RecordList { get; set; }
+        public List<UserHabitRule> RuleList { get; set; }
         public int CompleteCondition { get; set; }
         public int RecordCount { get; set; }
         public List<DateTime> ExpectedRuleDateList { get; set; }
@@ -30,37 +31,43 @@ namespace knowledgebuilderapi.test.UnitTests
         public UserHabitRecordsControllerTestData_MonthNoOfCount()
         {
             RecordList = new List<UserHabitRecord>();
+            RuleList = new List<UserHabitRule>();
             ExpectedRuleDateList = new List<DateTime>();
         }
 
-        public UserHabitRecordsControllerTestData_MonthNoOfCount(int dateInMonth,
-            List<UserHabitRecord> listRecords, int completeCondition,
+        public UserHabitRecordsControllerTestData_MonthNoOfCount(
+            int dateInMonth,
+            List<UserHabitRecord> listRecords, 
             List<UserHabitRule> ruleList,
-            List<UserHabitRecord> listExpectedRecords) : this()
+            int completeCondition,
+            int recordCount,
+            List<DateTime> expectedRuleDate) : this()
         {
             DateInMonth = dateInMonth;
             CompleteCondition = completeCondition;
-            if (listRecordDates.Count > 0)
-                this.RecordDateList.AddRange(listRecordDates);
             if (ruleList.Count > 0)
                 RuleList.AddRange(ruleList);
-            if (listExpectedRecords.Count > 0)
-                this.ExpectedRecordList.AddRange(listExpectedRecords);
+            if (listRecords.Count > 0)
+                RecordList.AddRange(listRecords);
+            RecordCount = recordCount; 
+            if (expectedRuleDate.Count > 0)
+                ExpectedRuleDateList.AddRange(expectedRuleDate);
         }
 
         public void Deserialize(IXunitSerializationInfo info)
         {
             String val = info.GetValue<String>("Value");
-            UserHabitRecordsControllerTestData_MonthNoOfTimes other = JsonSerializer.Deserialize<UserHabitRecordsControllerTestData_MonthNoOfTimes>(val);
+            UserHabitRecordsControllerTestData_MonthNoOfCount other = JsonSerializer.Deserialize<UserHabitRecordsControllerTestData_MonthNoOfCount>(val);
 
             DateInMonth = other.DateInMonth;
             CompleteCondition = other.CompleteCondition;
-            if (other.RecordDateList.Count > 0)
-                RecordDateList.AddRange(other.RecordDateList);
-            if (other.ExpectedRecordList.Count > 0)
-                ExpectedRecordList.AddRange(other.ExpectedRecordList);
             if (other.RuleList.Count > 0)
                 RuleList.AddRange(other.RuleList);
+            if (other.RecordList.Count > 0)
+                RecordList.AddRange(other.RecordList);
+            RecordCount = other.RecordCount;
+            if (other.ExpectedRuleDateList.Count > 0)
+                ExpectedRuleDateList.AddRange(other.ExpectedRuleDateList);
         }
 
         public void Serialize(IXunitSerializationInfo info)
@@ -82,10 +89,162 @@ namespace knowledgebuilderapi.test.UnitTests
         public static TheoryData<UserHabitRecordsControllerTestData_MonthNoOfCount> InputtedData =>
             new TheoryData<UserHabitRecordsControllerTestData_MonthNoOfCount>
             {
+                // Expect: 100 exercises per Month
+                // Continuous day 1
+                new UserHabitRecordsControllerTestData_MonthNoOfCount(
+                    1,
+                    new List<UserHabitRecord>
+                    {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 100, Comment = "Test1" },
+                    }, 
+                    new List<UserHabitRule>
+                    {
+                        new UserHabitRule { RuleID = 1, ContinuousRecordFrom = 1, ContinuousRecordTo = 2, Point = 1, },
+                    },
+                    100, 1, 
+                    new List<DateTime> { 
+                        new DateTime(2021, 11, 1),
+                    }),
+                new UserHabitRecordsControllerTestData_MonthNoOfCount(
+                    1,
+                    new List<UserHabitRecord>
+                    {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 10, Comment = "Test1" },
+                    },
+                    new List<UserHabitRule>
+                    {
+                        new UserHabitRule { RuleID = 1, ContinuousRecordFrom = 1, ContinuousRecordTo = 2, Point = 1, },
+                    },
+                    100, 1,
+                    new List<DateTime> {
+                    }),
+                new UserHabitRecordsControllerTestData_MonthNoOfCount(
+                    1,
+                    new List<UserHabitRecord>
+                    {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 150, Comment = "Test1" },
+                    },
+                    new List<UserHabitRule>
+                    {
+                        new UserHabitRule { RuleID = 1, ContinuousRecordFrom = 1, ContinuousRecordTo = 2, Point = 1, },
+                    },
+                    100, 1,
+                    new List<DateTime> {
+                        new DateTime(2021, 11, 1),
+                    }),
+                new UserHabitRecordsControllerTestData_MonthNoOfCount(
+                    1,
+                    new List<UserHabitRecord>
+                    {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 50, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 11 ), CompleteFact = 20, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 21 ), CompleteFact = 50, Comment = "Test1" },
+                    },
+                    new List<UserHabitRule>
+                    {
+                        new UserHabitRule { RuleID = 1, ContinuousRecordFrom = 1, ContinuousRecordTo = 2, Point = 1, },
+                    },
+                    100, 3,
+                    new List<DateTime> {
+                        new DateTime(2021, 11, 21),
+                    }),
+                new UserHabitRecordsControllerTestData_MonthNoOfCount(
+                    1,
+                    new List<UserHabitRecord>
+                    {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 50, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 11 ), CompleteFact = 20, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 21 ), CompleteFact = 20, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 22 ), CompleteFact = 5, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 30 ), CompleteFact = 5, Comment = "Test1" },
+                    },
+                    new List<UserHabitRule>
+                    {
+                        new UserHabitRule { RuleID = 1, ContinuousRecordFrom = 1, ContinuousRecordTo = 2, Point = 1, },
+                    },
+                    100, 5,
+                    new List<DateTime> {
+                        new DateTime(2021, 11, 30),
+                    }),
+                new UserHabitRecordsControllerTestData_MonthNoOfCount(
+                    1,
+                    new List<UserHabitRecord>
+                    {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 50, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 11 ), CompleteFact = 20, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 21 ), CompleteFact = 10, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 30 ), SubID = 1, CompleteFact = 5, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 30 ), SubID = 2, CompleteFact = 15, Comment = "Test1" },
+                    },
+                    new List<UserHabitRule>
+                    {
+                        new UserHabitRule { RuleID = 1, ContinuousRecordFrom = 1, ContinuousRecordTo = 2, Point = 1, },
+                    },
+                    100, 5,
+                    new List<DateTime> {
+                        new DateTime(2021, 11, 30),
+                    }),
+
+                // Continuous day 2
+                new UserHabitRecordsControllerTestData_MonthNoOfCount(
+                    1,
+                    new List<UserHabitRecord>
+                    {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 10, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 12, 1 ), CompleteFact = 100, Comment = "Test1" },
+                    },
+                    new List<UserHabitRule>
+                    {
+                        new UserHabitRule { RuleID = 1, ContinuousRecordFrom = 1, ContinuousRecordTo = 2, Point = 1, },
+                        new UserHabitRule { RuleID = 2, ContinuousRecordFrom = 2, ContinuousRecordTo = 99, Point = 2, },
+                    },
+                    100, 2,
+                    new List<DateTime> {
+                        new DateTime(2021, 12, 1),
+                    }),
+                new UserHabitRecordsControllerTestData_MonthNoOfCount(
+                    1,
+                    new List<UserHabitRecord>
+                    {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 100, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 12, 1 ), CompleteFact = 100, Comment = "Test1" },
+                    },
+                    new List<UserHabitRule>
+                    {
+                        new UserHabitRule { RuleID = 1, ContinuousRecordFrom = 1, ContinuousRecordTo = 2, Point = 1, },
+                        new UserHabitRule { RuleID = 2, ContinuousRecordFrom = 2, ContinuousRecordTo = 99, Point = 2, },
+                    },
+                    100, 2,
+                    new List<DateTime> {
+                        new DateTime(2021, 11, 1),
+                        new DateTime(2021, 12, 1),
+                    }),
+                new UserHabitRecordsControllerTestData_MonthNoOfCount(
+                    1,
+                    new List<UserHabitRecord>
+                    {
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 1 ), CompleteFact = 50, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 11 ), CompleteFact = 20, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 21 ), CompleteFact = 10, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 30 ), SubID = 1, CompleteFact = 5, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 11, 30 ), SubID = 2, CompleteFact = 15, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 12, 12 ), CompleteFact = 50, Comment = "Test1" },
+                        new UserHabitRecord { RecordDate = new DateTime(2021, 12, 31 ), SubID = 1, CompleteFact = 60, Comment = "Test1" },
+                    },
+                    new List<UserHabitRule>
+                    {
+                        new UserHabitRule { RuleID = 1, ContinuousRecordFrom = 1, ContinuousRecordTo = 2, Point = 1, },
+                        new UserHabitRule { RuleID = 2, ContinuousRecordFrom = 2, ContinuousRecordTo = 99, Point = 2, },
+                    },
+                    100, 7,
+                    new List<DateTime> {
+                        new DateTime(2021, 11, 30),
+                        new DateTime(2021, 12, 31),
+                    }),
             };
 
         [Theory]
-        [MemberData(nameof(InputtedData), MemberType = typeof(UserHabitRecordsControllerTestData_MonthNoOfCount))]
+        [MemberData(nameof(InputtedData))]
         public async Task CalculatePoints(UserHabitRecordsControllerTestData_MonthNoOfCount testData)
         {
             var context = this.fixture.GetCurrentDataContext();
@@ -100,36 +259,19 @@ namespace knowledgebuilderapi.test.UnitTests
             habit.Name = "Habit_1";
             habit.Category = HabitCategory.Positive;
             habit.Comment = habit.Name;
-            habit.Frequency = HabitFrequency.Weekly;
+            habit.Frequency = HabitFrequency.Monthly;
             habit.CompleteCategory = HabitCompleteCategory.NumberOfCount;
             habit.CompleteCondition = testData.CompleteCondition;
-            // habit.StartDate = (int)testData.Dow;
+            habit.StartDate = testData.DateInMonth;
             context.UserHabits.Add(habit);
             context.SaveChanges();
             Int32 nNewHabitID = habit.ID;
 
-            UserHabitRule rule1 = new UserHabitRule();
-            rule1.HabitID = habit.ID;
-            rule1.RuleID = 1;
-            rule1.ContinuousRecordFrom = 1;
-            rule1.ContinuousRecordTo = 2;
-            rule1.Point = 1;
-            context.UserHabitRules.Add(rule1);
-
-            UserHabitRule rule2 = new UserHabitRule();
-            rule2.HabitID = habit.ID;
-            rule2.RuleID = 2;
-            rule2.ContinuousRecordFrom = 2;
-            rule1.ContinuousRecordTo = 3;
-            rule2.Point = 2;
-            context.UserHabitRules.Add(rule2);
-
-            UserHabitRule rule3 = new UserHabitRule();
-            rule3.HabitID = habit.ID;
-            rule3.RuleID = 3;
-            rule3.ContinuousRecordFrom = 3;
-            rule3.Point = 4;
-            context.UserHabitRules.Add(rule3);
+            foreach(var rule in testData.RuleList)
+            {
+                rule.HabitID = nNewHabitID;
+                context.UserHabitRules.Add(rule);
+            }
             context.SaveChanges();
 
             // Add user record.
@@ -152,7 +294,7 @@ namespace knowledgebuilderapi.test.UnitTests
             Assert.Equal(testData.RecordCount, dbrecords.Count);
 
             // Ensure rule is assigned correctly
-            if (testData.TargetRuleDateList.Count > 0)
+            if (testData.ExpectedRuleDateList.Count > 0)
             {
                 var rulecnt = 0;
                 dbrecords.ForEach(dbr =>
@@ -161,11 +303,11 @@ namespace knowledgebuilderapi.test.UnitTests
                     {
                         rulecnt++;
 
-                        var ridx = testData.TargetRuleDateList.FindIndex(rd => rd.Date == dbr.RecordDate.Date);
+                        var ridx = testData.ExpectedRuleDateList.FindIndex(rd => rd.Date == dbr.RecordDate.Date);
                         Assert.NotEqual(-1, ridx);
                     }
                 });
-                Assert.Equal(testData.TargetRuleDateList.Count, rulecnt);
+                Assert.Equal(testData.ExpectedRuleDateList.Count, rulecnt);
             }
 
             DataSetupUtility.ClearUserHabitData(context, nNewHabitID);

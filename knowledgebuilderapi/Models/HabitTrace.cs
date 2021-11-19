@@ -280,7 +280,14 @@ namespace knowledgebuilderapi.Models
 
         public static DateTime getDBSelectionDate(int dateInMonth, DateTime recordDate)
         {
+            if (dateInMonth == 1)
+            {
+                // Beginning of the month
+                return new DateTime(recordDate.Year, recordDate.Month, 1).AddMonths(-1);
+            }
+
             int nPrvDays = recordDate.Day - dateInMonth;
+            
             DateTime dtbgn;
             if (nPrvDays >= 0)
                 dtbgn = recordDate.AddMonths(-1) - TimeSpan.FromDays(nPrvDays);

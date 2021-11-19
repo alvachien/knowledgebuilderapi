@@ -33,20 +33,26 @@ namespace knowledgebuilderapi.Models
         [Column("ID", TypeName = "INT")]
         public Int32 ID { get; set; }
 
+        [Required]
         [Column("Category", TypeName = "SMALLINT")]
         public HabitCategory Category { get; set; }
 
+        [Required]
         [Column("Name", TypeName = "NVARCHAR(50)")]
         public String Name { get; set; }
+
         [Column("Comment", TypeName = "NVARCHAR(50)")]
         public String Comment { get; set; }
 
+        [Required]
         [Column("TargetUser", TypeName = "NVARCHAR(50)")]
         public String TargetUser { get; set; }
 
+        [Required]
         [Column("ValidFrom", TypeName = "DATETIME")]
         public DateTime ValidFrom { get; set; }
 
+        [Required]
         [Column("ValidTo", TypeName = "DATETIME")]
         public DateTime ValidTo { get; set; }
 
@@ -94,6 +100,9 @@ namespace knowledgebuilderapi.Models
         {
             Rules = new HashSet<UserHabitRule>();
             Records = new HashSet<UserHabitRecord>();
+            Frequency = HabitFrequency.Daily;
+            Category = HabitCategory.Positive;
+            CompleteCategory = HabitCompleteCategory.NumberOfTimes;
         }
     }
 

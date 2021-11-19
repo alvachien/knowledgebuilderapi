@@ -234,6 +234,11 @@ namespace knowledgebuilderapi.test
             context.Database.ExecuteSqlRaw("DELETE FROM InvitedUser WHERE UserID = '" + testUser + "'");
             context.Database.ExecuteSqlRaw("DELETE FROM AwardUser WHERE Supervisor = '" + supervisor + "' AND TargetUser = '" + testUser + "'");
         }
+
+        internal static void DeleteUserHabit(kbdataContext context, int habitid)
+        {
+            context.Database.ExecuteSqlRaw("DELETE FROM UserHabit WHERE ID = " + habitid.ToString());
+        }
     }
 }
 

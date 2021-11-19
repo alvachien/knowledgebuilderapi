@@ -68,7 +68,7 @@ namespace knowledgebuilderapi.Controllers
             DateTime dtbgn = record.RecordDate;
             switch(habits[0].Frequency)
             {
-                case HabitFrequency.Weekly:
+                case HabitFrequency.Weekly:                   
                     dtbgn = HabitWeeklyTrace.getDBSelectionDate((DayOfWeek)habits[0].StartDate, record.RecordDate);
                     break;
 

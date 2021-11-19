@@ -162,7 +162,7 @@ namespace knowledgebuilderapi.test.UnitTests
             };
 
         [Theory]
-        [MemberData(nameof(InputtedData), MemberType = typeof(UserHabitRecordsControllerTest_WeekNOCount))]
+        [MemberData(nameof(InputtedData))]
         public async Task CalculatePoints_Weekly_NumberOfCounts(UserHabitRecordsControllerTestData_WeekNoOfCount testData)
         {
             var context = this.fixture.GetCurrentDataContext();
