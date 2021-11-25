@@ -1,6 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using knowledgebuilderapi.Models;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace knowledgebuilderapi
 {
@@ -44,6 +45,10 @@ namespace knowledgebuilderapi
         public DbSet<UserHabit> UserHabits { get; set; }
         public DbSet<UserHabitRule> UserHabitRules { get; set; }
         public DbSet<UserHabitRecord> UserHabitRecords { get; set; }
+
+        private readonly ValueConverter habitCategoryConverter = new ValueConverter<HabitCategory, Int16>(v => (short)v, v => (HabitCategory)v);
+        private readonly ValueConverter habitFrequencyConverter = new ValueConverter<HabitFrequency, Int16>(v => (short)v, v => (HabitFrequency)v);
+        private readonly ValueConverter habitCompleteFactoryConverter = new ValueConverter<HabitCompleteCategory, Int16>(v => (short)v, v => (HabitCompleteCategory)v);
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -431,17 +436,11 @@ namespace knowledgebuilderapi
                 }
 
                 entity.Property(b => b.Category)
-                    .HasConversion(
-                        v => (short)v,
-                        v => (HabitCategory)v);
+                    .HasConversion(habitCategoryConverter);
                 entity.Property(b => b.Frequency)
-                    .HasConversion(
-                        v => (short)v,
-                        v => (HabitFrequency)v);
+                    .HasConversion(habitFrequencyConverter);
                 entity.Property(b => b.CompleteCategory)
-                    .HasConversion(
-                        v => (short)v,
-                        v => (HabitCompleteCategory)v);
+                    .HasConversion(habitCompleteFactoryConverter);
 
                 entity.HasMany(d => d.Rules)
                     .WithOne(p => p.CurrentHabit)

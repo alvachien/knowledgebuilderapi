@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "17eff124-e4c8-4a5c-9909-16238981f1d4",
+		"_postman_id": "a9e2ae0f-90d6-49b2-aa14-46eb0fb5e8ea",
 		"name": "Knowledge Builder API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1411,6 +1411,107 @@
 							"port": "44355",
 							"path": [
 								"AwardUserViews"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserHabit",
+			"item": [
+				{
+					"name": "Get Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/UserHabits?$top=100&$skip=0&$count=true",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"UserHabits"
+							],
+							"query": [
+								{
+									"key": "$top",
+									"value": "100"
+								},
+								{
+									"key": "$skip",
+									"value": "0"
+								},
+								{
+									"key": "$count",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetHabitsForUserAndDate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/UserHabits?$filter=TargetUser eq 'test2' and ValidFrom le 2021-11-25 and ValidTo ge 2021-11-25",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"UserHabits"
+							],
+							"query": [
+								{
+									"key": "$filter",
+									"value": "TargetUser eq 'test2' and ValidFrom le 2021-11-25 and ValidTo ge 2021-11-25"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserHabitRecords",
+			"item": [
+				{
+					"name": "Get Collection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44355/UserHabitRecords?$top=100&$skip=0&$count=true",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44355",
+							"path": [
+								"UserHabitRecords"
+							],
+							"query": [
+								{
+									"key": "$top",
+									"value": "100"
+								},
+								{
+									"key": "$skip",
+									"value": "0"
+								},
+								{
+									"key": "$count",
+									"value": "true"
+								}
 							]
 						}
 					},

@@ -90,7 +90,7 @@ namespace knowledgebuilderapi.Models
         /// Start Date.
         ///     Only valid for Weekly and Montly.
         /// </summary>
-        [Column("StartDate", TypeName = "SMALLINT")]
+        [Column("StartDate", TypeName = "INT")]
         public Int32? StartDate { get; set; }
 
         public ICollection<UserHabitRule> Rules { get; set; }

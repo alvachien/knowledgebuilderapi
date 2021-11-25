@@ -152,6 +152,18 @@ namespace knowledgebuilderapi.Controllers
                     break;
             }
 
+            // Check 2. Rules
+            if (habit.Rules.Count < 0)
+                return BadRequest("Habit must define with rules");
+            // habit.Rules.Sort(prop => prop.);
+
+            int i = 1;
+            foreach(var rule in habit.Rules)
+            {
+                rule.RuleID = i++;
+                rule.CurrentHabit = habit;
+            }
+
             // Update db
             _context.UserHabits.Add(habit);
             await _context.SaveChangesAsync();
