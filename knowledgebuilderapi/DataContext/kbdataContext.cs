@@ -45,6 +45,8 @@ namespace knowledgebuilderapi
         public DbSet<UserHabit> UserHabits { get; set; }
         public DbSet<UserHabitRule> UserHabitRules { get; set; }
         public DbSet<UserHabitRecord> UserHabitRecords { get; set; }
+        public DbSet<UserHabitPointsByUserDate> UserHabitPointsByUserDates { get; set; }
+        public DbSet<UserHabitPointsByUserHabitDate> UserHabitPointsByUserHabitDates { get; set; }
 
         private readonly ValueConverter habitCategoryConverter = new ValueConverter<HabitCategory, Int16>(v => (short)v, v => (HabitCategory)v);
         private readonly ValueConverter habitFrequencyConverter = new ValueConverter<HabitFrequency, Int16>(v => (short)v, v => (HabitFrequency)v);
@@ -474,6 +476,18 @@ namespace knowledgebuilderapi
                     entity.Property(b => b.RecordDate)
                         .HasDefaultValueSql("CURRENT_DATE");
                 }
+            });
+
+            modelBuilder.Entity<UserHabitPointsByUserDate>(entity =>
+            {
+                entity.ToView("HabitUserDatePointView");
+                entity.HasNoKey();
+            });
+
+            modelBuilder.Entity<UserHabitPointsByUserHabitDate>(entity =>
+            {
+                entity.ToView("HabitUserHabitDatePointView");
+                entity.HasNoKey();
             });
         }
     }

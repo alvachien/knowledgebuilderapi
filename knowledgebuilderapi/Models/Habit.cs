@@ -159,5 +159,37 @@ namespace knowledgebuilderapi.Models
 
         public UserHabit CurrentHabit { get; set; }
     }
+
+    public class UserHabitPointsByUserDate
+    {
+        [Key]
+        [Column("TargetUser", TypeName ="NVARCHAR(50)")]
+        public String TargetUser { get; set; }
+
+        [Key]
+        [Column("RecordDate", TypeName = "DATE")]
+        public DateTime RecordDate { get; set; }
+
+        [Column("Point", TypeName = "INT")]
+        public Int32 Point { get; set; }
+    }
+
+    public class UserHabitPointsByUserHabitDate
+    {
+        [Key]
+        [Column("TargetUser", TypeName = "NVARCHAR(50)")]
+        public String TargetUser { get; set; }
+
+        [Key]
+        [Column("HabitID", TypeName = "INT")]
+        public Int32 HabitID { get; set; }
+
+        [Key]
+        [Column("RecordDate", TypeName = "DATE")]
+        public DateTime RecordDate { get; set; }
+
+        [Column("Point", TypeName = "INT")]
+        public Int32 Point { get; set; }
+    }
 }
 
