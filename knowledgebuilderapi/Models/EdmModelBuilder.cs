@@ -92,6 +92,13 @@ namespace knowledgebuilderapi.Models
             var usrHabitRecordEntity = modelBuilder.EntityType<UserHabitRecord>();
             usrHabitRecordEntity.Property(prop => prop.RecordDate).AsDate();
 
+            // 2021.11.27
+            modelBuilder.EntitySet<UserHabitPointsByUserDate>("UserHabitPointsByUserDates");
+            modelBuilder.EntitySet<UserHabitPointsByUserHabitDate>("UserHabitPointsByUserHabitDates");
+
+            // 2021.11.28
+            modelBuilder.EntitySet<UserHabitRecordView>("UserHabitRecordViews");
+
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
 
             return modelBuilder.GetEdmModel();

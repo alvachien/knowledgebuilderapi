@@ -160,6 +160,28 @@ namespace knowledgebuilderapi.Models
         public UserHabit CurrentHabit { get; set; }
     }
 
+    public class UserHabitRecordView
+    {
+        [Key]
+        public Int32 HabitID { get; set;}
+        [Key]
+        public DateTime RecordDate { get; set; }
+        [Key]
+        public Int32 SubID { get; set; }
+        public Int32? CompleteFact { get; set; }
+        public Int32? RuleID { get; set; }
+        public Int32 ContinuousCount { get; set;}
+        public String Comment { get; set; }
+
+        public String TargetUser { get; set; }
+        public String HabitName { get; set; }
+        public DateTime HabitValidFrom { get; set; }
+        public DateTime HabitValidTo { get; set; }
+        public Int32? RuleDaysFrom { get; set; }
+        public Int32? RuleDaysTo { get; set; }
+        public Int32? RulePoint { get; set; }
+    }
+
     public class UserHabitPointsByUserDate
     {
         [Key]
