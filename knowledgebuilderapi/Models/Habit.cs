@@ -160,6 +160,29 @@ namespace knowledgebuilderapi.Models
         public UserHabit CurrentHabit { get; set; }
     }
 
+    [Table("UserHabitPoint")]
+    public class UserHabitPoint
+    {
+        [Key]
+        [Column("ID", TypeName = "INT")]
+        public Int32 ID { get; set; }
+
+        [Required]
+        [Column("TargetUser", TypeName = "NVARCHAR(50)")]
+        public String TargetUser { get; set; }
+
+        [Required]
+        [Column("RecordDate", TypeName = "DATE")]
+        public DateTime RecordDate { get; set; }
+
+        [Required]
+        [Column("Point", TypeName = "INT")]
+        public Int32 Point { get; set; }
+
+        [Column("Comment", TypeName = "NVARCHAR(50)")]
+        public String Comment { get; set; }
+    }
+
     public class UserHabitRecordView
     {
         [Key]

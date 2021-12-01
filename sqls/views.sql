@@ -64,6 +64,12 @@ CREATE VIEW HabitUserDatePointView AS
 					ON a.RuleID = b.RuleID
 			WHERE b.RuleID IS NOT NULL
 			GROUP BY c.TargetUser, a.RecordDate 	
+		
+		UNION ALL 
+
+		SELECT TargetUser, RecordDate, SUM( Point ) as Points
+			FROM UserHabitRecord
+			GROUP BY TargetUser, RecordDate
 	) as a
 
 

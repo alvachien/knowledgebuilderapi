@@ -45,6 +45,7 @@ namespace knowledgebuilderapi
         public DbSet<UserHabit> UserHabits { get; set; }
         public DbSet<UserHabitRule> UserHabitRules { get; set; }
         public DbSet<UserHabitRecord> UserHabitRecords { get; set; }
+        public DbSet<UserHabitPoint> UserHabitPoints { get; set;}
         public DbSet<UserHabitPointsByUserDate> UserHabitPointsByUserDates { get; set; }
         public DbSet<UserHabitPointsByUserHabitDate> UserHabitPointsByUserHabitDates { get; set; }
 

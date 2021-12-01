@@ -584,5 +584,27 @@ namespace knowledgebuilderapi.Controllers
 
             return Created(record);
         }
+    
+        public async Task<IActionResult> Delete([FromODataUri]Int32 keyHabitid, [FromODataUri] DateTime keyRecordDate, [FromODataUri] Int32 keySubID)
+        {
+            var dt = await _context.UserHabitRecords.FindAsync(keyHabitid, keyRecordDate, keySubID);
+            if (dt == null)
+            {
+                return NotFound();
+            }
+
+            // Check there are newest record
+            var dbcnt = _context.UserHabitRecords.Where(dt => dt.HabitID == keyHabitid && dt.RecordDate > keyRecordDate).Count();
+            if (dbcnt > 0)
+            {
+                return BadRequest("There are newest record, cannot delete");
+            }
+
+            _context.UserHabitRecords.Remove(dt);
+
+            await _context.SaveChangesAsync();
+
+            return StatusCode(204); // HttpStatusCode.NoContent
+        }
     }
 }
