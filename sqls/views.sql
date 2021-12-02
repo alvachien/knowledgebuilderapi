@@ -53,10 +53,11 @@ CREATE VIEW AwardUserView AS
 
 
 -- Created on 2021.11.27
+-- Updated on 2021.12.02
 CREATE VIEW HabitUserDatePointView AS 
 	SELECT TargetUser, RecordDate, SUM( Points ) OVER ( PARTITION BY TargetUser ORDER BY RecordDate ASC ) as Point
 	from (
-		SELECT c.TargetUser, a.RecordDate, SUM( b.Point ) as Points
+		SELECT c.TargetUser as TargetUser, a.RecordDate as RecordDate, SUM( b.Point ) as Points
 			FROM UserHabitRecord as a
 				INNER JOIN UserHabit as c
 					ON a.HabitID = c.ID
@@ -68,7 +69,7 @@ CREATE VIEW HabitUserDatePointView AS
 		UNION ALL 
 
 		SELECT TargetUser, RecordDate, SUM( Point ) as Points
-			FROM UserHabitRecord
+			FROM UserHabitPoint
 			GROUP BY TargetUser, RecordDate
 	) as a
 
@@ -86,7 +87,6 @@ CREATE VIEW HabitUserHabitDatePointView AS
 			WHERE b.RuleID IS NOT NULL
 			GROUP BY c.TargetUser, a.HabitID, a.RecordDate 	
 	) as a
-		
 		
 
 		
