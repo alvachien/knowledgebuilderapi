@@ -236,5 +236,19 @@ namespace knowledgebuilderapi.Models
         [Column("Point", TypeName = "INT")]
         public Int32 Point { get; set; }
     }
+
+    public class UserHabitPointReport
+    {
+        [Key]
+        [Column("TargetUser", TypeName = "NVARCHAR(50)")]
+        public String TargetUser { get; set; }
+
+        [Key]
+        [Column("RecordDate", TypeName = "DATE")]
+        public DateTime RecordDate { get; set; }
+
+        [Column("Point", TypeName = "INT")]
+        public Int32 Point { get; set; }
+    }
 }
 

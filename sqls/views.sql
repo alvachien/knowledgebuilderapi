@@ -64,15 +64,7 @@ CREATE VIEW HabitUserDatePointView AS
 				LEFT OUTER JOIN UserHabitRule as b
 					ON a.RuleID = b.RuleID
 			WHERE b.RuleID IS NOT NULL
-			GROUP BY c.TargetUser, a.RecordDate 	
-		
-		UNION ALL 
-
-		SELECT TargetUser, RecordDate, SUM( Point ) as Points
-			FROM UserHabitPoint
-			GROUP BY TargetUser, RecordDate
-	) as a
-
+			GROUP BY c.TargetUser, a.RecordDate ) as a
 
 -- Created on 2021.11.27
 CREATE VIEW HabitUserHabitDatePointView AS 
@@ -89,4 +81,12 @@ CREATE VIEW HabitUserHabitDatePointView AS
 	) as a
 		
 
-		
+-- Created on 2021.12.02
+CREATE VIEW UserHabitPointView AS 
+	SELECT TargetUser, RecordDate, SUM( Point ) OVER ( PARTITION BY TargetUser ORDER BY RecordDate ASC ) as Point
+	from ( SELECT TargetUser, RecordDate, SUM( Point ) as Point
+			FROM UserHabitPoint
+			GROUP BY TargetUser, RecordDate ) as a 
+
+
+

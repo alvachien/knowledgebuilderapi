@@ -94,10 +94,21 @@ namespace knowledgebuilderapi.Models
 
             // 2021.11.27
             modelBuilder.EntitySet<UserHabitPointsByUserDate>("UserHabitPointsByUserDates");
+            var usrHabitPointByUserDateEntity = modelBuilder.EntityType<UserHabitPointsByUserDate>();
+            usrHabitPointByUserDateEntity.Property(prop => prop.RecordDate).AsDate();
             modelBuilder.EntitySet<UserHabitPointsByUserHabitDate>("UserHabitPointsByUserHabitDates");
+            var usrHabitPointByUserHabitDateEntity = modelBuilder.EntityType<UserHabitPointsByUserHabitDate>();
+            usrHabitPointByUserHabitDateEntity.Property(prop => prop.RecordDate).AsDate();
 
             // 2021.11.28
             modelBuilder.EntitySet<UserHabitRecordView>("UserHabitRecordViews");
+            var usrHabitRecordViewEntity = modelBuilder.EntityType<UserHabitRecordView>();
+            usrHabitRecordViewEntity.Property(prop => prop.RecordDate).AsDate();
+
+            // 2021.12.02
+            modelBuilder.EntitySet<UserHabitPointReport>("UserHabitPointReports");
+            var usrHabitPointViewEntity = modelBuilder.EntityType<UserHabitPointReport>();
+            usrHabitPointViewEntity.Property(prop => prop.RecordDate).AsDate();
 
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
 

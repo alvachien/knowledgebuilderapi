@@ -37,6 +37,22 @@ namespace knowledgebuilderapi.Controllers
             return _context.UserHabitPoints;
         }
 
+        ///// GET: /AwardPoints(:id)
+        //[EnableQuery]
+        //public SingleResult<UserHabitPoint> Get([FromODataUri] int key)
+        //{
+        //    String usrId = ControllerUtil.GetUserID(this);
+        //    if (String.IsNullOrEmpty(usrId))
+        //        throw new Exception("Failed ID");
+
+        //    return SingleResult.Create(from au in _context.AwardUsers
+        //                               join ap in _context.AwardPoints
+        //                               on au.TargetUser equals ap.TargetUser
+        //                               where au.Supervisor == usrId
+        //                                && ap.ID == key
+        //                               select ap);
+        //}
+
         // POST: /UserHabitRecords
         /// <summary>
         /// Support for creating user habit record
@@ -69,6 +85,30 @@ namespace knowledgebuilderapi.Controllers
             }
 
             return Created(point);
+        }
+
+        public async Task<IActionResult> Delete([FromODataUri] int key)
+        {
+            var point = await _context.UserHabitPoints.FindAsync(key);
+            if (point == null)
+            {
+                return NotFound();
+            }
+
+            //String usrId = ControllerUtil.GetUserID(this);
+            //if (String.IsNullOrEmpty(usrId))
+            //    throw new Exception("Failed ID");
+            //var rst = (from au in _context.AwardUsers
+            //           where au.TargetUser == point.TargetUser
+            //             && au.Supervisor == usrId
+            //           select au).Count();
+            //if (rst != 1)
+            //    throw new Exception("Invalid user data");
+
+            _context.UserHabitPoints.Remove(point);
+            await _context.SaveChangesAsync();
+
+            return StatusCode(204); // HttpStatusCode.NoContent
         }
     }
 }
