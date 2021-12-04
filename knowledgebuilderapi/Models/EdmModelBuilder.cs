@@ -96,6 +96,11 @@ namespace knowledgebuilderapi.Models
             modelBuilder.EntitySet<UserHabitPointsByUserDate>("UserHabitPointsByUserDates");
             var usrHabitPointByUserDateEntity = modelBuilder.EntityType<UserHabitPointsByUserDate>();
             usrHabitPointByUserDateEntity.Property(prop => prop.RecordDate).AsDate();
+            var latestUserHabitPointAction = usrHabitPointByUserDateEntity.Collection.Action("GetOpeningPoint");
+            latestUserHabitPointAction.Parameter<String>("User");
+            latestUserHabitPointAction.Parameter<DateTime>("StartedDate");
+            latestUserHabitPointAction.Returns<int>();
+
             modelBuilder.EntitySet<UserHabitPointsByUserHabitDate>("UserHabitPointsByUserHabitDates");
             var usrHabitPointByUserHabitDateEntity = modelBuilder.EntityType<UserHabitPointsByUserHabitDate>();
             usrHabitPointByUserHabitDateEntity.Property(prop => prop.RecordDate).AsDate();
@@ -109,6 +114,15 @@ namespace knowledgebuilderapi.Models
             modelBuilder.EntitySet<UserHabitPointReport>("UserHabitPointReports");
             var usrHabitPointViewEntity = modelBuilder.EntityType<UserHabitPointReport>();
             usrHabitPointViewEntity.Property(prop => prop.RecordDate).AsDate();
+
+            // 2021.12.03
+            modelBuilder.EntitySet<UserHabitPoint>("UserHabitPoints");
+            var usrHabitPointEntity = modelBuilder.EntityType<UserHabitPoint>();
+            usrHabitPointEntity.Property(prop => prop.RecordDate).AsDate();
+            var latestUserPointAction = usrHabitPointEntity.Collection.Action("GetOpeningPoint");
+            latestUserPointAction.Parameter<String>("User");
+            latestUserPointAction.Parameter<DateTime>("StartedDate");
+            latestUserPointAction.Returns<int>();
 
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;
 

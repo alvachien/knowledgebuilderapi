@@ -482,19 +482,19 @@ namespace knowledgebuilderapi
 
             modelBuilder.Entity<UserHabitPointsByUserDate>(entity =>
             {
-                entity.ToView("HabitUserDatePointView");
+                entity.ToView("HabitUserDatePointReport");
                 entity.HasNoKey();
             });
 
             modelBuilder.Entity<UserHabitPointsByUserHabitDate>(entity =>
             {
-                entity.ToView("HabitUserHabitDatePointView");
+                entity.ToView("HabitUserHabitDatePointReport");
                 entity.HasNoKey();
             });
 
             modelBuilder.Entity<UserHabitPointReport>(entity =>
             {
-                entity.ToView("UserHabitPointView");
+                entity.ToView("UserHabitPointReport");
                 entity.HasNoKey();
             });
         }

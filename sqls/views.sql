@@ -54,23 +54,34 @@ CREATE VIEW AwardUserView AS
 
 -- Created on 2021.11.27
 -- Updated on 2021.12.02
-CREATE VIEW HabitUserDatePointView AS 
-	SELECT TargetUser, RecordDate, SUM( Points ) OVER ( PARTITION BY TargetUser ORDER BY RecordDate ASC ) as Point
-	from (
-		SELECT c.TargetUser as TargetUser, a.RecordDate as RecordDate, SUM( b.Point ) as Points
+-- Updated on 2021.12.03
+--CREATE VIEW HabitUserDatePointView AS 
+--	SELECT TargetUser, RecordDate, SUM( Points ) OVER ( PARTITION BY TargetUser ORDER BY RecordDate ASC ) as Point
+--	from (
+--		SELECT c.TargetUser as TargetUser, a.RecordDate as RecordDate, SUM( b.Point ) as Points
+--			FROM UserHabitRecord as a
+--				INNER JOIN UserHabit as c
+--					ON a.HabitID = c.ID
+--				LEFT OUTER JOIN UserHabitRule as b
+--					ON a.RuleID = b.RuleID
+--			WHERE b.RuleID IS NOT NULL
+--			GROUP BY c.TargetUser, a.RecordDate ) as a
+CREATE VIEW HabitUserDatePointReport AS 
+	SELECT c.TargetUser as TargetUser, a.RecordDate as RecordDate, SUM( b.Point ) as Point
 			FROM UserHabitRecord as a
 				INNER JOIN UserHabit as c
 					ON a.HabitID = c.ID
 				LEFT OUTER JOIN UserHabitRule as b
 					ON a.RuleID = b.RuleID
 			WHERE b.RuleID IS NOT NULL
-			GROUP BY c.TargetUser, a.RecordDate ) as a
+			GROUP BY c.TargetUser, a.RecordDate
 
 -- Created on 2021.11.27
-CREATE VIEW HabitUserHabitDatePointView AS 
-	SELECT TargetUser, HabitID, RecordDate, SUM( Points ) OVER ( PARTITION BY TargetUser, HabitID ORDER BY RecordDate ASC ) as Point
-	from (
-		SELECT c.TargetUser, a.HabitID, a.RecordDate, SUM( b.Point ) as Points
+-- Updated on 2021.12.03
+CREATE VIEW HabitUserHabitDatePointReport AS 
+--	SELECT TargetUser, HabitID, RecordDate, SUM( Points ) OVER ( PARTITION BY TargetUser, HabitID ORDER BY RecordDate ASC ) as Point
+--	from (
+		SELECT c.TargetUser, a.HabitID, a.RecordDate, SUM( b.Point ) as Point
 			FROM UserHabitRecord as a
 				INNER JOIN UserHabit as c
 					ON a.HabitID = c.ID
@@ -78,15 +89,17 @@ CREATE VIEW HabitUserHabitDatePointView AS
 					ON a.RuleID = b.RuleID
 			WHERE b.RuleID IS NOT NULL
 			GROUP BY c.TargetUser, a.HabitID, a.RecordDate 	
-	) as a
+--	) as a
 		
 
 -- Created on 2021.12.02
-CREATE VIEW UserHabitPointView AS 
-	SELECT TargetUser, RecordDate, SUM( Point ) OVER ( PARTITION BY TargetUser ORDER BY RecordDate ASC ) as Point
-	from ( SELECT TargetUser, RecordDate, SUM( Point ) as Point
-			FROM UserHabitPoint
-			GROUP BY TargetUser, RecordDate ) as a 
-
+-- Updated on 2021.12.03
+CREATE VIEW UserHabitPointReport AS
+--	SELECT TargetUser, HabitID, RecordDate, SUM( Points ) OVER ( PARTITION BY TargetUser, HabitID ORDER BY RecordDate ASC ) as Point
+--	from (
+	SELECT TargetUser, RecordDate, SUM( Point ) as Point
+		FROM UserHabitPoint
+		GROUP BY TargetUser, RecordDate
+--		) as a 
 
 
