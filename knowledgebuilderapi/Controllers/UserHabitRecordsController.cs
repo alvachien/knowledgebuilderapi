@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace knowledgebuilderapi.Controllers
 {
+    [Authorize]
     public class UserHabitRecordsController : ODataController
     {
         private readonly kbdataContext _context;
@@ -25,7 +26,7 @@ namespace knowledgebuilderapi.Controllers
 
         /// GET: /UserHabitRecords
         /// <summary>
-        /// Adds support for getting User Habit Rules, for example:
+        /// Adds support for getting User Habit Records, for example:
         /// 
         /// GET /UserHabitRecords
         /// GET /UserHabitRecords?$filter=Name eq 'Windows 95'
@@ -35,13 +36,42 @@ namespace knowledgebuilderapi.Controllers
         [EnableQuery]
         public IQueryable<UserHabitRecord> Get()
         {
-            return _context.UserHabitRecords;
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            return from record in _context.UserHabitRecords
+                   join habit in _context.UserHabits
+                       on new { record.HabitID } equals new { HabitID = habit.ID }                   
+                   join auser in _context.AwardUsers
+                       on new { habit.TargetUser } equals new { auser.TargetUser }
+                   where auser.Supervisor == usrId
+                   select record;
+        }
+
+        [EnableQuery]
+        public SingleResult<UserHabitRecord> Get([FromODataUri] Int32 keyHabitID, [FromODataUri] DateTime keyRecordDate, [FromODataUri] Int32 keySubID)
+        {
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            return SingleResult.Create(
+                    from record in _context.UserHabitRecords
+                   join habit in _context.UserHabits
+                       on new { record.HabitID } equals new { HabitID = habit.ID }
+                   join auser in _context.AwardUsers
+                       on new { habit.TargetUser } equals new { auser.TargetUser }
+                   where auser.Supervisor == usrId && record.HabitID == keyHabitID && record.RecordDate == keyRecordDate && record.SubID == keySubID
+                   select record);
         }
 
         // POST: /UserHabitRecords
         /// <summary>
         /// Support for creating user habit record
         /// </summary>
+        /// 
+        [HttpPost]
         public async Task<IActionResult> Post([FromBody] UserHabitRecord record)
         {
             if (!ModelState.IsValid)
@@ -584,20 +614,27 @@ namespace knowledgebuilderapi.Controllers
 
             return Created(record);
         }
-    
-        public async Task<IActionResult> Delete([FromODataUri]Int32 keyHabitid, [FromODataUri] DateTime keyRecordDate, [FromODataUri] Int32 keySubID)
+
+        [HttpPut]
+        public IActionResult Put([FromODataUri] Int32 keyHabitID, [FromODataUri] DateTime keyRecordDate, [FromODataUri] Int32 keySubID)
         {
-            var dt = await _context.UserHabitRecords.FindAsync(keyHabitid, keyRecordDate, keySubID);
+            return BadRequest();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromODataUri] Int32 keyHabitID, [FromODataUri] DateTime keyRecordDate, [FromODataUri] Int32 keySubID)
+        {
+            var dt = await _context.UserHabitRecords.FindAsync(keyHabitID, keyRecordDate, keySubID);
             if (dt == null)
             {
                 return NotFound();
             }
 
             // Check there are newest record
-            var dbcnt = _context.UserHabitRecords.Where(dt => dt.HabitID == keyHabitid && dt.RecordDate > keyRecordDate).Count();
+            var dbcnt = _context.UserHabitRecords.Where(dt => dt.HabitID == keyHabitID && dt.RecordDate > keyRecordDate).Count();
             if (dbcnt > 0)
             {
-                return BadRequest("There are newest record, cannot delete");
+                return BadRequest("Cannot delete the elder records");
             }
 
             _context.UserHabitRecords.Remove(dt);

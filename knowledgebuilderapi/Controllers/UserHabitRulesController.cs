@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace knowledgebuilderapi.Controllers
 {
+    [Authorize]
     public class UserHabitRulesController : ODataController
     {
         private readonly kbdataContext _context;

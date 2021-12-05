@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace knowledgebuilderapi.Controllers
 {
+    [Authorize]
     public class UserHabitPointReportsController : ODataController
     {
         private readonly kbdataContext _context;
@@ -28,7 +29,15 @@ namespace knowledgebuilderapi.Controllers
         [EnableQuery]
         public IQueryable<UserHabitPointReport> Get()
         {
-            return this._context.UserHabitPointReports;
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            return from report in this._context.UserHabitPointReports
+                   join auser in _context.AwardUsers
+                    on report.TargetUser equals auser.TargetUser
+                   where auser.Supervisor == usrId // || auser.TargetUser == usrId
+                   select report;
         }
     }
 }

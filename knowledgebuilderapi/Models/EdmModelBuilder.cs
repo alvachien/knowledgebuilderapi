@@ -98,7 +98,7 @@ namespace knowledgebuilderapi.Models
             usrHabitPointByUserDateEntity.Property(prop => prop.RecordDate).AsDate();
             var latestUserHabitPointAction = usrHabitPointByUserDateEntity.Collection.Action("GetOpeningPoint");
             latestUserHabitPointAction.Parameter<String>("User");
-            latestUserHabitPointAction.Parameter<DateTime>("StartedDate");
+            latestUserHabitPointAction.Parameter<int>("DaysBackTo");
             latestUserHabitPointAction.Returns<int>();
 
             modelBuilder.EntitySet<UserHabitPointsByUserHabitDate>("UserHabitPointsByUserHabitDates");
@@ -121,7 +121,7 @@ namespace knowledgebuilderapi.Models
             usrHabitPointEntity.Property(prop => prop.RecordDate).AsDate();
             var latestUserPointAction = usrHabitPointEntity.Collection.Action("GetOpeningPoint");
             latestUserPointAction.Parameter<String>("User");
-            latestUserPointAction.Parameter<DateTime>("StartedDate");
+            latestUserPointAction.Parameter<int>("DaysBackTo");
             latestUserPointAction.Returns<int>();
 
             modelBuilder.Namespace = typeof(KnowledgeItem).Namespace;

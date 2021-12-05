@@ -5,10 +5,11 @@ using knowledgebuilderapi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Formatter;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace knowledgebuilderapi.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class UserHabitPointsByUserDatesController : ODataController
     {
         private readonly kbdataContext _context;
@@ -21,7 +22,15 @@ namespace knowledgebuilderapi.Controllers
         [EnableQuery]
         public IQueryable<UserHabitPointsByUserDate> Get()
         {
-            return this._context.UserHabitPointsByUserDates;
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            return from point in _context.UserHabitPointsByUserDates
+                   join auser in _context.AwardUsers
+                    on point.TargetUser equals auser.TargetUser
+                   where auser.Supervisor == usrId
+                   select point;
         }
 
         [HttpPost]
@@ -40,11 +49,25 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest();
             }
 
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
             String user = (String)parameters["User"];
-            DateTime rdt = (DateTime)parameters["StartedDate"];
+            Int32 daysBackTo = (Int32)parameters["DaysBackTo"];
+            DateTime dt = DateTime.Now;
+            TimeSpan ts = new TimeSpan(daysBackTo, 0, 0, 0);
+            dt = dt.Subtract(ts);
+
+            var rst = (from au in _context.AwardUsers
+                       where au.TargetUser == user
+                         && au.Supervisor == usrId
+                       select au).Count();
+            if (rst != 1)
+                throw new Exception("Invalid user data");
 
             var point = (from usrpoint in this._context.UserHabitPointsByUserDates
-                         where usrpoint.TargetUser == user && usrpoint.RecordDate < rdt
+                         where usrpoint.TargetUser == user && usrpoint.RecordDate < dt
                          select usrpoint.Point).Sum();
 
             return Ok(point);

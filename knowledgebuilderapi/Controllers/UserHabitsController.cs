@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace knowledgebuilderapi.Controllers
 {
+    [Authorize]
     public class UserHabitsController : ODataController
     {
         private readonly kbdataContext _context;
@@ -35,7 +36,15 @@ namespace knowledgebuilderapi.Controllers
         [EnableQuery]
         public IQueryable<UserHabit> Get()
         {
-            return _context.UserHabits;
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            return from habit in _context.UserHabits
+                   join auser in _context.AwardUsers
+                    on habit.TargetUser equals auser.TargetUser
+                   where auser.Supervisor == usrId
+                   select habit;
         }
 
         /// GET: /UserHabits(:id)
@@ -49,7 +58,15 @@ namespace knowledgebuilderapi.Controllers
         [EnableQuery]
         public SingleResult<UserHabit> Get([FromODataUri] int key)
         {
-            return SingleResult.Create(_context.UserHabits.Where(p => p.ID == key));
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            return SingleResult.Create(from habit in _context.UserHabits
+                                       join auser in _context.AwardUsers
+                                        on habit.TargetUser equals auser.TargetUser
+                                       where auser.Supervisor == usrId && habit.ID == key
+                                       select habit);
         }
 
         // POST: /UserHabits
@@ -70,6 +87,15 @@ namespace knowledgebuilderapi.Controllers
 
                 return BadRequest();
             }
+
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            // Check 0. User
+            var ucnt = _context.AwardUsers.Where(p => p.TargetUser == habit.TargetUser && p.Supervisor == usrId).Count();
+            if (ucnt != 1)
+                return BadRequest("Invalid user");
 
             // Check 1. Validity
             if (habit.ValidTo <= habit.ValidFrom)
@@ -169,6 +195,35 @@ namespace knowledgebuilderapi.Controllers
             await _context.SaveChangesAsync();
 
             return Created(habit);
+        }
+
+        public async Task<ActionResult> Delete([FromODataUri]int key)
+        {
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            // Check whether the habit already in using
+            var recordcnt = _context.UserHabitRecords.Where(p => p.HabitID == key).Count();
+            if (recordcnt > 0)
+            {
+                return BadRequest("Habit is in using");
+            }
+
+            var habititem = await _context.UserHabits.FindAsync(key);
+            if (habititem == null)
+            {
+                return NotFound();
+            }
+
+            var ucnt = _context.AwardUsers.Where(p => p.TargetUser == habititem.TargetUser && p.Supervisor == usrId).Count();
+            if (ucnt != 1)
+                return BadRequest("Invalid user");
+
+            _context.UserHabits.Remove(habititem);
+            await _context.SaveChangesAsync();
+
+            return StatusCode(204); // HttpStatusCode.NoContent
         }
     }
 }

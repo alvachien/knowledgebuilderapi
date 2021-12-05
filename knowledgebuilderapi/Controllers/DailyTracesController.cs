@@ -40,7 +40,8 @@ namespace knowledgebuilderapi.Controllers
         }
 
         // POST: /DailyTraces
-        [HttpPut]
+        //[HttpPut]
+        [HttpPost]
         public async Task<IActionResult> Post([FromBody] DailyTrace dt)
         {
             if (!ModelState.IsValid)

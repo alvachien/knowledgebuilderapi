@@ -24,7 +24,7 @@ namespace knowledgebuilderapi.Controllers
             _context = context;
         }
 
-        /// GET: /AwardPoints
+        /// GET: /InvitedUsers
         [EnableQuery]
         public IQueryable<InvitedUser> Get()
         {

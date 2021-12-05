@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace knowledgebuilderapi.Controllers
 {
+    [Authorize]
     public class UserHabitPointsController : ODataController
     {
         private readonly kbdataContext _context;
@@ -34,26 +35,33 @@ namespace knowledgebuilderapi.Controllers
         [EnableQuery]
         public IQueryable<UserHabitPoint> Get()
         {
-            return _context.UserHabitPoints;
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+
+            return from point in _context.UserHabitPoints
+                    join au in _context.AwardUsers
+                        on new { point.TargetUser } equals new { au.TargetUser }
+                    where au.Supervisor == usrId
+                    select point;
         }
 
-        ///// GET: /AwardPoints(:id)
-        //[EnableQuery]
-        //public SingleResult<UserHabitPoint> Get([FromODataUri] int key)
-        //{
-        //    String usrId = ControllerUtil.GetUserID(this);
-        //    if (String.IsNullOrEmpty(usrId))
-        //        throw new Exception("Failed ID");
+        /// GET: /UserHabitPoints(:id)
+        [EnableQuery]
+        public SingleResult<UserHabitPoint> Get([FromODataUri] int key)
+        {
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
 
-        //    return SingleResult.Create(from au in _context.AwardUsers
-        //                               join ap in _context.AwardPoints
-        //                               on au.TargetUser equals ap.TargetUser
-        //                               where au.Supervisor == usrId
-        //                                && ap.ID == key
-        //                               select ap);
-        //}
+            return SingleResult.Create(from point in _context.UserHabitPoints
+                                       join au in _context.AwardUsers
+                                           on new { point.TargetUser } equals new { au.TargetUser }
+                                       where au.Supervisor == usrId && point.ID == key
+                                       select point );
+        }
 
-        // POST: /UserHabitRecords
+        // POST: /UserHabitPoints
         /// <summary>
         /// Support for creating user habit record
         /// </summary>
@@ -72,6 +80,16 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest();
             }
 
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+            var rst = (from au in _context.AwardUsers
+                       where au.TargetUser == point.TargetUser
+                         && au.Supervisor == usrId
+                       select au).Count();
+            if (rst != 1)
+                throw new Exception("Invalid user data");
+
             // Update db
             _context.UserHabitPoints.Add(point);
             try
@@ -87,6 +105,7 @@ namespace knowledgebuilderapi.Controllers
             return Created(point);
         }
 
+        // DELETE: UserHabitPoints(id)
         public async Task<IActionResult> Delete([FromODataUri] int key)
         {
             var point = await _context.UserHabitPoints.FindAsync(key);
@@ -95,15 +114,15 @@ namespace knowledgebuilderapi.Controllers
                 return NotFound();
             }
 
-            //String usrId = ControllerUtil.GetUserID(this);
-            //if (String.IsNullOrEmpty(usrId))
-            //    throw new Exception("Failed ID");
-            //var rst = (from au in _context.AwardUsers
-            //           where au.TargetUser == point.TargetUser
-            //             && au.Supervisor == usrId
-            //           select au).Count();
-            //if (rst != 1)
-            //    throw new Exception("Invalid user data");
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+            var rst = (from au in _context.AwardUsers
+                       where au.TargetUser == point.TargetUser
+                         && au.Supervisor == usrId
+                       select au).Count();
+            if (rst != 1)
+                throw new Exception("Invalid user data");
 
             _context.UserHabitPoints.Remove(point);
             await _context.SaveChangesAsync();
@@ -128,10 +147,24 @@ namespace knowledgebuilderapi.Controllers
             }
 
             String user = (String)parameters["User"];
-            DateTime rdt = (DateTime)parameters["StartedDate"];
+            Int32 daysBackTo = (Int32)parameters["DaysBackTo"];
+            DateTime dt = DateTime.Now;
+            TimeSpan ts = new TimeSpan(daysBackTo, 0, 0, 0);
+            dt = dt.Subtract(ts);
+
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                throw new Exception("Failed ID");
+            var rst = (from au in _context.AwardUsers
+                       where au.TargetUser == user
+                         && au.Supervisor == usrId
+                       select au).Count();
+            if (rst != 1)
+                throw new Exception("Invalid user data");
+
 
             var point = (from usrpoint in this._context.UserHabitPoints
-                          where usrpoint.TargetUser == user && usrpoint.RecordDate < rdt                          
+                          where usrpoint.TargetUser == user && usrpoint.RecordDate < dt                          
                           select usrpoint.Point).Sum();
 
             return Ok(point);
