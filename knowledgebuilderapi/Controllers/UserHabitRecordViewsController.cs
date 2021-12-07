@@ -45,7 +45,9 @@ namespace knowledgebuilderapi.Controllers
                             on record.HabitID equals habit.ID
                           join auser in _context.AwardUsers
                             on habit.TargetUser equals auser.TargetUser
-                          where auser.Supervisor == usrId
+                          join rule in _context.UserHabitRules
+                             on new { HabitID = record.HabitID, RuleID = record.RuleID.GetValueOrDefault() } equals new { HabitID = rule.HabitID, RuleID = rule.RuleID }
+                          where auser.TargetUser != null
                           select new UserHabitRecordView
                           {
                               HabitID = record.HabitID,
@@ -59,9 +61,10 @@ namespace knowledgebuilderapi.Controllers
                               HabitName = habit.Name,
                               HabitValidFrom = habit.ValidFrom,
                               HabitValidTo = habit.ValidTo,
+                              RuleDaysFrom = rule.ContinuousRecordFrom,
+                              RuleDaysTo = rule.ContinuousRecordTo,
+                              RulePoint = rule.Point
                           };
-                          //join rule in _context.UserHabitRules
-                          //  on rule.HabitID equals habit.ID
 
             return results;
         }
