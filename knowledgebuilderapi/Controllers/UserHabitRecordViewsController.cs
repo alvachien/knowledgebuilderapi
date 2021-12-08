@@ -40,15 +40,13 @@ namespace knowledgebuilderapi.Controllers
             if (String.IsNullOrEmpty(usrId))
                 throw new Exception("Failed ID");
 
-            var results = from record in _context.UserHabitRecords
+            var resultInterms = from record in _context.UserHabitRecords
                           join habit in _context.UserHabits
                             on record.HabitID equals habit.ID
                           join auser in _context.AwardUsers
                             on habit.TargetUser equals auser.TargetUser
-                          join rule in _context.UserHabitRules
-                             on new { HabitID = record.HabitID, RuleID = record.RuleID.GetValueOrDefault() } equals new { HabitID = rule.HabitID, RuleID = rule.RuleID }
                           where auser.TargetUser != null
-                          select new UserHabitRecordView
+                          select new
                           {
                               HabitID = record.HabitID,
                               Comment = record.Comment,
@@ -60,10 +58,30 @@ namespace knowledgebuilderapi.Controllers
                               TargetUser = habit.TargetUser,
                               HabitName = habit.Name,
                               HabitValidFrom = habit.ValidFrom,
-                              HabitValidTo = habit.ValidTo,
-                              RuleDaysFrom = rule.ContinuousRecordFrom,
-                              RuleDaysTo = rule.ContinuousRecordTo,
-                              RulePoint = rule.Point
+                              HabitValidTo = habit.ValidTo
+                          };
+
+            var results = from intrst in resultInterms
+                          join rule in _context.UserHabitRules
+                            on new { HabitID = intrst.HabitID, RuleID = intrst.RuleID.GetValueOrDefault() } equals new { HabitID = rule.HabitID, RuleID = rule.RuleID }
+                          into ps 
+                          from p in ps.DefaultIfEmpty()
+                          select new UserHabitRecordView
+                          {
+                              HabitID = intrst.HabitID,
+                              Comment = intrst.Comment,
+                              CompleteFact = intrst.CompleteFact,
+                              RecordDate = intrst.RecordDate,
+                              ContinuousCount = intrst.ContinuousCount,
+                              RuleID = intrst.RuleID,
+                              SubID = intrst.SubID,
+                              TargetUser = intrst.TargetUser,
+                              HabitName = intrst.HabitName,
+                              HabitValidFrom = intrst.HabitValidFrom,
+                              HabitValidTo = intrst.HabitValidTo,
+                              RuleDaysFrom = p.ContinuousRecordFrom,
+                              RuleDaysTo = p.ContinuousRecordTo,
+                              RulePoint = p.Point,
                           };
 
             return results;
