@@ -49,6 +49,7 @@ namespace knowledgebuilderapi
         public DbSet<UserHabitPointsByUserDate> UserHabitPointsByUserDates { get; set; }
         public DbSet<UserHabitPointsByUserHabitDate> UserHabitPointsByUserHabitDates { get; set; }
         public DbSet<UserHabitPointReport> UserHabitPointReports { get; set; }
+        public DbSet<UserHabitRecordView> UserHabitRecordViews { get; set; }
 
         private readonly ValueConverter habitCategoryConverter = new ValueConverter<HabitCategory, Int16>(v => (short)v, v => (HabitCategory)v);
         private readonly ValueConverter habitFrequencyConverter = new ValueConverter<HabitFrequency, Int16>(v => (short)v, v => (HabitFrequency)v);
@@ -495,6 +496,12 @@ namespace knowledgebuilderapi
             modelBuilder.Entity<UserHabitPointReport>(entity =>
             {
                 entity.ToView("UserHabitPointReport");
+                entity.HasNoKey();
+            });
+
+            modelBuilder.Entity<UserHabitRecordView>(entity =>
+            {
+                entity.ToView("UserHabitRecordView");
                 entity.HasNoKey();
             });
         }

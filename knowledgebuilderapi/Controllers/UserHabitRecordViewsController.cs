@@ -40,51 +40,56 @@ namespace knowledgebuilderapi.Controllers
             if (String.IsNullOrEmpty(usrId))
                 throw new Exception("Failed ID");
 
-            var resultInterms = from record in _context.UserHabitRecords
-                          join habit in _context.UserHabits
-                            on record.HabitID equals habit.ID
-                          join auser in _context.AwardUsers
-                            on habit.TargetUser equals auser.TargetUser
-                          where auser.TargetUser != null
-                          select new
-                          {
-                              HabitID = record.HabitID,
-                              Comment = record.Comment,
-                              CompleteFact = record.CompleteFact,
-                              RecordDate = record.RecordDate,
-                              ContinuousCount = record.ContinuousCount,
-                              RuleID = record.RuleID,
-                              SubID = record.SubID,
-                              TargetUser = habit.TargetUser,
-                              HabitName = habit.Name,
-                              HabitValidFrom = habit.ValidFrom,
-                              HabitValidTo = habit.ValidTo
-                          };
+            return from vdata in _context.UserHabitRecordViews
+                   join auser in _context.AwardUsers
+                    on vdata.TargetUser equals auser.TargetUser
+                   where auser.Supervisor == usrId
+                   select vdata;
+            //var resultInterms = from record in _context.UserHabitRecords
+            //              join habit in _context.UserHabits
+            //                on record.HabitID equals habit.ID
+            //              join auser in _context.AwardUsers
+            //                on habit.TargetUser equals auser.TargetUser
+            //              where auser.Supervisor == usrId
+            //              select new
+            //              {
+            //                  HabitID = record.HabitID,
+            //                  Comment = record.Comment,
+            //                  CompleteFact = record.CompleteFact,
+            //                  RecordDate = record.RecordDate,
+            //                  ContinuousCount = record.ContinuousCount,
+            //                  RuleID = record.RuleID,
+            //                  SubID = record.SubID,
+            //                  TargetUser = habit.TargetUser,
+            //                  HabitName = habit.Name,
+            //                  HabitValidFrom = habit.ValidFrom,
+            //                  HabitValidTo = habit.ValidTo
+            //              };
 
-            var results = from intrst in resultInterms
-                          join rule in _context.UserHabitRules
-                            on new { HabitID = intrst.HabitID, RuleID = intrst.RuleID.GetValueOrDefault() } equals new { HabitID = rule.HabitID, RuleID = rule.RuleID }
-                          into ps 
-                          from p in ps.DefaultIfEmpty()
-                          select new UserHabitRecordView
-                          {
-                              HabitID = intrst.HabitID,
-                              Comment = intrst.Comment,
-                              CompleteFact = intrst.CompleteFact,
-                              RecordDate = intrst.RecordDate,
-                              ContinuousCount = intrst.ContinuousCount,
-                              RuleID = intrst.RuleID,
-                              SubID = intrst.SubID,
-                              TargetUser = intrst.TargetUser,
-                              HabitName = intrst.HabitName,
-                              HabitValidFrom = intrst.HabitValidFrom,
-                              HabitValidTo = intrst.HabitValidTo,
-                              RuleDaysFrom = p.ContinuousRecordFrom,
-                              RuleDaysTo = p.ContinuousRecordTo,
-                              RulePoint = p.Point,
-                          };
+            //var results = from intrst in resultInterms
+            //              join rule in _context.UserHabitRules
+            //                on new { HabitID = intrst.HabitID, RuleID = intrst.RuleID.GetValueOrDefault() } equals new { HabitID = rule.HabitID, RuleID = rule.RuleID }
+            //              into ps 
+            //              from p in ps.DefaultIfEmpty()
+            //              select new UserHabitRecordView
+            //              {
+            //                  HabitID = intrst.HabitID,
+            //                  Comment = intrst.Comment,
+            //                  CompleteFact = intrst.CompleteFact,
+            //                  RecordDate = intrst.RecordDate,
+            //                  ContinuousCount = intrst.ContinuousCount,
+            //                  RuleID = intrst.RuleID,
+            //                  SubID = intrst.SubID,
+            //                  TargetUser = intrst.TargetUser,
+            //                  HabitName = intrst.HabitName,
+            //                  HabitValidFrom = intrst.HabitValidFrom,
+            //                  HabitValidTo = intrst.HabitValidTo,
+            //                  RuleDaysFrom = p.ContinuousRecordFrom,
+            //                  RuleDaysTo = p.ContinuousRecordTo,
+            //                  RulePoint = p.Point,
+            //              };
 
-            return results;
+            //return results;
         }
     }
 }

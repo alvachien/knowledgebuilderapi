@@ -104,3 +104,16 @@ CREATE VIEW UserHabitPointReport AS
 --		) as a 
 
 
+-- Created on 2021.12.09
+CREATE VIEW UserHabitRecordView AS 
+	SELECT a.*, b.Name as HabitName, b.ValidFrom as HabitValidFrom, b.ValidTo as HabitValidTo,
+	b.TargetUser, c.ContinuousRecordFrom as RuleDaysFrom, c.ContinuousRecordTo as RuleDaysTo,
+	c.Point as RulePoint
+	from UserHabitRecord as a
+	inner join UserHabit as b
+		on a.HabitID = b.ID
+	left outer join UserHabitRule as c
+		on a.HabitID = c.HabitID
+			and a.RuleID = c.RuleID
+
+
