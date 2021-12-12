@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace knowledgebuilderapi
 {
@@ -20,12 +21,14 @@ namespace knowledgebuilderapi
             Log.Logger = new LoggerConfiguration()
 #if DEBUG
             .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Information)
 #else
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
 #endif
             .Enrich.FromLogContext()
 #if DEBUG
-            .WriteTo.Console()
+            .WriteTo.Console(theme: SystemConsoleTheme.Colored)
 #else
 #if USE_ALIYUN
             .WriteTo.File(

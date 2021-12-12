@@ -21,6 +21,7 @@ using Microsoft.OData.Edm;
 using knowledgebuilderapi.Models;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace knowledgebuilderapi
 {
@@ -127,11 +128,8 @@ namespace knowledgebuilderapi
             services.AddControllers().AddOData(opt => opt.Count().Filter().Expand().Select().OrderBy().SetMaxTop(100)
                 .AddRouteComponents(model)
                 .AddRouteComponents("v1", model)
-                // .AddModel("v2{data}", model2, builder => builder.AddService<ODataBatchHandler, DefaultODataBatchHandler>(Microsoft.OData.ServiceLifetime.Singleton))
-                // .ConfigureRoute(route => route.EnableQualifiedOperationCall = false) // use this to configure the built route template
                 );
 
-            // TBD: Authorization
             services.AddAuthorization();            
 
             // Response Caching
@@ -155,12 +153,14 @@ namespace knowledgebuilderapi
 
             app.UseCors(MyAllowSpecificOrigins);
             app.UseHttpsRedirection();
+
+            app.UseSerilogRequestLogging(); // <-- Add this line
+
             app.UseAuthentication();
 
             app.UseODataBatching();
             app.UseRouting();
 
-            // TBD: Authentication, Authorization
             app.UseAuthentication();
             app.UseAuthorization();
 
