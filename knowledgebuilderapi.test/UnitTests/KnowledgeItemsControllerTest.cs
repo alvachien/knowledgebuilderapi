@@ -16,8 +16,9 @@ using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
+using knowledgebuilderapi.test.common;
 
-namespace knowledgebuilderapi.test.UnitTests
+namespace knowledgebuilderapi.test.unittest
 {
     [Collection("KBAPI_UnitTests#1")]
     public class KnowledgeItemsControllerTest : IDisposable

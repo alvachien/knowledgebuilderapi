@@ -16,8 +16,9 @@ using System.Collections.Generic;
 using Xunit.Abstractions;
 using System.Text.Json;
 using Xunit;
+using knowledgebuilderapi.test.common;
 
-namespace knowledgebuilderapi.test.UnitTests
+namespace knowledgebuilderapi.test.unittest
 {
     public class UserHabitRecordsControllerTestData_MonthNoOfCount : IXunitSerializable
     {

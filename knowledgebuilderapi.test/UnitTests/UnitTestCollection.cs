@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace knowledgebuilderapi.test.UnitTests
+namespace knowledgebuilderapi.test.unittest
 {
     [CollectionDefinition("KBAPI_UnitTests#1")]
     public class UnitTestCollection : ICollectionFixture<SqliteDatabaseFixture>

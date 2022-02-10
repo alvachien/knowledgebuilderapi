@@ -9,7 +9,7 @@ using System.Collections;
 using Xunit.Abstractions;
 using System.Text.Json;
 
-namespace knowledgebuilderapi.test.UnitTests
+namespace knowledgebuilderapi.test.unittest
 {
     public class HabitMonthlyDateTestData : IXunitSerializable
     {

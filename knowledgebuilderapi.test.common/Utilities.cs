@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using knowledgebuilderapi.Models;
 
-namespace knowledgebuilderapi.test {
+namespace knowledgebuilderapi.test.common
+{
     public static class Utilities
     {
         #region snippet1

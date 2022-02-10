@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
 
-namespace knowledgebuilderapi.test.UnitTests
+namespace knowledgebuilderapi.test.unittest
 {
     [Collection("KBAPI_UnitTests#1")]
     public class DailyTracesControllerTest : IDisposable
@@ -326,7 +326,7 @@ namespace knowledgebuilderapi.test.UnitTests
             //// Clean award data
             //DataSetupUtility.DeleteAwardData(context);
 
-            //await context.DisposeAsync();
+            await context.DisposeAsync();
         }
         
         [Fact]
@@ -620,7 +620,7 @@ namespace knowledgebuilderapi.test.UnitTests
             //// Clean award data
             //DataSetupUtility.DeleteAwardData(context);
 
-            //await context.DisposeAsync();
+            await context.DisposeAsync();
         }
         
         [Fact]
@@ -830,7 +830,7 @@ namespace knowledgebuilderapi.test.UnitTests
             //// Clean award data
             //DataSetupUtility.DeleteAwardData(context);
 
-            //await context.DisposeAsync();
+            await context.DisposeAsync();
         }
         
         [Fact]
@@ -1040,7 +1040,7 @@ namespace knowledgebuilderapi.test.UnitTests
             //// Clean award data
             //DataSetupUtility.DeleteAwardData(context);
 
-            //await context.DisposeAsync();
+            await context.DisposeAsync();
         }
 
         [Fact]
@@ -1147,7 +1147,7 @@ namespace knowledgebuilderapi.test.UnitTests
             //// Clean award data
             //DataSetupUtility.DeleteAwardData(context);
 
-            //await context.DisposeAsync();
+            await context.DisposeAsync();
         }
         
         [Fact]
@@ -1256,7 +1256,7 @@ namespace knowledgebuilderapi.test.UnitTests
             //// Clean award data
             //DataSetupUtility.DeleteAwardData(context);
 
-            //await context.DisposeAsync();
+            await context.DisposeAsync();
         }
 
         [Fact]
@@ -1370,7 +1370,7 @@ namespace knowledgebuilderapi.test.UnitTests
             //// Clean award data
             //DataSetupUtility.DeleteAwardData(context);
 
-            //await context.DisposeAsync();
+            await context.DisposeAsync();
         }
     }
 }

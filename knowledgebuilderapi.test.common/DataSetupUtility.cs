@@ -6,7 +6,7 @@ using knowledgebuilderapi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace knowledgebuilderapi.test
+namespace knowledgebuilderapi.test.common
 {
     public sealed class DataSetupUtility
     {
@@ -187,24 +187,24 @@ namespace knowledgebuilderapi.test
         }
         #endregion
 
-        internal static void DeleteKnowledgeItem(kbdataContext context, int kid)
+        public static void DeleteKnowledgeItem(kbdataContext context, int kid)
         {
             context.Database.ExecuteSqlRaw("DELETE FROM KnowledgeItem WHERE ID = " + kid.ToString());
         }
 
-        internal static void DeleteAwardData(kbdataContext context)
+        public static void DeleteAwardData(kbdataContext context)
         {
             context.Database.ExecuteSqlRaw("DELETE FROM AwardRule WHERE ID > 0 ");
             context.Database.ExecuteSqlRaw("DELETE FROM AwardPoint WHERE ID > 0 ");
             context.Database.ExecuteSqlRaw("DELETE FROM DailyTrace WHERE TargetUser IS NOT NULL");
         }
 
-        internal static void ClearUserHabitData(kbdataContext context, Int32 habitID)
+        public static void ClearUserHabitData(kbdataContext context, Int32 habitID)
         {
             context.Database.ExecuteSqlRaw("DELETE FROM UserHabit WHERE ID = " + habitID);
         }
 
-        internal static void CreateInviteUser(kbdataContext context, String supervisor, String testUser)
+        public static void CreateInviteUser(kbdataContext context, String supervisor, String testUser)
         {
             // Add Invited User
             //
@@ -228,14 +228,14 @@ namespace knowledgebuilderapi.test
             context.AwardUsers.Add(aus);
         }
 
-        internal static void DeleteInviteUser(kbdataContext context, String supervisor, String testUser)
+        public static void DeleteInviteUser(kbdataContext context, String supervisor, String testUser)
         {
             context.Database.ExecuteSqlRaw("DELETE FROM InvitedUser WHERE UserID = '" + supervisor + "'");
             context.Database.ExecuteSqlRaw("DELETE FROM InvitedUser WHERE UserID = '" + testUser + "'");
             context.Database.ExecuteSqlRaw("DELETE FROM AwardUser WHERE Supervisor = '" + supervisor + "' AND TargetUser = '" + testUser + "'");
         }
 
-        internal static void DeleteUserHabit(kbdataContext context, int habitid)
+        public static void DeleteUserHabit(kbdataContext context, int habitid)
         {
             context.Database.ExecuteSqlRaw("DELETE FROM UserHabit WHERE ID = " + habitid.ToString());
         }

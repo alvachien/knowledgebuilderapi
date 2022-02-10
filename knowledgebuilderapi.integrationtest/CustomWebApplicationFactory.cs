@@ -12,8 +12,9 @@ using Microsoft.Extensions.Logging;
 using knowledgebuilderapi.Models;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using knowledgebuilderapi.test.common;
 
-namespace knowledgebuilderapi.test
+namespace knowledgebuilderapi.test.integrationtest
 {
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {

@@ -18,8 +18,9 @@ using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
 using Xunit.Abstractions;
 using System.Text.Json;
+using knowledgebuilderapi.test.common;
 
-namespace knowledgebuilderapi.test.UnitTests
+namespace knowledgebuilderapi.test.unittest
 {
     public class UserHabitRecordsControllerTestData_DailyNoOfTimes : IXunitSerializable
     {

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace knowledgebuilderapi.test
+namespace knowledgebuilderapi.test.integrationtest
 {
     //public class IdentityServerSetup
     //{

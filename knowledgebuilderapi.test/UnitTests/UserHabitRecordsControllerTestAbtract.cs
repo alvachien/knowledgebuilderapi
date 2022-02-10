@@ -1,10 +1,11 @@
-﻿using System;
+﻿using knowledgebuilderapi.test.common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace knowledgebuilderapi.test.UnitTests
+namespace knowledgebuilderapi.test.unittest
 {
     public class UserHabitRecordsControllerTestAbtract : IDisposable
     {
