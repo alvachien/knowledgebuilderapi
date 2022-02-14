@@ -11,7 +11,8 @@ namespace knowledgebuilderapi.Controllers
     {
         internal static String GetUserID(ControllerBase ctrl)
         {
-            return ctrl.User != null ? ctrl.User.FindFirst(ClaimTypes.NameIdentifier)?.Value : "";
+            return ctrl.User?.Identity?.Name;
+            //return ctrl.User != null ? ctrl.User.FindFirst(ClaimTypes.NameIdentifier)?.Value : "";
         }
     }
 }
