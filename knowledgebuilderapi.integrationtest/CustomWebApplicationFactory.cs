@@ -13,66 +13,114 @@ using knowledgebuilderapi.Models;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using knowledgebuilderapi.test.common;
+using Microsoft.Extensions.Hosting;
 
 namespace knowledgebuilderapi.test.integrationtest
 {
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
+        protected SqliteConnection DBConnection { get; private set; }
+
+        public CustomWebApplicationFactory()
+        {
+            DBConnection = new SqliteConnection("DataSource=:memory:");
+            DBConnection.Open();
+
+            try
+            {
+                // Create the schema in the database
+                var context = GetCurrentDataContext();
+                if (!context.Database.IsSqlite()
+                    || context.Database.IsSqlServer())
+                {
+                    throw new Exception("Failed!");
+                }
+
+                // Create tables and views
+                DataSetupUtility.CreateDatabaseTables(context.Database);
+                DataSetupUtility.CreateDatabaseViews(context.Database);
+
+                context.Database.EnsureCreated();
+
+                // Setup the tables
+
+                context.Dispose();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                // Error occurred
+            }
+            finally
+            {
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (DBConnection != null)
+            {
+                DBConnection.Close();
+                DBConnection = null;
+            }
+        }
+
+        public kbdataContext GetCurrentDataContext()
+        {
+            var options = new DbContextOptionsBuilder<kbdataContext>()
+                .UseSqlite(DBConnection, action =>
+                {
+                    action.UseRelationalNulls();
+                })
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
+                .EnableSensitiveDataLogging()
+                .Options;
+
+            var context = new kbdataContext(options, true);
+            return context;
+        }
+
+        protected override IHostBuilder CreateHostBuilder() =>
+            base.CreateHostBuilder();
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("IntegrationTest");
 
             builder.ConfigureServices(services =>
             {
-                // In-memory database only exists while the connection is open
-                var connection = new SqliteConnection("DataSource=:memory:");
-                connection.Open();
+                //var descriptor = services.SingleOrDefault(
+                //    d => d.ServiceType == typeof(Microsoft.AspNetCore.Authentication.AuthenticationOptions));
+                //if (descriptor != null)
+                //{
+                //    services.Remove(descriptor);
+                //}
 
-                // // Identity
-                // foreach(var srv in services)
-                // {
-                //     System.Diagnostics.Debug.WriteLine("===");
-                //     System.Diagnostics.Debug.WriteLine(srv.ServiceType);
-                //     System.Diagnostics.Debug.WriteLine(srv.ImplementationType);
-                // }
+                //// Add the Jwt bear back
+                //services.AddAuthentication("Bearer")
+                //    .AddJwtBearer("Bearer", options =>
+                //    {
+                //        options.Authority = "http://localhost:5005";
+                //        options.RequireHttpsMetadata = false;
 
-                var descriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(Microsoft.AspNetCore.Authentication.AuthenticationOptions));
+                //        options.Audience = "knowledgebuilder.api";
+                //    });
+
+                var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<kbdataContext>));
                 if (descriptor != null)
-                {
                     services.Remove(descriptor);
-                }
 
-                // Add the Jwt bear back
-                services.AddAuthentication("Bearer")
-                    .AddJwtBearer("Bearer", options =>
-                    {
-                        options.Authority = "http://localhost:5005";
-                        options.RequireHttpsMetadata = false;
-
-                        options.Audience = "knowledgebuilder.api";
-                    });
-
-                // Remove the app's ApplicationDbContext registration.
-                descriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(DbContextOptions<kbdataContext>));
-
-                if (descriptor != null)
+                services.AddDbContext<kbdataContext>(options =>
                 {
-                    services.Remove(descriptor);
-                }
-
-                // Add ApplicationDbContext using an in-memory database for testing.
-                services.AddDbContext<kbdataContext>((options, context) =>
+                    options.UseSqlite(DBConnection, action =>
                     {
-                        context.UseSqlite(connection);
-                    });
+                        action.UseRelationalNulls();
+                    })
+                    .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
+                    .EnableSensitiveDataLogging();
+                });
 
-                // Build the service provider.
                 var sp = services.BuildServiceProvider();
-
-                // Create a scope to obtain a reference to the database
-                // context (kbdataContext).
                 using (var scope = sp.CreateScope())
                 {
                     var scopedServices = scope.ServiceProvider;
@@ -80,18 +128,17 @@ namespace knowledgebuilderapi.test.integrationtest
                     var logger = scopedServices
                         .GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
 
-                    // Ensure the database is created.
                     db.Database.EnsureCreated();
 
                     try
                     {
-                        // Seed the database with test data.
-                        Utilities.InitializeDbForTests(db);
+                        // Utilities.InitializeDbForTests(db);
                     }
-                    catch (Exception ex)
+                    catch (Exception exp)
                     {
-                        logger.LogError(ex, "An error occurred seeding the " +
-                            "database with test messages. Error: {Message}", ex.Message);
+
+                        logger.LogError(exp, "An error occurred seeding the " +
+                            "database with test messages. Error: {Message}", exp.Message);
                     }
                 }
             });

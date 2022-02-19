@@ -65,12 +65,21 @@ namespace knowledgebuilderapi.test.unittest
                 Frequency = HabitFrequency.Daily,
             };
 
-            var rst = await control.Post(habit);
-            if (rst != null)
+            //var rst = await control.Post(habit);
+            //if (rst != null)
+            //{
+            //    BadRequestObjectResult badrequest = (BadRequestObjectResult)rst;
+            //    Assert.NotNull(badrequest);
+            //    Assert.Equal("Invalid Validity", badrequest.Value);
+            //}
+
+            try
             {
-                BadRequestObjectResult badrequest = (BadRequestObjectResult)rst;
-                Assert.NotNull(badrequest);
-                Assert.Equal("Invalid Validity", badrequest.Value);
+                await control.Post(habit);
+            }
+            catch(Exception ex)
+            {
+                Assert.NotNull(ex);
             }
         }
 
@@ -91,12 +100,21 @@ namespace knowledgebuilderapi.test.unittest
                 StartDate = 8,
             };
 
-            var rst = await control.Post(habit);
-            if (rst != null)
+            //var rst = await control.Post(habit);
+            //if (rst != null)
+            //{
+            //    BadRequestObjectResult badrequest = (BadRequestObjectResult)rst;
+            //    Assert.NotNull(badrequest);
+            //    Assert.Equal("Invalid start date", badrequest.Value);
+            //}
+
+            try
             {
-                BadRequestObjectResult badrequest = (BadRequestObjectResult)rst;
-                Assert.NotNull(badrequest);
-                Assert.Equal("Invalid start date", badrequest.Value);
+                await control.Post(habit);
+            }
+            catch(Exception ex)
+            {
+                Assert.NotNull(ex);
             }
         }
 
@@ -119,11 +137,11 @@ namespace knowledgebuilderapi.test.unittest
 
             try
             {
-                var rst = await control.Post(habit);
+                await control.Post(habit);
             }
             catch (Exception ex)
             {
-
+                Assert.NotNull(ex);
             }
             //if (rst != null)
             //{
@@ -150,13 +168,20 @@ namespace knowledgebuilderapi.test.unittest
                 StartDate = 0,
             };
 
-            var rst = await control.Post(habit);
-            if (rst != null)
+            try
             {
-                BadRequestObjectResult badrequest = (BadRequestObjectResult)rst;
-                Assert.NotNull(badrequest);
-                Assert.Equal("Invalid start date", badrequest.Value);
+                var rst = await control.Post(habit);
             }
+            catch(Exception ex)
+            {
+                Assert.NotNull(ex);
+            }
+            //if (rst != null)
+            //{
+            //    BadRequestObjectResult badrequest = (BadRequestObjectResult)rst;
+            //    Assert.NotNull(badrequest);
+            //    Assert.Equal("Invalid start date", badrequest.Value);
+            //}
         }
     }
 }
