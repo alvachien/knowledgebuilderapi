@@ -4,16 +4,16 @@ using knowledgebuilderapi.Models;
 
 namespace knowledgebuilderapi.test.common
 {
-    public static class Utilities
+    internal static class Utilities
     {
         #region snippet1
-        public static void InitializeDbForTests(kbdataContext db)
+        internal static void InitializeDbForTests(kbdataContext db)
         {
             // db.Messages.AddRange(GetSeedingMessages());
             db.SaveChanges();
         }
 
-        public static void ReinitializeDbForTests(kbdataContext db)
+        internal static void ReinitializeDbForTests(kbdataContext db)
         {
             // db.Messages.RemoveRange(db.Messages);
             InitializeDbForTests(db);
