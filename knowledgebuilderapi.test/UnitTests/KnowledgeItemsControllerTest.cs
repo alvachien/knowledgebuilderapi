@@ -89,29 +89,6 @@ namespace knowledgebuilderapi.test.unittest
             rstscnt = await rsts.CountAsync();
             Assert.Equal(0, rstscnt);
 
-            //// Step 9. Read it again via OData way
-            //var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
-            //httpContext.Request.Path = "/api/KnowledgeItems";
-            //httpContext.Request.QueryString = new QueryString("?$select=ID, Title");
-            //httpContext.Request.Method = "GET";
-            //var routeData = new RouteData();
-            //routeData.Values.Add("odataPath", "KnowledgeItems");
-            //routeData.Values.Add("action", "GET");
-
-            //// Controller needs a controller context 
-            //var controllerContext = new ControllerContext()
-            //{
-            //    RouteData = routeData,
-            //    HttpContext = httpContext,
-            //};
-            //// Assign context to controller
-            //control = new KnowledgeItemsController(context)
-            //{
-            //    ControllerContext = controllerContext,
-            //};
-            //rsts = control.Get();
-            //Assert.NotNull(rsts);
-
             await context.DisposeAsync();
         }
         
@@ -163,8 +140,7 @@ namespace knowledgebuilderapi.test.unittest
 
             var rstOdata = control.Get();
             Assert.NotNull(rstOdata);
-            var rstOdata2 = (from dt in rstOdata select dt).ToList();
-            
+            var rstOdata2 = (from dt in rstOdata select dt).ToList();            
 
             await context.DisposeAsync();
         }
