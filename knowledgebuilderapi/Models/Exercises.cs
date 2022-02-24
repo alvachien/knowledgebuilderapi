@@ -12,8 +12,8 @@ namespace knowledgebuilderapi.Models
     {
         public ExerciseItem() : base()
         {
-            Tags = new HashSet<ExerciseTag>();
-            UserScores = new HashSet<ExerciseItemUserScore>();
+            Tags = new List<ExerciseTag>();
+            UserScores = new List<ExerciseItemUserScore>();
         }
 
         [Key]

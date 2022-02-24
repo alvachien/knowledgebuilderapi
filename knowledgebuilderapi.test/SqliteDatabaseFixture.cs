@@ -12,6 +12,8 @@ namespace knowledgebuilderapi.test.unittest
     {
         public SqliteDatabaseFixture()
         {
+            IsTestDataIntialized = false;
+
             // Open connections
             DBConnection = new SqliteConnection("DataSource=:memory:");
             DBConnection.Open();
@@ -71,6 +73,17 @@ namespace knowledgebuilderapi.test.unittest
 
             var context = new kbdataContext(options, true);
             return context;
+        }
+
+        public bool IsTestDataIntialized { get; private set; }
+        public void InitializeTestData()
+        {
+            if (IsTestDataIntialized)
+                return;
+
+            var context = GetCurrentDataContext();
+            DataSetupUtility.InitalizeTestData(context);
+            IsTestDataIntialized = true;
         }
     }
 }

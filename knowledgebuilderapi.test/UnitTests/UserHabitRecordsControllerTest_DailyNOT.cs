@@ -225,7 +225,7 @@ namespace knowledgebuilderapi.test.unittest
 
             // Add Habit, Habit Rule
             UserHabit habit = new UserHabit();
-            habit.TargetUser = test_user1;
+            habit.TargetUser = DataSetupUtility.UserA;
             habit.ValidFrom = new DateTime(2021, 1, 1);
             habit.ValidTo = new DateTime(2022, 12, 31);
             habit.Name = "Habit_Daily_1";

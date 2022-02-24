@@ -10,6 +10,8 @@ namespace knowledgebuilderapi.Models
     {
         public KnowledgeItem()
         {
+            this.Exercises = new List<ExerciseItem>();
+            this.Tags = new List<KnowledgeTag>();
         }
         public KnowledgeItem(KnowledgeItem other)
         {
@@ -63,18 +65,18 @@ namespace knowledgebuilderapi.Models
             return this.ID;
         }
 
-        public void UpdateData(KnowledgeItem other)
-        {
-            if (other == null)
-                throw new InvalidOperationException("Invalid parameter: Other");
+        //public void UpdateData(KnowledgeItem other)
+        //{
+        //    if (other == null)
+        //        throw new InvalidOperationException("Invalid parameter: Other");
 
-            if (Category != other.Category)
-                Category = other.Category;
-            if (String.CompareOrdinal(Title, other.Title) != 0)
-                Title = other.Title;
-            if (String.CompareOrdinal(Content, other.Content) != 0)
-                Content = other.Content;
-        }
+        //    if (Category != other.Category)
+        //        Category = other.Category;
+        //    if (String.CompareOrdinal(Title, other.Title) != 0)
+        //        Title = other.Title;
+        //    if (String.CompareOrdinal(Content, other.Content) != 0)
+        //        Content = other.Content;
+        //}
     }
 
     public class KnowledgeItemWithTagView

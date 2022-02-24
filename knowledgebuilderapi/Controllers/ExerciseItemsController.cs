@@ -69,7 +69,7 @@ namespace knowledgebuilderapi.Controllers
                     }
                 }
 
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             // Admin. fields
@@ -114,14 +114,10 @@ namespace knowledgebuilderapi.Controllers
         public async Task<IActionResult> Put([FromODataUri] int key, [FromBody] ExerciseItem update)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             if (key != update.ID)
-            {
                 return BadRequest("Key is not matched");
-            }
 
             // Check item need be updated
             //var contentChanged = false;
@@ -131,9 +127,7 @@ namespace knowledgebuilderapi.Controllers
                     .Include(i => i.Tags)
                     .SingleOrDefaultAsync(x => x.ID == key);
             if (execitem == null)
-            {
                 return NotFound();
-            }
 
             execitem.UpdateData(update);
             if (execitem.Answer == null)
@@ -279,9 +273,7 @@ namespace knowledgebuilderapi.Controllers
         public async Task<IActionResult> Patch([FromODataUri] int key, [FromBody] Delta<ExerciseItem> execitem)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var entity = await _context.ExerciseItems.FindAsync(key);
             if (entity == null)

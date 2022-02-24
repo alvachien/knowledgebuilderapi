@@ -21,17 +21,26 @@ using knowledgebuilderapi.test.common;
 namespace knowledgebuilderapi.test.unittest
 {
     [Collection("KBAPI_UnitTests#1")]
-    public class UserHabitRecordsControllerTest : IDisposable
+    public class OverviewInfosControllerTest
     {
-        private SqliteDatabaseFixture fixture = null;
+        SqliteDatabaseFixture fixture = null;
 
-        public UserHabitRecordsControllerTest(SqliteDatabaseFixture fixture)
+        public OverviewInfosControllerTest(SqliteDatabaseFixture fixture)
         {
             this.fixture = fixture;
+            this.fixture.InitializeTestData();
         }
 
-        public void Dispose()
+        [Fact]
+        public async Task TestCase_ReadInfo()
         {
+            var context = this.fixture.GetCurrentDataContext();
+
+            var control = new OverviewInfosController(context);
+            var getrst = control.Get();
+            Assert.NotNull(getrst);
+
+            await context.DisposeAsync();
         }
     }
 }

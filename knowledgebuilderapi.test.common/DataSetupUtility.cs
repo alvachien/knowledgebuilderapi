@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using knowledgebuilderapi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -184,12 +185,197 @@ namespace knowledgebuilderapi.test.common
 	            SELECT 1 AS RefType, count(*) AS cnt FROM KnowledgeItem
  	            UNION ALL
 	            SELECT 2 AS RefType, count(*) AS cnt FROM ExerciseItem");
+
+            database.ExecuteSqlRaw(@"CREATE VIEW ExerciseItemWithTagView AS 
+	            SELECT a.*, b.Tags
+	            from ExerciseItem as a
+	            left outer join ( select RefID, STRING_AGG(Tag, ',') as Tags from ExerciseTag GROUP BY RefID ) as b
+	            on a.ID = b.RefID");
+
+            database.ExecuteSqlRaw(@"CREATE VIEW KnowledgeItemWithTagView AS 
+	            SELECT a.ID, a.Content, a.ContentType, a.CreatedAt, a.ModifiedAt, a.Title, b.Tags
+	            FROM KnowledgeItem as a
+	            LEFT OUTER JOIN ( select RefID, STRING_AGG(Tag, ',') as Tags from KnowledgeTag GROUP BY RefID ) as b
+	            on a.ID = b.RefID");
+
+            database.ExecuteSqlRaw(@"CREATE VIEW AwardPointReport AS 
+	            WITH records AS ( select TargetUser, RecordDate, SUM(Point) as Point 
+			            from AwardPoint group by TargetUser, RecordDate )
+	            select TargetUser, RecordDate, Point, SUM(Point) OVER ( PARTITION BY TargetUser ORDER BY RecordDate ASC  ) as AggPoint
+	             from records");
+
+            database.ExecuteSqlRaw(@"CREATE VIEW AwardUserView AS 
+	            SELECT a.TargetUser, b.UserName, b.DisplayAs, a.Supervisor
+		            FROM AwardUser AS a
+		            INNER JOIN InvitedUser AS b
+		            ON a.TargetUser = b.UserID");
+
+            database.ExecuteSqlRaw(@"CREATE VIEW HabitUserDatePointReport AS 
+	            SELECT c.TargetUser as TargetUser, a.RecordDate as RecordDate, SUM( b.Point ) as Point
+			            FROM UserHabitRecord as a
+				            INNER JOIN UserHabit as c
+					            ON a.HabitID = c.ID
+				            LEFT OUTER JOIN UserHabitRule as b
+					            ON c.ID = b.HabitID and a.RuleID = b.RuleID
+			            WHERE b.RuleID IS NOT NULL
+			            GROUP BY c.TargetUser, a.RecordDate");
+
+            database.ExecuteSqlRaw(@"CREATE VIEW HabitUserHabitDatePointReport AS 
+		        SELECT c.TargetUser, a.HabitID, a.RecordDate, SUM( b.Point ) as Point
+			        FROM UserHabitRecord as a
+				        INNER JOIN UserHabit as c
+					        ON a.HabitID = c.ID
+				        LEFT OUTER JOIN UserHabitRule as b
+					        ON c.ID = b.HabitID and a.RuleID = b.RuleID
+			        WHERE b.RuleID IS NOT NULL
+			        GROUP BY c.TargetUser, a.HabitID, a.RecordDate ");
+
+            database.ExecuteSqlRaw(@"CREATE VIEW UserHabitPointReport AS
+	            SELECT TargetUser, RecordDate, SUM( Point ) as Point
+		            FROM UserHabitPoint
+		            GROUP BY TargetUser, RecordDate ");
+
+            database.ExecuteSqlRaw(@"CREATE VIEW UserHabitRecordView AS 
+	            SELECT a.*, b.Name as HabitName, b.ValidFrom as HabitValidFrom, b.ValidTo as HabitValidTo,
+	            b.TargetUser, c.ContinuousRecordFrom as RuleDaysFrom, c.ContinuousRecordTo as RuleDaysTo,
+	            c.Point as RulePoint
+	            from UserHabitRecord as a
+	            inner join UserHabit as b
+		            on a.HabitID = b.ID
+	            left outer join UserHabitRule as c
+		            on a.HabitID = c.HabitID
+			            and a.RuleID = c.RuleID");
         }
         #endregion
+
+        #region Constants of initialized data
+        public const string UserA = "UserA";
+        public const string UserB = "UserB";
+        public const int Knowledge1ID = 1;
+        public const int Knowledge2ID = 2;
+        public const string Tag1 = "Tag1";
+        public const string Tag2 = "Tag2";
+        public const int Exercise1ID = 1;
+        public const int Exercise2ID = 2;
+        #endregion
+
+        #region Initialize test data
+        public static void InitalizeTestData(kbdataContext context)
+        {
+            #region Invite users
+            context.InvitedUsers.Add(new InvitedUser
+            {
+                DisplayAs = "User A",
+                InvitationCode = "User A Invit",
+                UserID = UserA,
+                UserName = "User A",
+            });
+
+            context.InvitedUsers.Add(new InvitedUser
+            {
+                DisplayAs = "User B",
+                InvitationCode = "User B Invit",
+                UserID = UserB,
+                UserName = "User B",
+            });
+            #endregion
+
+            #region Award users
+            context.AwardUsers.Add(new AwardUser
+            {
+                Supervisor = UserA,
+                TargetUser = UserB,
+            });
+            #endregion
+
+            #region Knowledge items
+            context.KnowledgeItems.Add(new KnowledgeItem
+            {
+                ID = Knowledge1ID,
+                Category = KnowledgeItemCategory.Concept,
+                Title = "Knowledge 1",
+                Content = "Knowledge 1 Content"
+            });
+            context.KnowledgeItems.Add(new KnowledgeItem
+            {
+                ID = Knowledge2ID,
+                Category = KnowledgeItemCategory.Concept,
+                Title = "Knowledge 2",
+                Content = "Knowledge 2 Content"
+            });
+            context.KnowledgeTags.Add(new KnowledgeTag
+            {
+                RefID = Knowledge1ID,
+                TagTerm = Tag1
+            });
+            context.KnowledgeTags.Add(new KnowledgeTag
+            {
+                RefID = Knowledge2ID,
+                TagTerm = Tag2
+            });
+            #endregion
+
+            #region Exercise items
+            context.ExerciseItems.Add(new ExerciseItem
+            {
+                ID = Exercise1ID,
+                ExerciseType = ExerciseItemType.Question,
+                Content = "Exercise 1"
+            });
+            context.ExerciseItems.Add(new ExerciseItem
+            {
+                ID = Exercise2ID,
+                ExerciseType = ExerciseItemType.Question,
+                Content = "Exercise 2"
+            });
+            context.ExerciseItemAnswers.Add(new ExerciseItemAnswer
+            {
+                ID = Exercise1ID,
+                Content = "Answer for Exercise 1"
+            });
+            context.ExerciseItemAnswers.Add(new ExerciseItemAnswer
+            {
+                ID = Exercise2ID,
+                Content = "Answer for Exercise 2"
+            });
+            context.ExerciseTags.Add(new ExerciseTag
+            {
+                RefID = Exercise1ID,
+                TagTerm = Tag1
+            });
+            context.ExerciseTags.Add(new ExerciseTag
+            {
+                RefID = Exercise1ID,
+                TagTerm = Tag2
+            });
+            context.ExerciseTags.Add(new ExerciseTag
+            {
+                RefID = Exercise2ID,
+                TagTerm = Tag1
+            });
+            #endregion
+
+            context.SaveChanges();
+        }
+        #endregion
+
+        public static ClaimsPrincipal GetClaimForUser(String usr)
+        {
+            return new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.Name, usr),
+                new Claim(ClaimTypes.NameIdentifier, usr),
+            }, "mock"));
+        }
 
         public static void DeleteKnowledgeItem(kbdataContext context, int kid)
         {
             context.Database.ExecuteSqlRaw("DELETE FROM KnowledgeItem WHERE ID = " + kid.ToString());
+        }
+
+        public static void DeleteExerciseItem(kbdataContext context, int eid)
+        {
+            context.Database.ExecuteSqlRaw("DELETE FROM ExerciseItem WHERE ID = " + eid.ToString());
         }
 
         public static void DeleteAwardData(kbdataContext context)
@@ -204,36 +390,36 @@ namespace knowledgebuilderapi.test.common
             context.Database.ExecuteSqlRaw("DELETE FROM UserHabit WHERE ID = " + habitID);
         }
 
-        public static void CreateInviteUser(kbdataContext context, String supervisor, String testUser)
-        {
-            // Add Invited User
-            //
-            InvitedUser usr = new InvitedUser();
-            usr.DisplayAs = supervisor;
-            usr.InvitationCode = supervisor;
-            usr.UserID = supervisor;
-            usr.UserName = supervisor;
-            context.InvitedUsers.Add(usr);
+        //public static void CreateInviteUser(kbdataContext context, String supervisor, String testUser)
+        //{
+        //    // Add Invited User
+        //    //
+        //    InvitedUser usr = new InvitedUser();
+        //    usr.DisplayAs = supervisor;
+        //    usr.InvitationCode = supervisor;
+        //    usr.UserID = supervisor;
+        //    usr.UserName = supervisor;
+        //    context.InvitedUsers.Add(usr);
 
-            usr = new InvitedUser();
-            usr.DisplayAs = testUser;
-            usr.InvitationCode = testUser;
-            usr.UserID = testUser;
-            usr.UserName = testUser;
-            context.InvitedUsers.Add(usr);
+        //    usr = new InvitedUser();
+        //    usr.DisplayAs = testUser;
+        //    usr.InvitationCode = testUser;
+        //    usr.UserID = testUser;
+        //    usr.UserName = testUser;
+        //    context.InvitedUsers.Add(usr);
 
-            AwardUser aus = new AwardUser();
-            aus.Supervisor = supervisor;
-            aus.TargetUser = testUser;
-            context.AwardUsers.Add(aus);
-        }
+        //    AwardUser aus = new AwardUser();
+        //    aus.Supervisor = supervisor;
+        //    aus.TargetUser = testUser;
+        //    context.AwardUsers.Add(aus);
+        //}
 
-        public static void DeleteInviteUser(kbdataContext context, String supervisor, String testUser)
-        {
-            context.Database.ExecuteSqlRaw("DELETE FROM InvitedUser WHERE UserID = '" + supervisor + "'");
-            context.Database.ExecuteSqlRaw("DELETE FROM InvitedUser WHERE UserID = '" + testUser + "'");
-            context.Database.ExecuteSqlRaw("DELETE FROM AwardUser WHERE Supervisor = '" + supervisor + "' AND TargetUser = '" + testUser + "'");
-        }
+        //public static void DeleteInviteUser(kbdataContext context, String supervisor, String testUser)
+        //{
+        //    context.Database.ExecuteSqlRaw("DELETE FROM InvitedUser WHERE UserID = '" + supervisor + "'");
+        //    context.Database.ExecuteSqlRaw("DELETE FROM InvitedUser WHERE UserID = '" + testUser + "'");
+        //    context.Database.ExecuteSqlRaw("DELETE FROM AwardUser WHERE Supervisor = '" + supervisor + "' AND TargetUser = '" + testUser + "'");
+        //}
 
         public static void DeleteUserHabit(kbdataContext context, int habitid)
         {

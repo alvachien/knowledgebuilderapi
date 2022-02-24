@@ -20,18 +20,14 @@ using knowledgebuilderapi.test.common;
 
 namespace knowledgebuilderapi.test.unittest
 {
-    [Collection("KBAPI_UnitTests#1")]
-    public class UserHabitRecordsControllerTest : IDisposable
+    public class UserCollectionsControllerTest
     {
-        private SqliteDatabaseFixture fixture = null;
+        SqliteDatabaseFixture fixture = null;
 
-        public UserHabitRecordsControllerTest(SqliteDatabaseFixture fixture)
+        public UserCollectionsControllerTest(SqliteDatabaseFixture fixture)
         {
             this.fixture = fixture;
-        }
-
-        public void Dispose()
-        {
+            this.fixture.InitializeTestData();
         }
     }
 }

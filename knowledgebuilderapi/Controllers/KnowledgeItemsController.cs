@@ -73,7 +73,7 @@ namespace knowledgebuilderapi.Controllers
                     }
                 }
 
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             knowledge.CreatedAt = DateTime.Now;
@@ -95,47 +95,31 @@ namespace knowledgebuilderapi.Controllers
             }
 
             if (key != update.ID)
-            {
-                return BadRequest();
-            }
-
-            var knowitem = await _context.KnowledgeItems
-                    .Include(i => i.Tags)
-                    .SingleOrDefaultAsync(x => x.ID == key);
-            if (knowitem == null)
-            {
                 return NotFound();
-            }
-            knowitem.UpdateData(update);
-            if (knowitem.Tags.Count > 0)
-            {
-                if (update.Tags.Count > 0)
-                {
-                    knowitem.Tags.Clear();
 
-                    foreach (var tag in update.Tags)
-                    {
-                        var newtag = new KnowledgeTag(tag);
-                        newtag.CurrentKnowledgeItem = knowitem;
-                        knowitem.Tags.Add(newtag);
-                    }
-                }
-                else
+            var isexist = await _context.KnowledgeItems.Where(p => p.ID == key).CountAsync();
+            if (isexist <= 0)
+                return NotFound();
+
+            update.ModifiedAt = DateTime.Now;
+            _context.Entry(update).State = EntityState.Modified;
+
+            //knowitem.UpdateData(update);
+            var tagsindb = _context.KnowledgeTags.Where(p => p.RefID == update.ID).AsNoTracking().ToList();
+            foreach (var ditem in update.Tags)
+            {
+                var itemindb = tagsindb.Find(p => p.TagTerm == ditem.TagTerm);
+                if (itemindb == null)
                 {
-                    // Delete all
-                    knowitem.Tags.Clear();
+                    _context.KnowledgeTags.Add(ditem);
                 }
             }
-            else
+            foreach (var ditem in tagsindb)
             {
-                if (update.Tags != null && update.Tags.Count > 0)
+                var nitem = update.Tags.FirstOrDefault(p => p.TagTerm == ditem.TagTerm);
+                if (nitem == null)
                 {
-                    foreach (var tag in update.Tags)
-                    {
-                        var newtag = new KnowledgeTag(tag);
-                        newtag.CurrentKnowledgeItem = knowitem;
-                        knowitem.Tags.Add(newtag);
-                    }
+                    _context.KnowledgeTags.Remove(ditem);
                 }
             }
 

@@ -13,7 +13,7 @@ namespace knowledgebuilderapi.Models
     {
         public InvitedUser()
         {
-            AwardUsers = new HashSet<AwardUserView>();
+            AwardUsers = new List<AwardUserView>();
         }
 
         [Key]

@@ -26,7 +26,7 @@ namespace knowledgebuilderapi.Models
     {
         public AwardRuleGroup()
         {
-            Rules = new HashSet<AwardRule>();
+            Rules = new List<AwardRule>();
         }
 
         [Key]
