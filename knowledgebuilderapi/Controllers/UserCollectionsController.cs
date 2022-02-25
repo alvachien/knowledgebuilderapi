@@ -39,8 +39,8 @@ namespace knowledgebuilderapi.Controllers
         public IQueryable<UserCollection> Get()
         {
             String usrId = ControllerUtil.GetUserID(this);
-            if (String.IsNullOrEmpty(usrId)) 
-                throw new Exception("Failed ID");
+            if (String.IsNullOrEmpty(usrId))
+                throw new UnauthorizedAccessException("Failed ID");
 
             return _context.UserCollections.Where(p => p.User == usrId);
         }
@@ -58,7 +58,7 @@ namespace knowledgebuilderapi.Controllers
         {
             String usrId = ControllerUtil.GetUserID(this);
             if (String.IsNullOrEmpty(usrId))
-                throw new Exception("Failed ID");
+                throw new UnauthorizedAccessException("Failed ID");
 
             return SingleResult.Create(_context.UserCollections.Where(p => p.User == usrId && p.ID == key));
         }
@@ -120,12 +120,12 @@ namespace knowledgebuilderapi.Controllers
                     }
                 }
 
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             String usrId = ControllerUtil.GetUserID(this);
             if (String.IsNullOrEmpty(usrId) || coll.User != usrId)
-                throw new Exception("Failed ID");
+                return new UnauthorizedResult();
 
             coll.CreatedAt = DateTime.Now;            
             _context.UserCollections.Add(coll);
@@ -142,83 +142,50 @@ namespace knowledgebuilderapi.Controllers
         {
             if (!ModelState.IsValid)
             {
+                foreach (var value in ModelState.Values)
+                {
+                    foreach (var err in value.Errors)
+                    {
+                        System.Diagnostics.Debug.WriteLine(err.Exception?.Message);
+                    }
+                }
+
                 return BadRequest(ModelState);
             }
 
             if (key != update.ID)
-            {
-                return BadRequest();
-            }
+                return BadRequest("Invalid key");
 
             String usrId = ControllerUtil.GetUserID(this);
             if (String.IsNullOrEmpty(usrId) || update.User != usrId)
-                throw new Exception("Failed ID");
+                return new UnauthorizedResult();
 
-            var dbcoll = await _context.UserCollections
-                    .Include(i => i.Items)
-                    .SingleOrDefaultAsync(x => x.ID == key);
-            if (dbcoll == null)
-            {
+            // Check existes
+            var isexist = await _context.UserCollections.AsNoTracking().Where(p => p.ID == key).CountAsync();
+            if (isexist <= 0)
                 return NotFound();
-            }
-            dbcoll.UpdateData(update);
+
+            update.ModifiedAt = DateTime.Now;
+            _context.Entry(update).State = EntityState.Modified;
 
             // Items
-            if (dbcoll.Items.Count > 0)
+            var itemsindb = _context.UserCollectionItems.AsNoTracking().Where(p => p.ID == update.ID).ToList();
+            foreach (var ditem in update.Items)
             {
-                if (update.Items.Count > 0)
+                var itemindb = itemsindb.Find(p => p.RefType == ditem.RefType && p.RefID == ditem.RefID);
+                if (itemindb == null)
                 {
-                    List<UserCollectionItem> tmpItems = new List<UserCollectionItem>();
-                    // 1. Search for deletion
-                    foreach (var item in dbcoll.Items)
-                    {
-                        var nitem = update.Items.FirstOrDefault(p => p.RefID == item.RefID && p.RefType == item.RefType);
-                        if (nitem == null)
-                        {
-                            // Cannot find the item in new collection, means to delete
-                            tmpItems.Add(item);
-                        }
-                    }
-                    if (tmpItems.Count > 0)
-                    {
-                        foreach (var item in tmpItems)
-                        {
-                            dbcoll.Items.Remove(item);
-                        }
-                        tmpItems.Clear();
-                    }
-                    // 2. Search for insertion
-                    foreach (var item in update.Items)
-                    {
-                        var nitem = dbcoll.Items.FirstOrDefault(p => p.RefID == item.RefID && p.RefType == item.RefType);
-                        if (nitem == null)
-                        {
-                            // Cannot find the item in old collection, means to insert
-                            var nitem2 = new UserCollectionItem(item);
-                            nitem2.Collection = dbcoll;
-                            dbcoll.Items.Add(nitem2);
-                        }
-                    }
-                }
-                else
-                {
-                    // Delete all
-                    dbcoll.Items.Clear();
+                    _context.UserCollectionItems.Add(ditem);
                 }
             }
-            else
+            foreach (var ditem2 in itemsindb)
             {
-                if (update.Items.Count > 0)
+                var nitem = update.Items.FirstOrDefault(p => p.RefType == ditem2.RefType && p.RefID == ditem2.RefID);
+                if (nitem == null)
                 {
-                    foreach (var item in update.Items)
-                    {
-                        var nitem = new UserCollectionItem(item);
-                        nitem.Collection = dbcoll;
-                        dbcoll.Items.Add(nitem);
-                    }
+                    _context.UserCollectionItems.Remove(ditem2);
                 }
             }
-            dbcoll.ModifiedAt = DateTime.Now;
 
             try
             {
@@ -241,9 +208,11 @@ namespace knowledgebuilderapi.Controllers
         {
             var coll = await _context.UserCollections.FindAsync(key);
             if (coll == null)
-            {
                 return NotFound();
-            }
+
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId) || coll.User != usrId)
+                return new UnauthorizedResult();
 
             _context.UserCollections.Remove(coll);
             await _context.SaveChangesAsync();

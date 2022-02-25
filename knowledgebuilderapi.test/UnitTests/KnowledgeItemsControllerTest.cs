@@ -42,6 +42,11 @@ namespace knowledgebuilderapi.test.unittest
         {
             var context = fixture.GetCurrentDataContext();
             KnowledgeItemsController control = new KnowledgeItemsController(context);
+            var userclaim = DataSetupUtility.GetClaimForUser(DataSetupUtility.UserA);
+            control.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext() { User = userclaim }
+            };
 
             // Step 1. Read all - 0
             var rsts = control.Get();
@@ -176,6 +181,11 @@ namespace knowledgebuilderapi.test.unittest
         {
             var context = fixture.GetCurrentDataContext();
             KnowledgeItemsController control = new KnowledgeItemsController(context);
+            var userclaim = DataSetupUtility.GetClaimForUser(DataSetupUtility.UserA);
+            control.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext() { User = userclaim }
+            };
 
             var putrst = control.Put(999, new KnowledgeItem { ID = 999 });
             Assert.NotNull(putrst);

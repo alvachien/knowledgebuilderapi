@@ -72,20 +72,13 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest(ModelState);
             }
 
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                return new UnauthorizedResult();
+
             // Admin. fields
             execitem.CreatedAt = DateTime.Now;
             execitem.ModifiedAt = null;
-            //if (execitem.Answer != null)
-            //{
-            //    execitem.Answer.ExerciseItem = execitem;
-            //}
-            //ExerciseItemAnswer execawr = null;
-            //if (execitem.Answer != null)
-            //{
-            //    execawr = new ExerciseItemAnswer();
-            //    execawr.Content = execitem.Answer.Content;
-            //    execitem.Answer = null;
-            //}
             if (execitem.Tags.Count > 0)
             {
                 foreach (var tag in execitem.Tags)
@@ -95,14 +88,6 @@ namespace knowledgebuilderapi.Controllers
             // Update db
             _context.ExerciseItems.Add(execitem);
             await _context.SaveChangesAsync();
-
-            // Answer
-            //if (execawr != null)
-            //{
-            //    execawr.ItemID = execitem.ID;
-            //    _context.ExerciseItemAnswers.Add(execawr);
-            //    await _context.SaveChangesAsync();
-            //}
 
             return Created(execitem);
         }
@@ -119,126 +104,65 @@ namespace knowledgebuilderapi.Controllers
             if (key != update.ID)
                 return BadRequest("Key is not matched");
 
-            // Check item need be updated
-            //var contentChanged = false;
-            // var execitem = await _context.ExerciseItems.FindAsync(key);
-            var execitem = await _context.ExerciseItems
-                    .Include(i => i.Answer)
-                    .Include(i => i.Tags)
-                    .SingleOrDefaultAsync(x => x.ID == key);
-            if (execitem == null)
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                return new UnauthorizedResult();
+
+            var isexist = await _context.ExerciseItems.Where(p => p.ID == key).CountAsync();
+            if (isexist <= 0)
                 return NotFound();
 
-            execitem.UpdateData(update);
-            if (execitem.Answer == null)
+            // Update itself
+            update.ModifiedAt = DateTime.Now;
+            _context.Entry(update).State = EntityState.Modified;
+
+            // Tags
+            var tagsindb = _context.ExerciseTags.Where(p => p.RefID == update.ID).AsNoTracking().ToList();
+            foreach (var ditem in update.Tags)
             {
+                var itemindb = tagsindb.Find(p => p.TagTerm == ditem.TagTerm);
+                if (itemindb == null)
+                {
+                    _context.ExerciseTags.Add(ditem);
+                }
+            }
+            foreach (var ditem in tagsindb)
+            {
+                var nitem = update.Tags.FirstOrDefault(p => p.TagTerm == ditem.TagTerm);
+                if (nitem == null)
+                {
+                    _context.ExerciseTags.Remove(ditem);
+                }
+            }
+
+            // Answer
+            var answerindb = _context.ExerciseItemAnswers.Where(p => p.ID == update.ID).AsNoTracking().FirstOrDefault();
+            if (answerindb == null)
+            {
+                // Not exist
                 if (update.Answer != null)
                 {
-                    execitem.Answer = new ExerciseItemAnswer(update.Answer);
-                    execitem.Answer.ExerciseItem = execitem;
+                    // Insert
+                    _context.ExerciseItemAnswers.Add(update.Answer);
                 }
             }
             else
             {
+                // Already in DB
                 if (update.Answer != null)
                 {
-                    execitem.Answer.UpdateData(update.Answer);
+                    // Insert
+                    _context.Entry(update.Answer).State = EntityState.Modified;
                 }
                 else
                 {
-                    execitem.Answer = null;
+                    _context.ExerciseItemAnswers.Remove(answerindb);
                 }
             }
-            if (execitem.Tags.Count > 0)
-            {
-                if (update.Tags.Count > 0)
-                {
-                    execitem.Tags.Clear();
-
-                    foreach (var tag in update.Tags)
-                    {
-                        var newtag = new ExerciseTag(tag);
-                        newtag.CurrentExerciseItem = execitem;
-                        execitem.Tags.Add(newtag);
-                    }
-                }
-                else
-                {
-                    // Delete all
-                    execitem.Tags.Clear();
-                }
-            }
-            else
-            {
-                if (update.Tags.Count > 0)
-                {
-                    foreach(var tag in update.Tags)
-                    {
-                        var newtag = new ExerciseTag(tag);
-                        newtag.CurrentExerciseItem = execitem;
-                        execitem.Tags.Add(newtag);
-                    }
-                }
-            }
-
-            //// Check the exercise item
-            //if (execitem.Equals(update))
-            //{
-            //    // Do nothing
-            //}
-            //else
-            //{
-            //    contentChanged = true;
-            //    execitem.UpdateData(update);
-            //    _context.Update(execitem);
-            //}
-
-            //// Check the associated object need be updated - Answer
-            //if (execitem.Answer == null)
-            //{
-            //    if (update.Answer != null)
-            //    {
-            //        contentChanged = true;
-
-            //        ExerciseItemAnswer eia = new ExerciseItemAnswer(update.Answer);
-            //        eia.ExerciseItem = execitem;
-            //        _context.Update(eia);
-            //    }
-            //}
-            //else
-            //{
-            //    if (update.Answer != null)
-            //    {
-            //        if (!execitem.Answer.Equals(update.Answer))
-            //        {
-            //            ExerciseItemAnswer eia = new ExerciseItemAnswer(update.Answer);
-            //            eia.ExerciseItem = execitem;
-            //            _context.Update(eia);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        contentChanged = true;
-
-            //    }
-            //}
-
-            //// Check the associated object need be updated - Tags
-            //if (execitem.Tags.Count > 0)
-            //{
-
-            //}
-            //else
-            //{
-
-            //}
 
             try
             {
-                //if (contentChanged)
-                //{
-                    await _context.SaveChangesAsync();
-                //}
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -256,9 +180,11 @@ namespace knowledgebuilderapi.Controllers
         {
             var execitem = await _context.ExerciseItems.FindAsync(key);
             if (execitem == null)
-            {
                 return NotFound();
-            }
+
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                return new UnauthorizedResult();
 
             _context.ExerciseItems.Remove(execitem);
             await _context.SaveChangesAsync();
@@ -275,11 +201,13 @@ namespace knowledgebuilderapi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                return new UnauthorizedResult();
+
             var entity = await _context.ExerciseItems.FindAsync(key);
             if (entity == null)
-            {
                 return NotFound();
-            }
 
             execitem.Patch(entity);
             entity.ModifiedAt = DateTime.Now;

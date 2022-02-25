@@ -55,6 +55,14 @@ namespace knowledgebuilderapi.test.common
                 CONSTRAINT FK_KNOWLEDGETAG_ID FOREIGN KEY (RefID) REFERENCES ExerciseItem ([ID]) ON DELETE CASCADE ON UPDATE CASCADE )"
             );
 
+            database.ExecuteSqlRaw(@"CREATE TABLE AwardRuleGroup (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                RuleType    SMALLINT      NOT NULL,
+                TargetUser  NVARCHAR (50) NOT NULL,
+                DESP        NVARCHAR (50) NOT NULL,
+                ValidFrom   DATETIME NULL DEFAULT CURRENT_DATE,
+                ValidTo     DATETIME NULL DEFAULT CURRENT_DATE )");
+
             database.ExecuteSqlRaw(@"CREATE TABLE AwardRule (
                 ID INTEGER PRIMARY KEY AUTOINCREMENT,
 	            RuleType	SMALLINT 		NOT NULL,
@@ -158,6 +166,30 @@ namespace knowledgebuilderapi.test.common
                 PRIMARY KEY (HabitID, RecordDate, SubID),
 	            CONSTRAINT FK_USERHABITRECORD_HABIT FOREIGN KEY (HabitID) REFERENCES UserHabit (ID) ON DELETE CASCADE ON UPDATE CASCADE )"
             );
+
+            database.ExecuteSqlRaw(@"CREATE TABLE UserCollection (
+                ID  INTEGER PRIMARY KEY AUTOINCREMENT,
+	            User NVARCHAR(50)	NOT NULL,
+	            Name NVARCHAR(50)	NOT NULL,
+	            COMMENT NVARCHAR(50)	NULL,
+                CreatedAt DATE   NULL   DEFAULT CURRENT_DATE,
+                ModifiedAt DATE   NULL   DEFAULT CURRENT_DATE)");
+
+            database.ExecuteSqlRaw(@"CREATE TABLE UserCollectionItem (
+                ID INT,
+                RefType SMALLINT      NOT NULL,
+                RefID INT           NOT NULL,
+                CreatedAt DATE   NULL   DEFAULT CURRENT_DATE,
+	            PRIMARY KEY (ID, RefType, RefID),
+	            CONSTRAINT FK_USERCOLL_ITEM_ID FOREIGN KEY (ID) REFERENCES UserCollection (ID) ON DELETE CASCADE ON UPDATE CASCADE )");
+
+            database.ExecuteSqlRaw(@"CREATE TABLE ExerciseItemUserScore (
+                ID  INTEGER PRIMARY KEY AUTOINCREMENT,
+	            User NVARCHAR(50)	NOT NULL,
+                RefID INT           NOT NULL,
+                TakenDate DATE   NULL   DEFAULT CURRENT_DATE,
+	            Score 		INT				NOT NULL,
+	            CONSTRAINT FK_EXERCISEITEM_USRSCORE_ID FOREIGN KEY (RefID) REFERENCES ExerciseItem (ID) ON DELETE CASCADE ON UPDATE CASCADE	)");
         }
 
         public static void CreateDatabaseViews(DatabaseFacade database)
@@ -376,6 +408,11 @@ namespace knowledgebuilderapi.test.common
         public static void DeleteExerciseItem(kbdataContext context, int eid)
         {
             context.Database.ExecuteSqlRaw("DELETE FROM ExerciseItem WHERE ID = " + eid.ToString());
+        }
+
+        public static void DeleteUserCollection(kbdataContext context, int cid)
+        {
+            context.Database.ExecuteSqlRaw("DELETE FROM UserCollection WHERE ID = " + cid.ToString());
         }
 
         public static void DeleteAwardData(kbdataContext context)

@@ -12,7 +12,7 @@ namespace knowledgebuilderapi.Models
     {
         public UserCollection(): base()
         {
-            Items = new HashSet<UserCollectionItem>();
+            Items = new List<UserCollectionItem>();
         }
 
         [Key]
@@ -34,17 +34,6 @@ namespace knowledgebuilderapi.Models
         public String Comment { get; set; }
 
         public ICollection<UserCollectionItem> Items { get; set; }
-
-        public void UpdateData(UserCollection other)
-        {
-            if (other == null)
-                throw new InvalidOperationException("Invalid parameter: Other");
-
-            if (String.CompareOrdinal(User, other.User) != 0)
-                User = other.User;
-            if (String.CompareOrdinal(Comment, other.Comment) != 0)
-                Comment = other.Comment;
-        }
     }
 
     [Table("UserCollectionItem")]

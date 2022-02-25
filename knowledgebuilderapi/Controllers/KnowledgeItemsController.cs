@@ -76,6 +76,10 @@ namespace knowledgebuilderapi.Controllers
                 return BadRequest(ModelState);
             }
 
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                return new UnauthorizedResult();
+
             knowledge.CreatedAt = DateTime.Now;
             _context.KnowledgeItems.Add(knowledge);
             await _context.SaveChangesAsync();
@@ -90,12 +94,14 @@ namespace knowledgebuilderapi.Controllers
         public async Task<IActionResult> Put([FromODataUri] int key, [FromBody] KnowledgeItem update)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             if (key != update.ID)
                 return NotFound();
+
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                return new UnauthorizedResult();
 
             var isexist = await _context.KnowledgeItems.Where(p => p.ID == key).CountAsync();
             if (isexist <= 0)
@@ -143,9 +149,11 @@ namespace knowledgebuilderapi.Controllers
         {
             var knowledge = await _context.KnowledgeItems.FindAsync(key);
             if (knowledge == null)
-            {
                 return NotFound();
-            }
+
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                return new UnauthorizedResult();
 
             _context.KnowledgeItems.Remove(knowledge);
             await _context.SaveChangesAsync();
@@ -160,15 +168,15 @@ namespace knowledgebuilderapi.Controllers
         public async Task<IActionResult> Patch([FromODataUri] int key, [FromBody] Delta<KnowledgeItem> knowledge)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var entity = await _context.KnowledgeItems.FindAsync(key);
             if (entity == null)
-            {
                 return NotFound();
-            }
+
+            String usrId = ControllerUtil.GetUserID(this);
+            if (String.IsNullOrEmpty(usrId))
+                return new UnauthorizedResult();
 
             knowledge.Patch(entity);
             entity.ModifiedAt = DateTime.Now;

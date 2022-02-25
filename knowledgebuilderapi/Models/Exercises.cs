@@ -58,19 +58,6 @@ namespace knowledgebuilderapi.Models
         {
             return this.ID;
         }
-
-        public void UpdateData(ExerciseItem other)
-        {
-            if (other == null)
-                throw new InvalidOperationException("Invalid parameter: Other");
-
-            if (KnowledgeItemID != other.KnowledgeItemID)
-                KnowledgeItemID = other.KnowledgeItemID;
-            if (ExerciseType != other.ExerciseType)
-                ExerciseType = other.ExerciseType;
-            if (String.CompareOrdinal(Content, other.Content) != 0)
-                Content = other.Content;
-        }
     }
 
     [Table("ExerciseItemAnswer")]
@@ -113,15 +100,6 @@ namespace knowledgebuilderapi.Models
         public override int GetHashCode()
         {
             return this.ID;
-        }
-
-        public void UpdateData(ExerciseItemAnswer other)
-        {
-            if (other == null)
-                throw new InvalidOperationException("Invalid parameter: Other");
-
-            if (String.CompareOrdinal(Content, other.Content) != 0)
-                Content = other.Content;
         }
     }
 
