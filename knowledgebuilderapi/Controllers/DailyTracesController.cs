@@ -75,7 +75,7 @@ namespace knowledgebuilderapi.Controllers
         }
 
         // PUT: /DailyTraces/5
-        public async Task<IActionResult> Put([FromODataUri] String keyTargetUser, [FromODataUri] DateTime keyRecordDate, [FromBody] DailyTrace update)
+        public IActionResult Put([FromODataUri] String keyTargetUser, [FromODataUri] DateTime keyRecordDate, [FromBody] DailyTrace update)
         {
             return BadRequest();
             //if (!ModelState.IsValid)
@@ -128,7 +128,7 @@ namespace knowledgebuilderapi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SimulatePoints([FromBody] ODataActionParameters parameters)
+        public IActionResult SimulatePoints([FromBody] ODataActionParameters parameters)
         {
             if (!ModelState.IsValid)
             {
