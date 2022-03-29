@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>609c239b-e8d5-49a0-9cd3-feb06a09011b</UserSecretsId>
     <AssemblyName>KnowledgeBuilder.API</AssemblyName>
-    <Version>0.3.122</Version>
+    <Version>0.3.132</Version>
     <Authors>Alva Chien</Authors>
     <Company>Alva Chien</Company>
     <Copyright>© Alva Chien 2022</Copyright>
